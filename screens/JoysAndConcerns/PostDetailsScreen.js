@@ -45,6 +45,13 @@ const PostDetailsScreen = ({ navigation, route }) => {
     setLiveLikes(liveLikes + 1);
     prayerContext.incrementLike(route.params?.id);
     AsyncStorage.setItem(`post_${route.params?.id}`, "1");
+    userContext.sendPushNotification(
+      route.params?.userID,
+      "Someone Liked Your Post!",
+      `${userContext.formatName} liked one of your posts!`,
+      route.params?.id,
+      "POST_LIKED"
+    );
   };
 
   const getLikeStatus = async () => {
@@ -61,19 +68,6 @@ const PostDetailsScreen = ({ navigation, route }) => {
     getLikeStatus();
   }, [liveLikes]);
 
-  const imageComponent = route.params?.avatarURL ? (
-    <Avatar.Image
-      source={{ uri: route.params?.avatarURL }}
-      size={50}
-      style={{ backgroundColor: userColors.seaFoam300 }}
-    />
-  ) : (
-    <Avatar.Image
-      source={require("../../assets/default-2.png")}
-      size={50}
-      style={{ backgroundColor: Colors.white }}
-    />
-  );
 
   const getComments = useCallback(async () => {
     setLoadingComments(true);
@@ -137,6 +131,13 @@ const PostDetailsScreen = ({ navigation, route }) => {
       try {
 
         const { data, error } = await addItemToTable("comments", newComment);
+        userContext.sendPushNotification(
+          route.params?.userID,
+          "New Comment!",
+          `${userContext.formatName} commented on your post!`,
+          route.params?.id,
+          "NEW_COMMENT"
+        );
         setCommentContent('');
       } catch (err) {
         setPostingComment(false);

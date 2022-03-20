@@ -9,13 +9,14 @@ const BASE_URL = `https://asbury-next-website.vercel.app/blog`;
 
 const BlogDetailsHeader = ({ navigation, route, back, props, title }) => {
   const userContext = useContext(UserContext);
-
+  
 
   const formatTitle = route.params?.title
     .replace(/([a-z])([A-Z])/g, "$1-$2")
     .replace(/\s+/g, "-")
     .replace("---", "-")
     .toLowerCase();
+    
 
   const shareURL = `${BASE_URL}/${route.params?.id}/${formatTitle}`
     const shareMessage = `Check out this post by ${route.params?.author} on Asbury UMC!`
@@ -29,9 +30,11 @@ const BlogDetailsHeader = ({ navigation, route, back, props, title }) => {
           backgroundColor: "transparent",
           justifyContent: "space-between",
           alignItems: "center",
+          shadowOpacity: 0,
         }}
       >
         <Appbar.BackAction onPress={navigation.goBack} />
+        <Appbar.Content title={route.params?.author} />
         <Appbar.Action
           icon="share"
           onPress={() =>

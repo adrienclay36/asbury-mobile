@@ -1,4 +1,11 @@
-import { Dimensions, StyleSheet, Text, View, Share, StatusBar } from "react-native";
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  View,
+  Share,
+  StatusBar,
+} from "react-native";
 import React, { useContext } from "react";
 import { userColors } from "../../constants/userColors";
 import { Appbar, Avatar, Button, Colors } from "react-native-paper";
@@ -8,7 +15,7 @@ import { onShare } from "../../helpers/onShare";
 import { SafeAreaView } from "react-native-safe-area-context";
 const BASE_URL = `https://asbury-next-website.vercel.app/blog`;
 const IMAGE_SIZE = 30;
-const LibraryHeader = ({ navigation, route, back, props, title }) => {
+const BlogHeader = ({ navigation, route, back, props, title }) => {
   const userContext = useContext(UserContext);
 
   const formatTitle = route.params?.title
@@ -37,46 +44,40 @@ const LibraryHeader = ({ navigation, route, back, props, title }) => {
   return (
     <>
       <SafeAreaView
-        style={[styles.header, {
-          flexDirection: 'row',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-
-        }]}
+        style={[
+          styles.header,
+          {
+            flexDirection: "row",
+            justifyContent: "flex-end",
+            alignItems: "center",
+          },
+        ]}
       >
-        {/* <Text style={styles.title}>Library</Text> */}
-        
-        <Appbar.Action icon="menu" size={30} color={Colors.grey900} onPress={() => navigation.openDrawer()} />
+        {/* <Text style={styles.title}>Announcements</Text> */}
+
+        <Appbar.Action
+          icon="menu"
+          size={30}
+          color={Colors.grey900}
+          onPress={() => navigation.openDrawer()}
+        />
       </SafeAreaView>
     </>
   );
 };
 
-export default LibraryHeader;
+export default BlogHeader;
 
 const styles = StyleSheet.create({
   header: {
     marginTop: StatusBar.currentHeight,
     marginHorizontal: 10,
-  },
-  userHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    margin: 20,
-  },
-  welcome: {
-    fontFamily: primaryFont.semiBold,
-    fontSize: 20,
-  },
-  image: {
-    backgroundColor: "transparent",
-    margin: 20,
+    marginBottom: -40,
   },
   title: {
     marginLeft: 20,
     shadowOpacity: 0,
     fontSize: 25,
     fontFamily: primaryFont.extraBold,
-  }
+  },
 });

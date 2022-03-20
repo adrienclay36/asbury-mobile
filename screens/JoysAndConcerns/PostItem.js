@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Animated, Dimensions } from "react-native";
+import { StyleSheet, Text, View, Animated, Dimensions, TouchableWithoutFeedback } from "react-native";
 import React, {
   useRef,
   useContext,
@@ -21,7 +21,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 const { height: wHeight } = Dimensions.get("window");
 import { PrayerContext } from "../../store/PrayersProvider";
 import { supabase } from "../../supabase-service";
-import * as Animatable from "react-native-animatable";
+import { UserContext } from '../../store/UserProvider';
 let isInit = true;
 const height = wHeight - 200;
 const ITEM_SIZE = 200;
@@ -43,6 +43,7 @@ const PostItem = ({
   const [liveLikes, setLiveLikes] = useState(likes);
   const [liked, setLiked] = useState(false);
   const [commentCount, setCommentCount] = useState(0);
+  const userContext = useContext(UserContext);
 
   const getLikeStatus = useCallback(async () => {
     const storedPost = await AsyncStorage.getItem(`post_${id}`);
@@ -134,12 +135,14 @@ const PostItem = ({
     }
     setLiveLikes(liveLikes + 1);
     prayerContext.incrementLike(id);
+    userContext.sendPushNotification(userID, 'Someone Liked Your Post!', `${userContext.formatName} Liked one of your posts!`, id, 'POST_LIKED');
     AsyncStorage.setItem(`post_${id}`, "1");
   };
 
   return (
-    <TouchableOpacity
-      onLongPress={() =>
+    <TouchableWithoutFeedback
+      
+      onPress={() =>
         navigation.navigate("PostDetails", {
           liveLikes,
           formatName,
@@ -152,9 +155,6 @@ const PostItem = ({
           avatarURL,
         })
       }
-      onPress={() => {
-        incrementLikeHandler();
-      }}
     >
       <Animated.View
         style={[{ opacity, transform: [{ translateY }, { scale }] }]}
@@ -222,7 +222,7 @@ const PostItem = ({
           </View>
         </Card>
       </Animated.View>
-    </TouchableOpacity>
+    </TouchableWithoutFeedback>
   );
 };
 

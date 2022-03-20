@@ -36,6 +36,7 @@ const BookDetailsScreen = ({ navigation, route }) => {
 
   return (
     <>
+    <StatusBar style="light"/>
       <Card>
         <Text style={styles.title} numberOfLines={2}>
           {route.params?.title}

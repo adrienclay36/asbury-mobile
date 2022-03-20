@@ -1,4 +1,11 @@
-import { Dimensions, StyleSheet, Text, View, StatusBar, Platform } from "react-native";
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  View,
+  StatusBar,
+  Platform,
+} from "react-native";
 import React from "react";
 import { userColors } from "../../constants/userColors";
 import { Appbar, Avatar, Button, Colors } from "react-native-paper";
@@ -7,13 +14,15 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 const IMAGE_SIZE = 50;
 const NewPostHeader = ({ navigation, route, back, props, title }) => {
-
-
   const imageComponent = route.params?.avatarURL ? (
-    <Avatar.Image style={{backgroundColor: 'transparent'}} source={{ uri: route.params?.avatarURL }} size={IMAGE_SIZE} />
+    <Avatar.Image
+      style={{ backgroundColor: "transparent" }}
+      source={{ uri: route.params?.avatarURL }}
+      size={IMAGE_SIZE}
+    />
   ) : (
     <Avatar.Image
-        style={{ backgroundColor: 'transparent' }}
+      style={{ backgroundColor: "transparent" }}
       source={require("../../assets/default-2.png")}
       size={IMAGE_SIZE}
     />
@@ -25,7 +34,8 @@ const NewPostHeader = ({ navigation, route, back, props, title }) => {
           styles.header,
           {
             backgroundColor: Colors.grey200,
-            marginTop: Platform.OS === 'android' ? StatusBar.currentHeight + 30 : 30,
+            marginTop:
+              Platform.OS === "android" ? StatusBar.currentHeight + 30 : 30,
             marginBottom: 10,
           },
         ]}
@@ -50,9 +60,9 @@ const NewPostHeader = ({ navigation, route, back, props, title }) => {
 export default NewPostHeader;
 
 const styles = StyleSheet.create({
-    header: {
-        marginTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-    },
+  header: {
+    marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
   container: {
     width: Dimensions.get("window").width,
     position: "absolute",

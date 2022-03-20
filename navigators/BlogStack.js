@@ -7,13 +7,20 @@ const Stack = createStackNavigator();
 import WebEngine from "../components/WebEngine";
 import BlogDetailsScreen from "../screens/Blog/BlogDetailsScreen";
 import BlogDetailsHeader from "../screens/Blog/BlogDetailsHeader";
+import BlogHeader from "../screens/Blog/BlogHeader";
 const BlogStack = () => {
   return (
     <WebEngine>
       <BlogProvider>
         <Stack.Navigator>
           <Stack.Screen
-            options={{ headerShown: false }}
+            options={({ route }) => ({
+              headerShadowVisible: false,
+              presentation: "formSheet",
+              header: (props) => (
+                <BlogHeader {...props} props={props} route={route} />
+              ),
+            })}
             name="BlogHomeScreen"
             component={BlogHomeScreen}
           />

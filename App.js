@@ -32,20 +32,19 @@ export default function App() {
     return <AppLoading />;
   }
 
-  
   return (
-    <UserProvider>
-      <PaperProvider>
-        <NavigationContainer>
+    <PaperProvider>
+      <NavigationContainer>
+        <UserProvider>
           <AppStack.Navigator screenOptions={{ headerShown: false }}>
-            <AppStack.Screen name="StartupScreen" component={StartupScreen}/>
+            <AppStack.Screen name="StartupScreen" component={StartupScreen} />
             <AppStack.Screen name="AuthStack" component={AuthStack} />
             <AppStack.Screen name="AppStack" component={MainDrawerNavigator} />
           </AppStack.Navigator>
           <StatusBar style="auto" />
-        </NavigationContainer>
-      </PaperProvider>
-    </UserProvider>
+        </UserProvider>
+      </NavigationContainer>
+    </PaperProvider>
   );
 }
 

@@ -4,6 +4,7 @@ import CenteredLoader from "../../components/ui/CenteredLoader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserContext } from "../../store/UserProvider";
 import { supabase } from "../../supabase-service";
+
 const StartupScreen = ({ navigation, route }) => {
   const userContext = useContext(UserContext);
 
@@ -40,6 +41,18 @@ const StartupScreen = ({ navigation, route }) => {
   useEffect(() => {
     getAuthStatus();
   }, []);
+
+
+
+  
+
+
+
+  useEffect(() => {
+
+  }, [])
+
+
   return <CenteredLoader />;
 };
 

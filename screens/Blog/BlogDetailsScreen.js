@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
   image: {
     height: height * 0.3,
     width: width,
+    backgroundColor: 'transparent',
   },
   title: {
     fontFamily: primaryFont.semiBold,
