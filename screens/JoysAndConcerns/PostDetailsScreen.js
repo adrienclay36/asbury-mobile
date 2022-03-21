@@ -8,6 +8,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Keyboard,
+  Platform,
 } from "react-native";
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Avatar, Button, Colors } from "react-native-paper";
@@ -21,9 +22,12 @@ import { supabase } from "../../supabase-service";
 import CommentItem from "./CommentItem";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { addItemToTable } from "../../supabase-util";
+import PostDetailsHeader from './PostDetailsHeader';
+import { StatusBar } from "expo-status-bar";
 
 let isInit = true;
 const PostDetailsScreen = ({ navigation, route }) => {
+  const { ITEM_SIZE, avatarURL, formatDate, formatName, id, postType, userID } = route?.params;
   const [liveLikes, setLiveLikes] = useState(route.params?.liveLikes);
   const [liked, setLiked] = useState(false);
   const [comments, setComments] = useState([]);
@@ -33,7 +37,6 @@ const PostDetailsScreen = ({ navigation, route }) => {
   const [postingComment, setPostingComment] = useState(false);
   const prayerContext = useContext(PrayerContext);
   const userContext = useContext(UserContext);
-
   const incrementLikeHandler = async () => {
     const storedPost = await AsyncStorage.getItem(`post_${route.params?.id}`);
     if (storedPost) {
@@ -75,7 +78,7 @@ const PostDetailsScreen = ({ navigation, route }) => {
       .from("comments")
       .select()
       .match({ postid: route.params?.id })
-      .order("id", { ascending: false });
+      .order("id", { ascending: true });
     if (data.length > 0) {
       setComments(data);
     }
@@ -102,7 +105,7 @@ const PostDetailsScreen = ({ navigation, route }) => {
           const filtered = prevComments.filter(
             (prevComment) => prevComment.id !== payload.new.id
           );
-          return [payload.new, ...filtered];
+          return [...filtered, payload.new];
         });
       }
 
@@ -120,6 +123,7 @@ const PostDetailsScreen = ({ navigation, route }) => {
   }, [payload]);
 
   const addCommentHandler = async () => {
+    Keyboard.dismiss();
     setPostingComment(true)
     if (commentContent) {
       const newComment = {
@@ -131,6 +135,7 @@ const PostDetailsScreen = ({ navigation, route }) => {
       try {
 
         const { data, error } = await addItemToTable("comments", newComment);
+        
         userContext.sendPushNotification(
           route.params?.userID,
           "New Comment!",
@@ -149,9 +154,11 @@ const PostDetailsScreen = ({ navigation, route }) => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    <>
+    <StatusBar style={Platform.OS === 'android' ? 'dark' : 'light'}/>
+    <PostDetailsHeader userID={userID} liveLikes={liveLikes} formatName={formatName} avatarURL={avatarURL} formatDate={formatDate} postID={route.params?.id} postContent={route.params?.postContent} postType={route.params?.postType}/>
       <SafeAreaView style={{ marginBottom: 30 }}>
-        <ScrollView>
+        <ScrollView onScroll={() => Keyboard.dismiss()} scrollEventThrottle={16}>
           <View style={styles.postContent}>
             <Text>{route.params?.postContent}</Text>
           </View>
@@ -225,7 +232,8 @@ const PostDetailsScreen = ({ navigation, route }) => {
           </View>
         </ScrollView>
       </SafeAreaView>
-    </TouchableWithoutFeedback>
+  </>
+
   );
 };
 

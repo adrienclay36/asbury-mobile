@@ -3,7 +3,7 @@ import React, { useState, useContext } from "react";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
+import { userColors } from "../../constants/userColors";
 import {
   Avatar,
   Title,
@@ -13,6 +13,7 @@ import {
   Text,
   TouchableRipple,
   Switch,
+  Colors,
 } from "react-native-paper";
 import { UserContext } from "../../store/UserProvider";
 
@@ -75,9 +76,25 @@ const DrawerContent = (props) => {
             </View>
             <View style={styles.row}>
               <View style={styles.section}>
-                <Caption style={[styles.caption, { marginLeft: 5 }]}>Posts To Date:</Caption>
-                <Paragraph style={[styles.paragraph, styles.caption, { marginLeft: 5, }]}>
+                <Caption style={[styles.caption, { marginLeft: 5 }]}>
+                  Posts To Date:
+                </Caption>
+                <Paragraph
+                  style={[styles.paragraph, styles.caption, { marginLeft: 5 }]}
+                >
                   {userContext.userPostCount}
+                </Paragraph>
+              </View>
+            </View>
+            <View style={styles.row}>
+              <View style={styles.section}>
+                <Caption style={[styles.caption, { marginLeft: 5 }]}>
+                  Amount Donated:
+                </Caption>
+                <Paragraph
+                  style={[styles.paragraph, styles.caption, { marginLeft: 5 }]}
+                >
+                  ${userContext.totalDonations}
                 </Paragraph>
               </View>
             </View>
@@ -85,6 +102,7 @@ const DrawerContent = (props) => {
 
           <Drawer.Section style={styles.drawerSection}>
             <DrawerItem
+              
               icon={({ color, size }) => (
                 <Icon name="home-outline" color={color} size={size} />
               )}
@@ -100,10 +118,10 @@ const DrawerContent = (props) => {
             />
             <DrawerItem
               icon={({ color, size }) => (
-                <Icon name="bookmark-outline" color={color} size={size} />
+                <Icon name="book" color={color} size={size} />
               )}
-              label="Bookmarks"
-              onPress={() => props.navigation.navigate("BookmarkScreen")}
+              label="Library"
+              onPress={() => props.navigation.navigate("LibraryStack")}
             />
             <DrawerItem
               icon={({ color, size }) => (
@@ -116,7 +134,6 @@ const DrawerContent = (props) => {
               onPress={() => props.navigation.navigate("SettingsScreen")}
               label="Settings"
             />
-            
           </Drawer.Section>
           {/* <Drawer.Section title="Preferences">
             <TouchableRipple

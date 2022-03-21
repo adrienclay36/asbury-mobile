@@ -9,6 +9,7 @@ import JoysAndConcernsHeader from "../screens/JoysAndConcerns/JoysAndConcernsHea
 import NewPostHeader from "../screens/JoysAndConcerns/NewPostHeader";
 import PostDetailsScreen from "../screens/JoysAndConcerns/PostDetailsScreen";
 import PostDetailsHeader from "../screens/JoysAndConcerns/PostDetailsHeader";
+import EditPostScreen from "../screens/JoysAndConcerns/EditPostScreen";
 const JoysAndConcernsStack = () => {
   
   return (
@@ -26,10 +27,9 @@ const JoysAndConcernsStack = () => {
           />
           <Stack.Screen
             options={({ route }) => ({
+              headerShown: false,
               presentation: "formSheet",
-              header: (props) => (
-                <NewPostHeader {...props} props={props} route={route} />
-              ),
+          
             })}
             name="NewPostScreen"
             component={NewPostScreen}
@@ -37,14 +37,12 @@ const JoysAndConcernsStack = () => {
           <Stack.Screen
             options={({ route }) => ({
               presentation: "formSheet",
-              header: (props) => (
-                <PostDetailsHeader {...props} props={props} route={route} />
-              ),
-              
+              headerShown: false,
             })}
             name="PostDetails"
             component={PostDetailsScreen}
           />
+          <Stack.Screen options={{ headerShown: false, presentation: 'formSheet'}} name="EditPostScreen" component={EditPostScreen} />
         </Stack.Navigator>
       </View>
     </PrayersProvider>

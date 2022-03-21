@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, Animated, Dimensions, TouchableWithoutFeedback } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Animated,
+  Dimensions,
+  TouchableWithoutFeedback,
+} from "react-native";
 import React, {
   useRef,
   useContext,
@@ -7,10 +14,6 @@ import React, {
   useCallback,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  TapGestureHandler,
-  TouchableOpacity,
-} from "react-native-gesture-handler";
 import Card from "../../components/ui/Card";
 import useGetUser from "../../hooks/useGetUser";
 import { ActivityIndicator, Avatar, Colors } from "react-native-paper";
@@ -21,7 +24,8 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 const { height: wHeight } = Dimensions.get("window");
 import { PrayerContext } from "../../store/PrayersProvider";
 import { supabase } from "../../supabase-service";
-import { UserContext } from '../../store/UserProvider';
+import { UserContext } from "../../store/UserProvider";
+import * as Animatable from 'react-native-animatable';
 let isInit = true;
 const height = wHeight - 200;
 const ITEM_SIZE = 200;
@@ -70,40 +74,23 @@ const PostItem = ({
   }, [liveLikes]);
 
   const prayerContext = useContext(PrayerContext);
-  const position = Animated.subtract(index * CARD_HEIGHT, scrollY);
 
-  const isDisappearing = -CARD_HEIGHT;
-  const isTop = 0;
-  const isBottom = height - CARD_HEIGHT;
-  const isAppearing = height;
-
-  const translateY = Animated.add(
-    scrollY,
-    scrollY.interpolate({
-      inputRange: [0, 0.00001 + index * CARD_HEIGHT],
-      outputRange: [0, -index * CARD_HEIGHT],
-      extrapolateRight: "clamp",
-    })
-  );
-
-  const scale = position.interpolate({
-    inputRange: [isDisappearing, isTop, isBottom, isAppearing],
-    outputRange: [0.5, 1, 1, 0.5],
-    extrapolateRight: "clamp",
-  });
-
-  const opacity = position.interpolate({
-    inputRange: [isDisappearing, isTop, isBottom, isAppearing],
-    outputRange: [0.5, 1, 1, 0],
-  });
 
   const { user, avatarURL, loadingUser } = useGetUser(userID);
 
   const formatDate = new Date(postDate).toLocaleDateString("en-US");
 
+
+
+
+
   if (loadingUser) {
-    return <SkeletonPost ITEM_SIZE={ITEM_SIZE} />;
+    return null;
   }
+
+
+
+
   let formatName;
   if (user) {
     formatName = `${user.first_name} ${user.last_name}`;
@@ -135,13 +122,18 @@ const PostItem = ({
     }
     setLiveLikes(liveLikes + 1);
     prayerContext.incrementLike(id);
-    userContext.sendPushNotification(userID, 'Someone Liked Your Post!', `${userContext.formatName} Liked one of your posts!`, id, 'POST_LIKED');
+    userContext.sendPushNotification(
+      userID,
+      "Someone Liked Your Post!",
+      `${userContext.formatName} Liked one of your posts!`,
+      id,
+      "POST_LIKED"
+    );
     AsyncStorage.setItem(`post_${id}`, "1");
   };
 
   return (
     <TouchableWithoutFeedback
-      
       onPress={() =>
         navigation.navigate("PostDetails", {
           liveLikes,
@@ -156,9 +148,8 @@ const PostItem = ({
         })
       }
     >
-      <Animated.View
-        style={[{ opacity, transform: [{ translateY }, { scale }] }]}
-      >
+    
+      <Animatable.View animation="fadeIn">
         <Card height={ITEM_SIZE}>
           <View style={styles.headerSection}>
             <View style={styles.userInfoContainer}>
@@ -178,7 +169,7 @@ const PostItem = ({
           </View>
           <View style={styles.likesContainer}>
             <Text style={styles.commentCount}>{commentCount} comments</Text>
-            <View style={{ flexDirection: 'row',}}>
+            <View style={{ flexDirection: "row" }}>
               <View style={{ marginRight: 10 }}>
                 {postType === "joy" ? (
                   <Ionicons
@@ -221,7 +212,7 @@ const PostItem = ({
             </View>
           </View>
         </Card>
-      </Animated.View>
+      </Animatable.View>
     </TouchableWithoutFeedback>
   );
 };
@@ -257,7 +248,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginVertical: 10,
-    
   },
   commentCount: {
     fontFamily: primaryFont.light,

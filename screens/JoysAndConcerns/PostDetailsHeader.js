@@ -1,83 +1,118 @@
 import {
   Dimensions,
+  Platform,
+  StatusBar,
   StyleSheet,
   Text,
   View,
-  StatusBar,
-  Platform,
+  Alert,
 } from "react-native";
-import React from "react";
+import React, { useContext } from "react";
 import { userColors } from "../../constants/userColors";
-import { Appbar, Avatar, Button, Colors } from "react-native-paper";
+import { Appbar, Avatar, Colors } from "react-native-paper";
 import { primaryFont } from "../../constants/fonts";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { SafeAreaView } from "react-native-safe-area-context";
-const IMAGE_SIZE = 50;
-const NewPostHeader = ({ navigation, route, back, props, title }) => {
-  const imageComponent = route.params?.avatarURL ? (
+import { UserContext } from "../../store/UserProvider";
+import { PrayerContext } from "../../store/PrayersProvider";
+import { useNavigation } from "@react-navigation/native";
+const AVATAR_SIZE = 40;
+const { width, height } = Dimensions.get("window");
+const HEADER_HEIGHT =
+  Platform.OS === "android" ? height * 0.13 : height * 0.109;
+const PostDetailsHeader = ({ userID, formatName, avatarURL, postID, postContent, postType, formatDate, liveLikes }) => {
+  const userContext = useContext(UserContext);
+  const prayerContext = useContext(PrayerContext);
+  const navigation = useNavigation();
+
+  const headerComponent = userContext.userInfo ? (
+    <Text style={styles.headerText}>{formatName}</Text>
+  ) : (
+    <Text style={styles.headerText}>New Post</Text>
+  );
+
+  const imageComponent = avatarURL ? (
     <Avatar.Image
-      style={{ backgroundColor: "transparent" }}
-      source={{ uri: route.params?.avatarURL }}
-      size={IMAGE_SIZE}
+      style={styles.avatar}
+      size={AVATAR_SIZE}
+      source={{ uri: avatarURL }}
     />
   ) : (
     <Avatar.Image
-      style={{ backgroundColor: "transparent" }}
+      style={styles.avatar}
+      size={AVATAR_SIZE}
       source={require("../../assets/default-2.png")}
-      size={IMAGE_SIZE}
     />
   );
+
+
+  const deletePostHandler = async () => {
+    Alert.alert('Delete Post?', 'Are you sure you want to delete this post? This action cannot be undone', [
+      { text: 'Delete', style: 'destructive', onPress: () => deletePostConfirmed()},
+      { text: 'Cancel' }
+    ])
+    
+  }
+
+  const deletePostConfirmed = () => {
+    prayerContext.deletePost(postID);
+    navigation.popToTop();
+  }
   return (
     <>
-      <Appbar.Header
-        style={[
-          styles.header,
-          {
-            backgroundColor: Colors.grey200,
-            marginTop:
-              Platform.OS === "android" ? StatusBar.currentHeight + 30 : 30,
-            marginBottom: 10,
-          },
-        ]}
-      >
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-        {imageComponent}
-        <View>
-          <Appbar.Content
-            color={Colors.black}
-            title={route.params?.formatName}
-          />
-          <Appbar.Content
-            color={userColors.seaFoam400}
-            title={route.params?.formatDate}
-          />
+      <View style={styles.header}>
+        <View style={styles.contentContainer}>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+            {Platform.OS === 'android' && <Appbar.BackAction onPress={() => navigation.goBack()}  color={Colors.white}/>}
+            {imageComponent}
+            {headerComponent}
+          </View>
+          {userContext.userValue.id === userID && <View style={{flexDirection: 'row',}}>
+            <Appbar.Action icon="pencil" color={Platform.OS === 'android' ? Colors.white : Colors.grey700} onPress={() => navigation.navigate('EditPostScreen', { liveLikes, userID, postID, postType, postContent, avatarURL, formatName, formatDate })} />
+            <Appbar.Action icon="trash-can" color={Platform.OS === 'android' ? Colors.white : Colors.red700} onPress={deletePostHandler} />
+          </View>}
         </View>
-      </Appbar.Header>
+      </View>
     </>
   );
 };
 
-export default NewPostHeader;
+export default PostDetailsHeader;
 
 const styles = StyleSheet.create({
   header: {
+    backgroundColor:
+      Platform.OS === "android" ? userColors.seaFoam600 : Colors.grey200,
+    height: HEADER_HEIGHT,
     marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
-  container: {
-    width: Dimensions.get("window").width,
-    position: "absolute",
-    top: 40,
-    height: 100,
-    backgroundColor: userColors.seaFoam500,
-  },
-  userHeader: {
+  contentContainer: {
+    flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    margin: 20,
+    marginTop: HEADER_HEIGHT / 6,
+    // marginHorizontal: 20,
   },
-  welcome: {
+  userContainer: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 5,
+    marginBottom: 10,
+  },
+  avatar: {
+    backgroundColor: "transparent",
+    marginLeft: 20,
+  },
+  headerText: {
+    color: Platform.OS === "android" ? Colors.white : Colors.black,
     fontFamily: primaryFont.semiBold,
+    marginLeft: 10,
     fontSize: 20,
+  },
+  leftContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
 });

@@ -1,7 +1,5 @@
 import {
   StyleSheet,
-  Text,
-  View,
   Dimensions,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
@@ -17,43 +15,42 @@ import { UserContext } from "../../store/UserProvider";
 import { Button, Colors } from "react-native-paper";
 import { userColors } from "../../constants/userColors";
 import { StatusBar } from "expo-status-bar";
-import NewPostHeader from "./NewPostHeader";
+import EditPostHeader from './EditPostHeader';
 import CenteredLoader from "../../components/ui/CenteredLoader";
-const NewPostScreen = ({ navigation, route }) => {
+const EditPostScreen = ({ navigation, route }) => {
+    const { avatarURL, formatDate, formatName, postContent, postID, postType: incomingType, liveLikes, userID } = route?.params;
   const prayerContext = useContext(PrayerContext);
   const userContext = useContext(UserContext);
-  const [content, setContent] = useState("");
-  const [postType, setPostType] = useState("joy");
+  const [content, setContent] = useState(postContent);
+  const [postType, setPostType] = useState(incomingType);
   const [name, setName] = useState("");
   const [error, setError] = useState(false);
   
+  
 
-
-  const submitPostHandler = async () => {
+  const editPostHandler = async () => {
     if (userContext.auth && postType && content) {
-      prayerContext.addUserPost(
-        postType,
-        content,
-        userContext.userValue.id,
-        navigation
-      );
+      prayerContext.editPost(route.params?.postID, content, postType, navigation);
+    //   navigation.navigate("PostDetails", {liveLikes, userID, postContent, postType, id: postID, formatName, formatDate, avatarURL, userID})
       Keyboard.dismiss();
+      navigation.popToTop();
       return;
     }
     if (name && content) {
-      prayerContext.addPost(name, postType, content, navigation);
+      prayerContext.editPost(name, postType, content, navigation);
       Keyboard.dismiss();
       return;
     }
     setError(true);
   };
 
-
-
-  if(prayerContext.posting) {
+  if (prayerContext.posting) {
     return (
       <>
-        <NewPostHeader navigation={navigation} submitPostHandler={submitPostHandler} />
+        <EditPostHeader
+          navigation={navigation}
+          editPostHandler={editPostHandler}
+        />
 
         <CenteredLoader />
       </>
@@ -61,7 +58,10 @@ const NewPostScreen = ({ navigation, route }) => {
   }
   return (
     <>
-      <NewPostHeader navigation={navigation} submitPostHandler={submitPostHandler} />
+      <EditPostHeader
+        navigation={navigation}
+        editPostHandler={editPostHandler}
+      />
 
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <KeyboardAvoidingView style={{ margin: 20, padding: 10 }}>
@@ -98,7 +98,7 @@ const NewPostScreen = ({ navigation, route }) => {
   );
 };
 
-export default NewPostScreen;
+export default EditPostScreen;
 
 const styles = StyleSheet.create({
   textInput: {

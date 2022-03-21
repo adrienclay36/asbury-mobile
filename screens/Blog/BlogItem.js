@@ -24,7 +24,7 @@ const BlogItem = ({
   const { user, avatarURL, loadingUser } = useGetUser(userID);
 
   if (loadingUser) {
-    return <SkeletonPost />;
+    return null;
   }
   let rightContent;
   if (avatarURL) {

@@ -8,6 +8,7 @@ const Drawer = createDrawerNavigator();
 import ProfileStack from './ProfileStack';
 import DrawerContent from '../components/DrawerContent/DrawerContent';
 import * as Notifications from 'expo-notifications';
+import LibraryStack from './LibraryStack'
 const MainDrawerNavigator = ({ navigation, route }) => {
 
 
@@ -55,6 +56,7 @@ const MainDrawerNavigator = ({ navigation, route }) => {
     >
       <Drawer.Screen name="Home" component={HomeTabNavigator} />
       <Drawer.Screen name="ProfileStack" component={ProfileStack} />
+      <Drawer.Screen name="LibraryStack" component={LibraryStack} />
     </Drawer.Navigator>
   );
 }

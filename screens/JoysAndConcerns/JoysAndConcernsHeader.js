@@ -34,17 +34,25 @@ const JoysAndConcernsHeader = ({ navigation, route, back, props, title }) => {
 
   return (
     <>
-      <SafeAreaView>
-        <View style={styles.userHeader}>
-          {welcomeComponent}
-          <TouchableOpacity onPress={() => navigation.openDrawer()}>
-            {imageComponent}
-          </TouchableOpacity>
-        </View>
-        <View style={styles.actionButtons}>
-          <Appbar.Action size={30} icon="plus" color={userColors.seaFoam600} onPress={() => navigation.navigate("NewPostScreen")} />
-        </View>
-        {/* <View height={1} style={{ backgroundColor: Colors.grey300 }} /> */}
+      <SafeAreaView
+        style={{
+          flexDirection: "row",
+          justifyContent: "flex-end",
+          alignItems: "center",
+        }}
+      >
+        <Appbar.Action
+          icon="plus"
+          size={30}
+          color={Colors.grey900}
+          onPress={() => navigation.navigate("NewPostScreen")}
+        />
+        <Appbar.Action
+          icon="menu"
+          size={30}
+          color={Colors.grey900}
+          onPress={() => navigation.openDrawer()}
+        />
       </SafeAreaView>
     </>
   );

@@ -16,8 +16,9 @@ import { UserContext } from "../../store/UserProvider";
 import { PrayerContext } from "../../store/PrayersProvider";
 const AVATAR_SIZE = 40;
 const { width, height } = Dimensions.get("window");
-const HEADER_HEIGHT = Platform.OS === "android" ? height * 0.13 : height * 0.109
-const NewPostHeader = ({ navigation, submitPostHandler }) => {
+const HEADER_HEIGHT =
+  Platform.OS === "android" ? height * 0.13 : height * 0.109;
+const EditPostHeader = ({ navigation, editPostHandler }) => {
   const userContext = useContext(UserContext);
   const prayerContext = useContext(PrayerContext);
 
@@ -45,7 +46,12 @@ const NewPostHeader = ({ navigation, submitPostHandler }) => {
       <View style={styles.header}>
         <View style={styles.contentContainer}>
           <Appbar.BackAction
-            style={{ marginLeft: 20, transform: [{ rotate: Platform.OS === 'ios' ? "-90deg" : "0deg", }] }}
+            style={{
+              marginLeft: 20,
+              transform: [
+                { rotate: Platform.OS === "ios" ? "-90deg" : "0deg" },
+              ],
+            }}
             color={Platform.OS === "android" ? Colors.white : Colors.grey700}
             onPress={() => navigation.goBack()}
           />
@@ -54,15 +60,20 @@ const NewPostHeader = ({ navigation, submitPostHandler }) => {
             {headerComponent}
           </View>
           <Button
-            onPress={submitPostHandler}
+            onPress={editPostHandler}
             disabled={prayerContext.posting}
             mode={Platform.OS === "android" ? "outlined" : "contained"}
-            style={{ backgroundColor: Platform.OS === 'android' ? Colors.blueGrey800 : userColors.seaFoam600}}
+            style={{
+              backgroundColor:
+                Platform.OS === "android"
+                  ? Colors.blueGrey800
+                  : userColors.seaFoam600,
+            }}
             color={
               Platform.OS === "android" ? Colors.white : userColors.seaFoam600
             }
           >
-            Post
+            Save
           </Button>
         </View>
       </View>
@@ -70,7 +81,7 @@ const NewPostHeader = ({ navigation, submitPostHandler }) => {
   );
 };
 
-export default NewPostHeader;
+export default EditPostHeader;
 
 const styles = StyleSheet.create({
   header: {
@@ -84,7 +95,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginTop: HEADER_HEIGHT / 6,
-    marginHorizontal: 20
+    marginHorizontal: 20,
   },
   userContainer: {
     flex: 1,
@@ -97,7 +108,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   headerText: {
-    color: Platform.OS === 'android' ? Colors.white : Colors.black,
+    color: Platform.OS === "android" ? Colors.white : Colors.black,
     fontFamily: primaryFont.semiBold,
-  }
+  },
 });

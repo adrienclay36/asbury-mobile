@@ -5,9 +5,12 @@ import { createMaterialBottomTabNavigator } from "@react-navigation/material-bot
 import { Colors } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import { Ionicons } from "@expo/vector-icons";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import JoysAndConcernsStack from "./JoysAndConcernsStack";
 import { userColors } from "../constants/userColors";
 import BlogStack from "./BlogStack";
+import GivingStack from "./GivingStack";
+import EventsStack from "./EventsStack";
 const Tab = createMaterialBottomTabNavigator();
 const HomeTabNavigator = () => {
   return (
@@ -32,15 +35,15 @@ const HomeTabNavigator = () => {
       <Tab.Screen
         options={{
           tabBarColor: Colors.white,
-
-          tabBarLabel: "Library",
+          
+          tabBarLabel: "Events",
 
           tabBarIcon: ({ color }) => (
-            <Icon name="book" color={color} size={24} />
+            <Icon name="calendar-week" color={color} size={24} />
           ),
         }}
-        name="LibraryStack"
-        component={LibraryStack}
+        name="EventsStack"
+        component={EventsStack}
       />
       <Tab.Screen
         options={{
@@ -57,6 +60,23 @@ const HomeTabNavigator = () => {
         }}
         name="JoysStack"
         component={JoysAndConcernsStack}
+      />
+
+      <Tab.Screen
+        options={{
+          tabBarColor: Colors.white,
+          tabBarLabel: "Giving",
+
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons
+              name="account-cash"
+              color={color}
+              size={24}
+            />
+          ),
+        }}
+        name="GivingStack"
+        component={GivingStack}
       />
     </Tab.Navigator>
   );

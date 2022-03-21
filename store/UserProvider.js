@@ -1,13 +1,13 @@
 import React, { createContext, useEffect, useState } from "react";
 import { supabase } from "../supabase-service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getItemById, getPublicUrl, getUserPostCount } from "../supabase-util";
+import { getPublicUrl, getUserPostCount } from "../supabase-util";
 import * as Notifications from "expo-notifications";
 import axios from "axios";
 const TOKEN_KEY = "asbury_auth";
 
-import { useNavigation } from "@react-navigation/native";
-
+import { SERVER_URL } from '../constants/serverURL';
+// const SERVER_URL = "http://localhost:3000/api";
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -29,6 +29,14 @@ export const UserContext = createContext({
   userPostCount: 0,
   formatName: "",
   sendPushNotification: (userID, title, body, postID) => {},
+  transactions: [],
+  totalDonations: 0,
+  refreshTransactions: () => {},
+  refreshing: false,
+  subscribed: false,
+  customerID: "",
+  gettingUser: false,
+
 });
 const UserProvider = (props) => {
   const [userValue, setUserValue] = useState();
@@ -41,8 +49,13 @@ const UserProvider = (props) => {
   const [userPostCount, setUserPostCount] = useState(0);
   const [formatName, setFormatName] = useState("");
   const [pushToken, setPushToken] = useState("");
-  const [notification, setNotification] = useState();
-  const navigationContext = useNavigation();
+  const [transactions, setTransactions] = useState([]);
+  const [customerID, setCustomerID] = useState("");
+  const [totalDonations, setTotalDonations] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const [subscribed, setSubscribed] = useState(false);
+  const [gettingUser, setGettingUser] = useState(false);
+  
 
   const getPermissions = async (user) => {
     const { data, error } = await supabase
@@ -67,17 +80,48 @@ const UserProvider = (props) => {
 
       const postCount = await getUserPostCount(user.id);
       setUserPostCount(postCount);
-
       getPushPermissions(user.id);
+
+      if (!userData.customer_id) {
+        await establishCustomer(userData);
+      } else {
+        setCustomerID(userData.customer_id);
+        const response = await axios.get(
+          `${SERVER_URL}/get-customer-invoices?customerID=${userData.customer_id}`
+        );
+        setTransactions(response.data.payments);
+        let totalDonated = 0;
+        for (let payment of response.data.payments) {
+          let amount = payment.charges.data[0].amount;
+          if (typeof amount === "number") {
+            totalDonated += parseInt(amount) / 100;
+          }
+        }
+        setTotalDonations(totalDonated);
+
+        await getSubscriptionStatus(userData.customer_id);
+      }
     }
+    setGettingUser(false);
+  };
+
+  
+
+  const getSubscriptionStatus = async (customerID) => {
+    const response = await axios.post(`${SERVER_URL}/get-user-subscriptions`, {
+      customerID,
+    });
+
+    setSubscribed(response.data.subscribed);
   };
 
   const checkUser = async () => {
+    setGettingUser(true);
     const user = supabase.auth.user();
     if (user) {
       setUserValue(user);
 
-      getPermissions(user);
+      await getPermissions(user);
     }
   };
 
@@ -109,7 +153,7 @@ const UserProvider = (props) => {
           { title, body, to: token, data: { postID, type: type } },
           {
             headers: {
-              'Accept': "application/json",
+              Accept: "application/json",
               "Accept-Encoding": "gzip deflate",
               "Content-Type": "application/json",
             },
@@ -184,6 +228,39 @@ const UserProvider = (props) => {
       .match({ id: userID });
   };
 
+  const establishCustomer = async (userInfo) => {
+    const name = `${userInfo.first_name} ${userInfo.last_name}`;
+    const customerObject = {
+      name: name,
+      email: userInfo.email,
+      userID: userInfo.id,
+    };
+    const response = await axios.post(
+      `${SERVER_URL}/establish-new-customer`,
+      customerObject
+    );
+    setCustomerID(response.data.customerID);
+  };
+
+  const refreshTransactions = async () => {
+    setRefreshing(true);
+    const response = await axios.get(
+      `${SERVER_URL}/get-customer-invoices?customerID=${customerID}`
+    );
+    setTransactions(response.data.payments);
+    let totalDonated = 0;
+    for (let payment of response.data.payments) {
+      let amount = payment.charges.data[0].amount;
+      if (typeof amount === "number") {
+        totalDonated += parseInt(amount) / 100;
+      }
+    }
+   
+    setTotalDonations(totalDonated);
+    setRefreshing(false);
+    
+  };
+
   const contextValue = {
     userValue,
     userInfo,
@@ -198,6 +275,13 @@ const UserProvider = (props) => {
     formatName,
     updatePushToken,
     sendPushNotification,
+    transactions,
+    totalDonations,
+    refreshTransactions,
+    refreshing,
+    subscribed,
+    customerID,
+    gettingUser,
   };
   return (
     <UserContext.Provider value={contextValue}>

@@ -118,6 +118,6 @@ const styles = StyleSheet.create({
     color: userColors.seaFoam600,
   },
   contentContainer: {
-    marginHorizontal: 10,
+    marginHorizontal: 15,
   },
 });
