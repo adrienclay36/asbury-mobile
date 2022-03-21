@@ -6,18 +6,16 @@ const GivingHomePage = ({ navigation, route }) => {
   const userContext = useContext(UserContext);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    const unsubscribe = navigation.addListener("focus", () => {
       userContext.checkUser();
-    })
+    });
     return unsubscribe;
-  }, [navigation])
+  }, [navigation]);
 
-  
   return (
-      <>
+    <>
       <ProfileCard navigation={navigation} />
-      </>
-   
+    </>
   );
 };
 

@@ -1,11 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-
-const ProfileScreen = () => {
+import ProfilePage from '../../components/Profile/ProfilePage'
+const ProfileScreen = ({ navigation }) => {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>ProfileScreen</Text>
-    </View>
+    <>
+      <ProfilePage navigation={navigation}/>
+    </>
   )
 }
 

@@ -1,12 +1,14 @@
 import React, { createContext, useEffect, useState } from "react";
 import { supabase } from "../supabase-service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from 'expo-secure-store';
 import { getPublicUrl, getUserPostCount } from "../supabase-util";
 import * as Notifications from "expo-notifications";
 import axios from "axios";
 const TOKEN_KEY = "asbury_auth";
+import { ASBURY_KEY_ONE, ASBURY_KEY_TWO } from "@env";
 
-import { SERVER_URL } from '../constants/serverURL';
+import { SERVER_URL } from "../constants/serverURL";
 // const SERVER_URL = "http://localhost:3000/api";
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -24,7 +26,6 @@ export const UserContext = createContext({
   authenticating: false,
   auth: null,
   avatarURL: "",
-  refreshSession: (refreshToken, navigation) => {},
   signOutHandler: () => {},
   userPostCount: 0,
   formatName: "",
@@ -36,7 +37,6 @@ export const UserContext = createContext({
   subscribed: false,
   customerID: "",
   gettingUser: false,
-
 });
 const UserProvider = (props) => {
   const [userValue, setUserValue] = useState();
@@ -55,7 +55,6 @@ const UserProvider = (props) => {
   const [refreshing, setRefreshing] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
   const [gettingUser, setGettingUser] = useState(false);
-  
 
   const getPermissions = async (user) => {
     const { data, error } = await supabase
@@ -105,8 +104,6 @@ const UserProvider = (props) => {
     setGettingUser(false);
   };
 
-  
-
   const getSubscriptionStatus = async (customerID) => {
     const response = await axios.post(`${SERVER_URL}/get-user-subscriptions`, {
       customerID,
@@ -129,13 +126,16 @@ const UserProvider = (props) => {
     setAuthenticating(true);
     const { data, error } = await supabase.auth.signIn({ email, password });
     if (error) {
-      console.log(error);
+      console.log("Err UserProvider signInHandler:: ", error);
       setAuthenticating(false);
 
       return { status: "error", message: error.message };
     }
     await checkUser();
     setAuthenticating(false);
+    const credA = await SecureStore.setItemAsync(ASBURY_KEY_ONE, email);
+    const credB = await SecureStore.setItemAsync(ASBURY_KEY_TWO, password);
+    console.log("Successful SignIn: UserProvider:: signInHandler")
     return { status: "ok", message: auth };
   };
 
@@ -167,6 +167,13 @@ const UserProvider = (props) => {
 
   const signOutHandler = async () => {
     await supabase.auth.signOut();
+    try {
+      const removeCredA = await SecureStore.deleteItemAsync(ASBURY_KEY_ONE);
+      const removeCredB = await SecureStore.deleteItemAsync(ASBURY_KEY_TWO);
+      console.log("UserProvider: signOutHandler:: Removed credentials from SecureStore");
+    } catch(err) {
+      console.log("UserProvider: signOutHandler:: ", err.message);
+    }
   };
 
   useEffect(() => {
@@ -186,20 +193,6 @@ const UserProvider = (props) => {
 
     checkUser();
   }, []);
-
-  const refreshSession = async (token, navigation) => {
-    setAuthenticating(true);
-    const { data, error } = await supabase.auth.signIn({ refreshToken: token });
-    if (error) {
-      console.log(error);
-      setAuthenticating(false);
-
-      return { status: "error", message: error.message };
-    }
-    await checkUser();
-    setAuthenticating(false);
-    return { status: "ok", message: auth };
-  };
 
   const getPushPermissions = async (userID) => {
     let retrievedToken;
@@ -228,12 +221,12 @@ const UserProvider = (props) => {
       .match({ id: userID });
   };
 
-  const establishCustomer = async (userInfo) => {
-    const name = `${userInfo.first_name} ${userInfo.last_name}`;
+  const establishCustomer = async (userData) => {
+    const name = `${userData.first_name} ${userData.last_name}`;
     const customerObject = {
       name: name,
-      email: userInfo.email,
-      userID: userInfo.id,
+      email: userData.email,
+      userID: userData.id,
     };
     const response = await axios.post(
       `${SERVER_URL}/establish-new-customer`,
@@ -255,10 +248,9 @@ const UserProvider = (props) => {
         totalDonated += parseInt(amount) / 100;
       }
     }
-   
+
     setTotalDonations(totalDonated);
     setRefreshing(false);
-    
   };
 
   const contextValue = {
@@ -269,7 +261,6 @@ const UserProvider = (props) => {
     auth,
     signInHandler,
     avatarURL,
-    refreshSession,
     signOutHandler,
     userPostCount,
     formatName,

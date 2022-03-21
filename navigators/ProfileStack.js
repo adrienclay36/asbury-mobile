@@ -3,14 +3,29 @@ import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 const Stack = createNativeStackNavigator();
 import ProfileScreen from '../screens/Profile/ProfileScreen';
-const ProfileStack = () => {
+import ProfileScreenHeader from '../screens/Profile/ProfileScreenHeader';
+import EditProfileScreen from '../screens/Profile/EditProfileScreen';
+const ProfileStack = ({ navigation, route }) => {
   return (
-    <View style={{flex: 1,}} collapsable={false}>
-        <Stack.Navigator>
-            <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
-        </Stack.Navigator>
+    <View style={{ flex: 1 }} collapsable={false}>
+      <Stack.Navigator>
+        <Stack.Screen
+          options={({ route }) => ({
+            header: (props) => (
+              <ProfileScreenHeader {...props} props={props} route={route} />
+            ),
+          })}
+          name="ProfileScreen"
+          component={ProfileScreen}
+        />
+        <Stack.Screen
+          
+          name="EditProfileScreen"
+          component={EditProfileScreen}
+        />
+      </Stack.Navigator>
     </View>
-  )
+  );
 }
 
 export default ProfileStack

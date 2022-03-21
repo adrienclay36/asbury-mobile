@@ -5,7 +5,7 @@ import { Colors, Button, Portal, Modal } from "react-native-paper";
 import * as Animatable from "react-native-animatable";
 import { primaryFont } from "../../constants/fonts";
 const { height, width } = Dimensions.get("window");
-
+import * as SecuresStore from 'expo-secure-store';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import { UserContext } from "../../store/UserProvider";

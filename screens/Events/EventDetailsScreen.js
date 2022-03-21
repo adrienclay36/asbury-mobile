@@ -11,6 +11,7 @@ import { decode } from "../../helpers/mapDecode";
 import * as Location from "expo-location";
 
 import axios from "axios";
+import CenteredLoader from "../../components/ui/CenteredLoader";
 
 const MODE = "driving";
 
@@ -114,6 +115,8 @@ const EventDetailsScreen = ({ navigation, route }) => {
   }
 
 
+
+
   return (
     <View style={{ flex: 1 }}>
       <EventDetailsHeader navigation={navigation} route={route} />
@@ -129,7 +132,7 @@ const EventDetailsScreen = ({ navigation, route }) => {
         </Text>
       </View>
 
-      <MapView
+      {gettingLocation ? <CenteredLoader/> : <MapView
       onLongPress={openInMapsHandler}
         initialRegion={mapRegion}
         collapsable={false}
@@ -159,7 +162,7 @@ const EventDetailsScreen = ({ navigation, route }) => {
             </View>
           </Callout>
         </Marker>
-      </MapView>
+      </MapView>}
     </View>
   );
 };
