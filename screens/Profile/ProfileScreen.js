@@ -4,6 +4,7 @@ import ProfilePage from '../../components/Profile/ProfilePage'
 const ProfileScreen = ({ navigation }) => {
   return (
     <>
+   
       <ProfilePage navigation={navigation}/>
     </>
   )

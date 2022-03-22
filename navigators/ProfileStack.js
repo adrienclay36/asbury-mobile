@@ -19,7 +19,7 @@ const ProfileStack = ({ navigation, route }) => {
           component={ProfileScreen}
         />
         <Stack.Screen
-          
+          options={{ headerShown: false}}
           name="EditProfileScreen"
           component={EditProfileScreen}
         />
