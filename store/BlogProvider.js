@@ -15,6 +15,7 @@ const BlogProvider = (props) => {
     const [noData, setNoData] = useState(false);
 
     const getPosts = async () => {
+        setPosts([]);
         setLoading(true);
         const data = await getAllItemsSorted(TABLE, 'id');
         setPosts(data);

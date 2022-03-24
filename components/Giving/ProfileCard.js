@@ -47,6 +47,7 @@ const ProfileCard = ({ navigation }) => {
   return (
     <Animatable.View animation="fadeIn">
       <ScrollView
+        style={styles.scrollView}
         refreshControl={
           <RefreshControl onRefresh={userContext.refreshTransactions} />
         }
@@ -185,4 +186,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     fontWeight: "600",
   },
+  scrollView: {
+    height: Dimensions.get('window').height,
+  }
 });

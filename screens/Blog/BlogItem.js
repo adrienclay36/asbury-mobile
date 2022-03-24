@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, Card } from "react-native-paper";
 import useGetUser from "../../hooks/useGetUser";
-import SkeletonPost from "../../components/ui/SkeletonPost";
+import RenderHTML from "react-native-render-html";
 import { useWindowDimensions } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { onShare } from "../../helpers/onShare";
@@ -19,11 +19,13 @@ const BlogItem = ({
   route,
   id,
 }) => {
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
 
   const { user, avatarURL, loadingUser } = useGetUser(userID);
 
-  if (loadingUser) {
+  
+
+  if (loadingUser || !user) {
     return null;
   }
   let rightContent;
@@ -71,7 +73,7 @@ const BlogItem = ({
         navigation.navigate("BlogDetailsScreen", {
           id,
           title,
-          author,
+          author: `${user.first_name} ${user.last_name}`,
           image,
           postDate,
           postContent,
@@ -83,7 +85,8 @@ const BlogItem = ({
       <Animatable.View animation="fadeIn">
         <Card style={styles.card}>
           {imageComponent}
-          <Card.Title title={title} subtitle={author} right={rightContent} />
+          <Card.Title title={title} subtitle={`${user.first_name} ${user.last_name}`} right={rightContent} />
+          <RenderHTML baseStyle={{ marginHorizontal: 20, textAlign: 'left'}} source={{ html: postContent.length > 100 ? postContent.slice(0, 100) + "..." : postContent }} contentWidth={width} />
         </Card>
       </Animatable.View>
     </TouchableOpacity>

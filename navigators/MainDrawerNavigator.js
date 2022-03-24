@@ -9,6 +9,7 @@ import ProfileStack from './ProfileStack';
 import DrawerContent from '../components/DrawerContent/DrawerContent';
 import * as Notifications from 'expo-notifications';
 import LibraryStack from './LibraryStack'
+import ServicesTabNavigator from './ServicesTabNavigator'
 const MainDrawerNavigator = ({ navigation, route }) => {
 
 
@@ -50,13 +51,13 @@ const MainDrawerNavigator = ({ navigation, route }) => {
 
   return (
     <Drawer.Navigator
-      
       drawerContent={(props) => <DrawerContent {...props} />}
       screenOptions={{ headerShown: false }}
     >
       <Drawer.Screen name="Home" component={HomeTabNavigator} />
       <Drawer.Screen name="ProfileStack" component={ProfileStack} />
       <Drawer.Screen name="LibraryStack" component={LibraryStack} />
+      <Drawer.Screen name="Services" component={ServicesTabNavigator} />
     </Drawer.Navigator>
   );
 }

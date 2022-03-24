@@ -19,13 +19,140 @@ import { supabase } from "../../supabase-service";
 import { updateItemInTable } from "../../supabase-util";
 import { decode } from "base64-arraybuffer";
 import { userColors } from "../../constants/userColors";
+import * as Animatable from 'react-native-animatable';
 const IMAGE_SIZE = 100;
 const EditProfileScreen = ({ navigation }) => {
   const userContext = useContext(UserContext);
   const [firstName, setFirstName] = useState(userContext.userInfo?.first_name);
   const [lastName, setLastName] = useState(userContext.userInfo?.last_name);
   const [location, setLocation] = useState(userContext.userInfo?.location);
+  const [saving, setSaving] = useState(false);
+
   const [uploading, setUploading] = useState(false);
+  const [valuesChanged, setValuesChanged] = useState({
+    firstNameChanged: false,
+    lastNameChanged: false,
+    locationChanged: false,
+  });
+  const [data, setData] = useState({
+    firstName: userContext.userInfo?.first_name,
+    lastName: userContext.userInfo?.last_name,
+    location: userContext.userInfo?.location,
+    firstNameIsValid: true,
+    lastNameIsValid: true,
+    locationIsValid: true,
+
+  })
+
+  useEffect(() => {
+
+    if(data.location.trim() === userContext.userInfo.location) {
+      setValuesChanged({
+        ...valuesChanged,
+        locationChanged: false,
+      });
+    } else {
+      setValuesChanged({
+        ...valuesChanged,
+        locationChanged: true,
+      })
+    }
+  }, [data.location]);
+
+  useEffect(() => {
+    if (data.firstName.trim() === userContext.userInfo.first_name) {
+      setValuesChanged({
+        ...valuesChanged,
+        firstNameChanged: false,
+      });
+    } else {
+      setValuesChanged({
+        ...valuesChanged,
+        firstNameChanged: true,
+      });
+    }
+  }, [data.firstName]);
+
+  useEffect(() => {
+    if (data.lastName.trim() === userContext.userInfo.last_name) {
+      setValuesChanged({
+        ...valuesChanged,
+        lastNameChanged: false,
+      });
+    } else {
+      setValuesChanged({
+        ...valuesChanged,
+        lastNameChanged: true,
+      });
+    }
+  }, [data.lastName]);
+
+
+
+
+
+
+  const firstNameChangeHandler = (text) => {
+    if(text.trim().length > 1){
+      setData({
+        ...data,
+        firstName: text,
+        firstNameIsValid: true,
+      })
+    } else {
+      setData({
+        ...data,
+        firstName: text,
+        firstNameIsValid: false,
+      })
+    }
+
+    
+  }
+
+  const lastNameChangeHandler = (text) => {
+    if (text.trim().length > 1) {
+      setData({
+        ...data,
+        lastName: text,
+        lastNameIsValid: true,
+      });
+    } else {
+      setData({
+        ...data,
+        lastName: text,
+        lastNameIsValid: false,
+      });
+    }
+  };
+
+
+  const locationChangeHandler = (text) => {
+    if (text.trim().length > 1) {
+      setData({
+        ...data,
+        location: text,
+        locationIsValid: true,
+      });
+    } else {
+      setData({
+        ...data,
+        location: text,
+        locationIsValid: false,
+      });
+    }
+  }
+
+
+  const saveChanges = () => {
+    setSaving(true);
+    if(data.firstName && data.lastName && data.location) {
+      userContext.updateUserInfo(data.firstName, data.lastName, data.location, navigation)
+    }
+
+
+    setSaving(false);
+  }
 
   const uploadPhoto = async (image) => {
     setUploading(true);
@@ -57,7 +184,6 @@ const EditProfileScreen = ({ navigation }) => {
     }
 
     try {
-      console.log(newAvatarPath);
       const { data: photoUploadData, error: photoUploadError } =
         await supabase.storage
           .from("avatars")
@@ -147,7 +273,11 @@ const EditProfileScreen = ({ navigation }) => {
 
   return (
     <>
-      <EditProfileScreenHeader navigation={navigation} />
+      <EditProfileScreenHeader
+        valuesChanged={valuesChanged}
+        navigation={navigation}
+        saveChanges={saveChanges}
+      />
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View>
           <View style={{ alignItems: "center", overflow: "hidden" }}>
@@ -182,49 +312,125 @@ const EditProfileScreen = ({ navigation }) => {
           </View>
 
           <View style={styles.editContainer}>
-            <View style={styles.rowNoBottom}>
-              <Icon
-                style={{ marginRight: 15 }}
-                color={Colors.grey600}
-                name="account-circle"
-                size={30}
-              />
-              <TextInput
-                placeholder="First Name"
-                style={styles.textInput}
-                value={firstName}
-                onChangeText={(text) => setFirstName(text)}
-              />
+            <View
+              style={[
+                styles.formControlNoBottom,
+                userContext.loading && styles.savingChanges,
+              ]}
+            >
+              <View style={styles.rowNoBottom}>
+                <Icon
+                  style={{ marginRight: 15 }}
+                  color={Colors.pink600}
+                  name="account-circle"
+                  size={30}
+                />
+                <TextInput
+                  editable={!userContext.loading}
+                  placeholder="First Name"
+                  style={styles.textInput}
+                  value={data.firstName}
+                  onChangeText={(text) => firstNameChangeHandler(text)}
+                />
+              </View>
+              {data.firstNameIsValid && (
+                <Animatable.View animation="bounceIn" style={styles.rightIcon}>
+                  <Icon
+                    name="checkbox-marked-circle-outline"
+                    size={30}
+                    color={Colors.green600}
+                  />
+                </Animatable.View>
+              )}
+              {!data.firstNameIsValid && (
+                <Animatable.View animation="bounceIn" style={styles.rightIcon}>
+                  <Icon
+                    name="close-circle-outline"
+                    size={30}
+                    color={Colors.red700}
+                  />
+                </Animatable.View>
+              )}
             </View>
-
-            <View style={styles.rowNoBottom}>
-              <Icon
-                style={{ marginRight: 15 }}
-                color={Colors.grey600}
-                name="account-circle-outline"
-                size={30}
-              />
-              <TextInput
-                placeholder="Last Name"
-                style={styles.textInput}
-                value={lastName}
-                onChangeText={(text) => setLastName(text)}
-              />
+            <View
+              style={[
+                styles.formControlNoBottom,
+                userContext.loading && styles.savingChanges,
+              ]}
+            >
+              <View style={styles.rowNoBottom}>
+                <Icon
+                  style={{ marginRight: 15 }}
+                  color={Colors.pink600}
+                  name="account-circle-outline"
+                  size={30}
+                />
+                <TextInput
+                  editable={!userContext.loading}
+                  placeholder="Last Name"
+                  style={styles.textInput}
+                  value={data.lastName}
+                  onChangeText={(text) => lastNameChangeHandler(text)}
+                />
+              </View>
+              {data.lastNameIsValid && (
+                <Animatable.View animation="bounceIn" style={styles.rightIcon}>
+                  <Icon
+                    name="checkbox-marked-circle-outline"
+                    size={30}
+                    color={Colors.green600}
+                  />
+                </Animatable.View>
+              )}
+              {!data.lastNameIsValid && (
+                <Animatable.View animation="bounceIn" style={styles.rightIcon}>
+                  <Icon
+                    name="close-circle-outline"
+                    size={30}
+                    color={Colors.red700}
+                  />
+                </Animatable.View>
+              )}
             </View>
-
-            <View style={styles.row}>
-              <Icon
-                style={{ marginRight: 15 }}
-                color={Colors.grey600}
-                name="map-marker"
-                size={30}
-              />
-              <TextInput
-                placeholder="Last Name"
-                style={styles.textInput}
-                value={location}
-                onChangeText={(text) => setLocation(text)}
-              />
+            <View
+              style={[
+                styles.formControl,
+                userContext.loading && styles.savingChanges,
+              ]}
+            >
+              <View style={styles.row}>
+                <Icon
+                  style={{ marginRight: 15 }}
+                  color={Colors.pink600}
+                  name="map-marker"
+                  size={30}
+                />
+                <TextInput
+                  editable={!userContext.loading}
+                  placeholder="Last Name"
+                  style={[styles.textInput]}
+                  value={data.location}
+                  onChangeText={(text) => locationChangeHandler(text)}
+                />
+              </View>
+              {data.locationIsValid && (
+                <Animatable.View animation="bounceIn" style={styles.rightIcon}>
+                  <Icon
+                    name="checkbox-marked-circle-outline"
+                    size={30}
+                    color={Colors.green600}
+                  />
+                </Animatable.View>
+              )}
+              {!data.locationIsValid && (
+                <Animatable.View animation="bounceIn" style={styles.rightIcon}>
+                  <Icon
+                    name="close-circle-outline"
+                    size={30}
+                    color={Colors.red700}
+                  />
+                </Animatable.View>
+              )}
             </View>
           </View>
         </View>
@@ -247,6 +453,8 @@ const styles = StyleSheet.create({
   backgroundImage: {
     height: IMAGE_SIZE,
     width: IMAGE_SIZE,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   editImageContainer: {
     flex: 1,
@@ -266,21 +474,40 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   row: {
-    borderBottomWidth: 1,
-    borderTopWidth: 1,
     borderColor: Colors.grey300,
     padding: 15,
     flexDirection: "row",
     alignItems: "center",
   },
   rowNoBottom: {
-    borderTopWidth: 1,
     borderColor: Colors.grey300,
     padding: 15,
     flexDirection: "row",
     alignItems: "center",
   },
   textInput: {
-    width: "100%",
+    width: "70%",
   },
+  formControlNoBottom: {
+    borderTopWidth: 0.5,
+    borderColor: Colors.grey300,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  formControl: {
+    borderTopWidth: 0.5,
+    borderBottomWidth: .5,
+    borderColor: Colors.grey300,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  rightIcon: {
+    marginRight: 15
+  },
+  savingChanges: {
+    backgroundColor: Colors.grey400,
+    opacity: .3
+  }
 });

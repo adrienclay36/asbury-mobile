@@ -75,7 +75,7 @@ export default NewPostHeader;
 const styles = StyleSheet.create({
   header: {
     backgroundColor:
-      Platform.OS === "android" ? userColors.seaFoam600 : Colors.grey300,
+      Platform.OS === "android" ? userColors.seaFoam600 : Colors.grey200,
     height: HEADER_HEIGHT,
     marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },

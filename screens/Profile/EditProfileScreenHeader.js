@@ -14,34 +14,16 @@ import { primaryFont } from "../../constants/fonts";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { UserContext } from "../../store/UserProvider";
-import { PrayerContext } from "../../store/PrayersProvider";
 const AVATAR_SIZE = 40;
 const { width, height } = Dimensions.get("window");
 const HEADER_HEIGHT =
   Platform.OS === "android" ? height * 0.14 : height * 0.15;
-const EditProfileScreenHeader = ({ navigation, submitPostHandler }) => {
+const EditProfileScreenHeader = ({ navigation, saveChanges, valuesChanged, }) => {
   const userContext = useContext(UserContext);
-  const prayerContext = useContext(PrayerContext);
+  
+  
 
-  const headerComponent = userContext.userInfo ? (
-    <Text style={styles.headerText}>{userContext.formatName}</Text>
-  ) : (
-    <Text style={styles.headerText}>New Post</Text>
-  );
 
-  const imageComponent = userContext.avatarURL ? (
-    <Avatar.Image
-      style={styles.avatar}
-      size={AVATAR_SIZE}
-      source={{ uri: userContext.avatarURL }}
-    />
-  ) : (
-    <Avatar.Image
-      style={styles.avatar}
-      size={AVATAR_SIZE}
-      source={require("../../assets/default-2.png")}
-    />
-  );
   return (
     <>
       <SafeAreaView style={styles.header}>
@@ -56,9 +38,11 @@ const EditProfileScreenHeader = ({ navigation, submitPostHandler }) => {
             {headerComponent}
           </View> */}
           <Button
-            onPress={submitPostHandler}
-            disabled={prayerContext.posting}
+            onPress={saveChanges}
+            
             mode={Platform.OS === "android" ? "outlined" : "contained"}
+            loading={userContext.loading}
+            disabled={!valuesChanged.firstNameChanged && !valuesChanged.lastNameChanged && !valuesChanged.locationChanged || userContext.loading}
             style={{
               backgroundColor:
                 Platform.OS === "android"

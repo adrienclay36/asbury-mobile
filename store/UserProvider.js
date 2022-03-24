@@ -2,7 +2,7 @@ import React, { createContext, useEffect, useState } from "react";
 import { supabase } from "../supabase-service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from 'expo-secure-store';
-import { getPublicUrl, getUserPostCount } from "../supabase-util";
+import { getPublicUrl, getUserPostCount, updateItemInTable } from "../supabase-util";
 import * as Notifications from "expo-notifications";
 import axios from "axios";
 const TOKEN_KEY = "asbury_auth";
@@ -37,6 +37,8 @@ export const UserContext = createContext({
   subscribed: false,
   customerID: "",
   gettingUser: false,
+  updateUserInfo: (firstName, lastName, location, navigation) => {},
+  loading: false,
 });
 const UserProvider = (props) => {
   const [userValue, setUserValue] = useState();
@@ -55,6 +57,7 @@ const UserProvider = (props) => {
   const [refreshing, setRefreshing] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
   const [gettingUser, setGettingUser] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const getPermissions = async (user) => {
     const { data, error } = await supabase
@@ -186,6 +189,8 @@ const UserProvider = (props) => {
 
       if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
         AsyncStorage.setItem(TOKEN_KEY, session.refresh_token);
+        checkUser();
+        return
       }
 
       setAuth(session);
@@ -253,6 +258,27 @@ const UserProvider = (props) => {
     setRefreshing(false);
   };
 
+
+  const updateUserInfo = async (firstName, lastName, location, navigation) => {
+    setLoading(true);
+    if(userValue.id){
+
+      const newInfo = {
+        first_name: firstName,
+        last_name: lastName,
+        location,
+      }
+  
+      const response = await updateItemInTable('users', userValue?.id , newInfo);
+      await checkUser();
+      navigation.goBack()
+    }
+    setLoading(false);
+  }
+
+
+  
+
   const contextValue = {
     userValue,
     userInfo,
@@ -273,6 +299,9 @@ const UserProvider = (props) => {
     subscribed,
     customerID,
     gettingUser,
+    updateUserInfo,
+    loading,
+
   };
   return (
     <UserContext.Provider value={contextValue}>

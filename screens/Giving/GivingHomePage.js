@@ -12,6 +12,12 @@ const GivingHomePage = ({ navigation, route }) => {
     return unsubscribe;
   }, [navigation]);
 
+
+  if(!userContext.userValue) {
+
+    return <Text>Sign in To View Giving Options</Text>
+  }
+
   return (
     <>
       <ProfileCard navigation={navigation} />

@@ -15,6 +15,8 @@ const BlogHomeScreen = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
+      showsHorizontalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
         refreshing={blogContext.loading}
         refreshControl={<RefreshControl onRefresh={() => blogContext.getPosts()} />}
         data={blogContext.posts}

@@ -207,13 +207,13 @@ const PrayersProvider = (props) => {
         });
       }
 
-      if (payload.eventType === "UPDATE") {
-        const updatedPost = payload.new;
-        const index = posts.findIndex((item) => item.id === updatedPost.id);
-        const postsCopy = posts;
-        postsCopy[index] = updatedPost;
-        setPosts(postsCopy);
-      }
+      // if (payload.eventType === "UPDATE") {
+      //   const updatedPost = payload.new;
+      //   const index = posts.findIndex((item) => item.id === updatedPost.id);
+      //   const postsCopy = posts;
+      //   postsCopy[index] = updatedPost;
+      //   setPosts(postsCopy);
+      // }
 
       if (payload.eventType === "DELETE") {
         setPosts((prevPosts) => {

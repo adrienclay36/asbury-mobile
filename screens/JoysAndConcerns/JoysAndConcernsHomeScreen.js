@@ -66,8 +66,10 @@ const JoysAndConcernsHomeScreen = ({ navigation, route }) => {
           <RefreshControl onRefresh={() => prayerContext.refreshPosts()} />
         }
         data={prayerContext.posts}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         scrollEventThrottle={16}
-        initialNumToRender={10}
+        initialNumToRender={7}
         keyExtractor={(item, index) => index}
         renderItem={(itemData) => renderPostItem(itemData)}
         onScroll={Animated.event(

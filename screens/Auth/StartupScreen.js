@@ -53,7 +53,7 @@ const StartupScreen = ({ navigation, route }) => {
       if (response.status === "ok") {
         navigation.replace("AppStack");
       } else {
-        navigation.replace("AuthStack");
+        navigation.replace("AuthStack"); 
       }
     } else {
       navigation.replace("AuthStack");

@@ -6,22 +6,33 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-
+import { onShare } from "../../helpers/onShare";
 import React, { useContext } from "react";
 import { UserContext } from "../../store/UserProvider";
-import { ActivityIndicator, Avatar, Colors } from "react-native-paper";
+import {
+  ActivityIndicator,
+  Avatar,
+  Colors,
+  TouchableRipple,
+} from "react-native-paper";
 import { userColors } from "../../constants/userColors";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import * as Animatable from "react-native-animatable";
 import { primaryFont } from "../../constants/fonts";
 const IMAGE_SIZE = 100;
+const { height, width } = Dimensions.get("window");
+
+const SHARE_MESSAGE =
+  "Check out the official Asbury UMC App!\n\nDownload to receive announcements, post on the prayer board, and more!\n\nFollow this link:\n";
+
+const SHARE_LINK = "exp://exp.host/@adrienclay/asbury-mobile";
 const ProfilePage = ({ navigation }) => {
   const userContext = useContext(UserContext);
 
   return (
     <Animatable.View animation="fadeIn">
-      <ScrollView>
+      <ScrollView style={{ height }}>
         <View style={styles.container}>
           <Avatar.Image
             source={{ uri: userContext.avatarURL }}
@@ -53,48 +64,45 @@ const ProfilePage = ({ navigation }) => {
             </View>
           </View>
         </View>
-        <View
-          style={{
-            height: 10,
-            borderBottomWidth: 0.5,
-            borderColor: Colors.grey300,
-            marginBottom: 20,
-          }}
-        />
 
         <View style={styles.menuContainer}>
-            <TouchableOpacity onPress={() => navigation.navigate("EditProfileScreen")}>
-
-          <View style={styles.menuRow}>
-            <MaterialCommunityIcons
-              style={styles.icon}
-              name="pencil-circle-outline"
-              size={30}
-              color={Colors.pink600}
-            />
-            <Text style={styles.menuItemText}>Edit Your Information</Text>
-          </View>
-            </TouchableOpacity>
-
-          <View style={styles.menuRow}>
-            <MaterialCommunityIcons
-              style={styles.icon}
-              name="account-lock"
-              size={30}
-              color={Colors.pink600}
-            />
-            <Text style={styles.menuItemText}>Change Your Password</Text>
-          </View>
-
-          <View style={styles.menuRow}>
-            <MaterialCommunityIcons
-              style={styles.icon}
-              name="share"
-              size={30}
-              color={Colors.pink600}
-            />
-            <Text style={styles.menuItemText}>Tell A Friend</Text>
-          </View>
+          <TouchableRipple
+            onPress={() => navigation.navigate("EditProfileScreen")}
+          >
+            <View style={styles.menuRow}>
+              <MaterialCommunityIcons
+                style={styles.icon}
+                name="pencil-circle-outline"
+                size={30}
+                color={Colors.pink600}
+              />
+              <Text style={styles.menuItemText}>Edit Your Information</Text>
+            </View>
+          </TouchableRipple>
+          <TouchableRipple
+            onPress={() => navigation.navigate("ChangePasswordScreen")}
+          >
+            <View style={styles.menuRow}>
+              <MaterialCommunityIcons
+                style={styles.icon}
+                name="account-lock"
+                size={30}
+                color={Colors.pink600}
+              />
+              <Text style={styles.menuItemText}>Change Your Password</Text>
+            </View>
+          </TouchableRipple>
+          <TouchableRipple onPress={() => onShare(SHARE_MESSAGE, SHARE_LINK)}>
+            <View style={styles.menuRow}>
+              <MaterialCommunityIcons
+                style={styles.icon}
+                name="share"
+                size={30}
+                color={Colors.pink600}
+              />
+              <Text style={styles.menuItemText}>Tell A Friend</Text>
+            </View>
+          </TouchableRipple>
         </View>
       </ScrollView>
     </Animatable.View>
@@ -132,8 +140,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-    padding: 10,
-    marginVertical: 5,
+    padding: 15,
+    borderBottomWidth: 0.25,
+    borderTopWidth: 0.25,
+    borderColor: Colors.grey300,
   },
   menuContainer: {
     marginHorizontal: 20,

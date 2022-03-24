@@ -2,6 +2,7 @@ import { StyleSheet, View } from "react-native";
 import React, { useState, useContext } from "react";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Entypo from "react-native-vector-icons/Entypo";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { userColors } from "../../constants/userColors";
 import {
@@ -19,7 +20,6 @@ import { UserContext } from "../../store/UserProvider";
 
 const DrawerContent = (props) => {
   const userContext = useContext(UserContext);
-
 
   const imageComponent = userContext.avatarURL ? (
     <Avatar.Image
@@ -43,13 +43,56 @@ const DrawerContent = (props) => {
     <Text style={styles.title}>Guest User</Text>
   );
 
+  const titleComponent = userContext.userInfo?.title ? (
+    <Caption style={[styles.titleCaption]}>
+      {userContext.userInfo.title}
+    </Caption>
+  ) : (
+    <Caption style={styles.caption}>Church Member</Caption>
+  );
 
-  const titleComponent = userContext.userInfo?.title ? <Caption style={styles.caption}>{userContext.userInfo.title}</Caption> : <Caption style={styles.caption}>Church Member</Caption>
+  const userInfoSection = (
+    <>
+      <View style={styles.row}>
+        <View style={[styles.section]}>
+          <Icon color={Colors.grey500} name="map-marker" size={20} />
+          <Caption style={[styles.caption, { marginTop: 5 }]}>
+            {userContext.userInfo?.location}
+          </Caption>
+        </View>
+      </View>
+      <View style={styles.row}>
+        <View style={styles.section}>
+          <Caption style={[styles.caption]}>Posts To Date:</Caption>
+          <Paragraph style={[styles.paragraph, styles.caption]}>
+            {userContext?.userPostCount}
+          </Paragraph>
+        </View>
+      </View>
+      <View style={styles.row}>
+        <View style={styles.section}>
+          <Caption style={[styles.caption]}>Amount Donated:</Caption>
+          <Paragraph style={[styles.paragraph, styles.caption]}>
+            ${userContext?.totalDonations}
+          </Paragraph>
+        </View>
+      </View>
+    </>
+  );
 
+  const signInSection = (
+    <>
+      <View style={styles.row}>
+        <View style={styles.section}>
+          <Caption style={styles.caption}>Log In/Sign Up</Caption>
+        </View>
+      </View>
+    </>
+  );
 
   const signOutHandler = () => {
-      userContext.signOutHandler();
-      props.navigation.replace("AuthStack");
+    userContext.signOutHandler();
+    props.navigation.replace("AuthStack");
   };
 
   return (
@@ -64,58 +107,32 @@ const DrawerContent = (props) => {
                 alignItems: "center",
               }}
             >
-              {/* <Avatar.Image
-                source={}
-                size={50}
-              /> */}
               {imageComponent}
               <View style={{ marginLeft: 15, flexDirection: "column" }}>
                 {nameComponent}
                 {titleComponent}
               </View>
             </View>
-            <View style={styles.row}>
-              <View style={styles.section}>
-                <Caption style={[styles.caption, { marginLeft: 5 }]}>
-                  Posts To Date:
-                </Caption>
-                <Paragraph
-                  style={[styles.paragraph, styles.caption, { marginLeft: 5 }]}
-                >
-                  {userContext.userPostCount}
-                </Paragraph>
-              </View>
-            </View>
-            <View style={styles.row}>
-              <View style={styles.section}>
-                <Caption style={[styles.caption, { marginLeft: 5 }]}>
-                  Amount Donated:
-                </Caption>
-                <Paragraph
-                  style={[styles.paragraph, styles.caption, { marginLeft: 5 }]}
-                >
-                  ${userContext.totalDonations}
-                </Paragraph>
-              </View>
-            </View>
+            {userInfoSection}
           </View>
 
           <Drawer.Section style={styles.drawerSection}>
             <DrawerItem
-              
               icon={({ color, size }) => (
                 <Icon name="home-outline" color={color} size={size} />
               )}
               label="Home"
               onPress={() => props.navigation.navigate("Home")}
             />
-            <DrawerItem
-              icon={({ color, size }) => (
-                <Icon name="account-outline" color={color} size={size} />
-              )}
-              label="Profile"
-              onPress={() => props.navigation.navigate("ProfileStack")}
-            />
+            {userContext?.auth && (
+              <DrawerItem
+                icon={({ color, size }) => (
+                  <Icon name="account-outline" color={color} size={size} />
+                )}
+                label="Profile"
+                onPress={() => props.navigation.navigate("ProfileStack")}
+              />
+            )}
             <DrawerItem
               icon={({ color, size }) => (
                 <Icon name="book" color={color} size={size} />
@@ -125,14 +142,10 @@ const DrawerContent = (props) => {
             />
             <DrawerItem
               icon={({ color, size }) => (
-                <Ionicons
-                  name="md-settings-outline"
-                  color={color}
-                  size={size}
-                />
+                <Entypo name="archive" color={color} size={size} />
               )}
-              onPress={() => props.navigation.navigate("SettingsScreen")}
-              label="Settings"
+              onPress={() => props.navigation.navigate("Services")}
+              label="Services"
             />
           </Drawer.Section>
           {/* <Drawer.Section title="Preferences">
@@ -155,7 +168,7 @@ const DrawerContent = (props) => {
         <Drawer.Item
           onPress={signOutHandler}
           icon={({ color, size }) => (
-            <Icon name="exit-to-app" color={color} size={size} />
+            <Ionicons name="exit-outline" color={color} size={size} />
           )}
           label="Sign Out"
         />
@@ -179,6 +192,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   caption: {
+    fontSize: 14,
+    lineHeight: 14,
+    marginLeft: 5,
+  },
+  titleCaption: {
     fontSize: 14,
     lineHeight: 14,
   },

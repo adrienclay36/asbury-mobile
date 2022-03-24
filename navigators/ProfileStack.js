@@ -5,7 +5,8 @@ const Stack = createNativeStackNavigator();
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import ProfileScreenHeader from '../screens/Profile/ProfileScreenHeader';
 import EditProfileScreen from '../screens/Profile/EditProfileScreen';
-const ProfileStack = ({ navigation, route }) => {
+import ChangePasswordScreen from '../screens/Profile/ChangePasswordScreen';
+const ProfileStack = ({ navigation }) => {
   return (
     <View style={{ flex: 1 }} collapsable={false}>
       <Stack.Navigator>
@@ -23,6 +24,7 @@ const ProfileStack = ({ navigation, route }) => {
           name="EditProfileScreen"
           component={EditProfileScreen}
         />
+        <Stack.Screen options={{headerShown: false }} name="ChangePasswordScreen" component={ChangePasswordScreen}/>
       </Stack.Navigator>
     </View>
   );

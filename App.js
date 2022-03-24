@@ -3,6 +3,7 @@ import React from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
+import { LogBox } from "react-native";
 import UserProvider from "./store/UserProvider";
 import MainDrawerNavigator from "./navigators/MainDrawerNavigator";
 import {
@@ -17,6 +18,8 @@ import AuthStack from "./navigators/AuthStack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import StartupScreen from "./screens/Auth/StartupScreen";
 const AppStack = createNativeStackNavigator();
+
+LogBox.ignoreLogs(['Setting a timer']);
 
 export default function App() {
   const [fontsLoaded] = useFonts({

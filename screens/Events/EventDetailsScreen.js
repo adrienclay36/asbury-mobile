@@ -1,11 +1,12 @@
 import { StyleSheet, Text, View, Platform, Linking, Alert } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import React, { useState, useEffect } from "react";
 import { getMonthFromDateCode } from "../../helpers/dateTimes";
 import { Appbar, Colors } from "react-native-paper";
 import EventDetailsHeader from "./EventDetailsHeader";
 import { primaryFont } from "../../constants/fonts";
 import { userColors } from "../../constants/userColors";
-import MapView, { Marker, Callout } from "react-native-maps";
+import MapView, { Marker, Callout, Polyline } from "react-native-maps";
 import { GOOGLE_API } from "@env";
 import { decode } from "../../helpers/mapDecode";
 import * as Location from "expo-location";
@@ -119,6 +120,7 @@ const EventDetailsScreen = ({ navigation, route }) => {
 
   return (
     <View style={{ flex: 1 }}>
+      <StatusBar style={Platform.OS === 'android' ? 'dark' : 'light'} />
       <EventDetailsHeader navigation={navigation} route={route} />
       <View style={styles.eventContainer}>
         <Text style={[styles.header, { color: userColors.seaFoam700 }]}>
@@ -137,13 +139,14 @@ const EventDetailsScreen = ({ navigation, route }) => {
         initialRegion={mapRegion}
         collapsable={false}
         style={styles.mapContainer}
+        
       >
         {userLocation.latitude && userLocation.longitude && <Marker coordinate={{ latitude: userLocation.latitude, longitude: userLocation.longitude}}/>}
-        {polyline && userLocation.latitude && userLocation.longitude && <MapView.Polyline coordinates={[
+        {polyline && userLocation.latitude && userLocation.longitude && <Polyline  coordinates={[
           { latitude: userLocation.latitude, longitude: userLocation.longitude },
           ...polyline.coords,
           { latitude: mapRegion.latitude, longitude: mapRegion.longitude},
-        ]} strokeWidth={4} strokeColor={Colors.blue400}  />}
+        ]} strokeWidth={4} strokeColor={Colors.blue400} lineDashPattern={[0]}  />}
         <Marker
           onLongPress={openInMapsHandler}
           coordinate={{

@@ -16,8 +16,7 @@ import React, {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Card from "../../components/ui/Card";
 import useGetUser from "../../hooks/useGetUser";
-import { ActivityIndicator, Avatar, Colors } from "react-native-paper";
-import SkeletonPost from "../../components/ui/SkeletonPost";
+import { Avatar, Colors } from "react-native-paper";
 import { primaryFont } from "../../constants/fonts";
 import { userColors } from "../../constants/userColors";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -28,7 +27,7 @@ import { UserContext } from "../../store/UserProvider";
 import * as Animatable from 'react-native-animatable';
 let isInit = true;
 const height = wHeight - 200;
-const ITEM_SIZE = 200;
+const ITEM_SIZE = 250;
 const MARGIN = 10;
 const CARD_HEIGHT = ITEM_SIZE + MARGIN * 2;
 const PostItem = ({
@@ -42,7 +41,8 @@ const PostItem = ({
   scrollY,
   index,
   navigation,
-  refreshItemsHandler,
+  fromHomePage,
+  itemHeight,
 }) => {
   const [liveLikes, setLiveLikes] = useState(likes);
   const [liked, setLiked] = useState(false);
@@ -75,7 +75,6 @@ const PostItem = ({
 
   const prayerContext = useContext(PrayerContext);
 
-
   const { user, avatarURL, loadingUser } = useGetUser(userID);
 
   const formatDate = new Date(postDate).toLocaleDateString("en-US");
@@ -102,7 +101,7 @@ const PostItem = ({
     <Avatar.Image
       source={{ uri: avatarURL }}
       size={50}
-      style={{ backgroundColor: userColors.seaFoam300 }}
+      style={{ backgroundColor: 'transparent' }}
     />
   ) : (
     <Avatar.Image
@@ -132,10 +131,8 @@ const PostItem = ({
     AsyncStorage.setItem(`post_${id}`, "1");
   };
 
-  return (
-    <TouchableWithoutFeedback
-      onPress={() =>
-        navigation.navigate("PostDetails", {
+  const navigatePostDetails = () => {
+    navigation.navigate("PostDetails", {
           liveLikes,
           formatName,
           postContent,
@@ -146,11 +143,32 @@ const PostItem = ({
           ITEM_SIZE,
           avatarURL,
         })
-      }
+  }
+
+  const navigateJoysHome = () => {
+    navigation.navigate("JoysStack");
+    setTimeout(() => {
+       navigation.navigate("PostDetails", {
+         liveLikes,
+         formatName,
+         postContent,
+         formatDate,
+         postType,
+         id,
+         userID,
+         ITEM_SIZE,
+         avatarURL,
+       });
+    }, 250)
+  }
+
+  return (
+    <TouchableWithoutFeedback
+      onPress={fromHomePage ? navigateJoysHome : navigatePostDetails}
     >
     
       <Animatable.View animation="fadeIn">
-        <Card height={ITEM_SIZE}>
+        <Card height={itemHeight ? ITEM_SIZE : null}>
           <View style={styles.headerSection}>
             <View style={styles.userInfoContainer}>
               {imageComponent}
@@ -160,9 +178,9 @@ const PostItem = ({
               </View>
             </View>
           </View>
-          <View style={styles.postContent}>
+          <View style={styles.content}>
             <Text>
-              {postContent.length > 100
+              {postContent?.length > 100
                 ? postContent.slice(0, 100) + "..."
                 : postContent}
             </Text>
@@ -217,7 +235,7 @@ const PostItem = ({
   );
 };
 
-export default React.memo(PostItem);
+export default PostItem;
 
 const styles = StyleSheet.create({
   userInfoContainer: {
@@ -238,7 +256,7 @@ const styles = StyleSheet.create({
     color: userColors.seaFoam400,
     letterSpacing: 0.5,
   },
-  postContent: {
+  content: {
     paddingTop: 25,
     paddingHorizontal: 30,
     fontFamily: primaryFont.regular,
