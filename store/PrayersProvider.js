@@ -26,12 +26,10 @@ const PAGE_SIZE = 10;
 import {
   addItemToTable,
   deleteItemFromTable,
-  getAllItemsSorted,
   getPagedDataByDate,
   updateItemInTable,
   getTotalPages,
 } from "../supabase-util";
-import { DrawerContentScrollView } from "@react-navigation/drawer";
 const PrayersProvider = (props) => {
   const [posts, setPosts] = useState([]);
   const [comments, setComments] = useState([]);
@@ -43,64 +41,54 @@ const PrayersProvider = (props) => {
   const [endOfList, setEndOfList] = useState(false);
   const route = useRoute();
 
-  const getPosts = useCallback(async () => {
-    if (isInit) {
+  const getPosts = async (paged) => {
+    if(isInit){
+
       setLoading(true);
     }
-    //  const data = await getAllItemsSorted(TABLE, 'postdate');
-    const data = await getPagedDataByDate(
-      pageNumber,
-      PAGE_SIZE,
-      TABLE,
-      "postdate"
-    );
-
+    const data = await getPagedDataByDate(pageNumber, PAGE_SIZE, TABLE, 'postdate');
+    if(paged){
+      setPosts(prevPosts => {
+        return prevPosts.concat(data);
+      })
+    } else {
+      setPosts(data);
+    }
     setPosts(data);
     setLoading(false);
     isInit = false;
+  }
+
+  const loadMore = async () => {
+    const data = await getPagedDataByDate(pageNumber, PAGE_SIZE, TABLE, 'postdate');
+    setPosts(prevPosts => {
+      return [...prevPosts, ...data]
+    })
+  }
+
+  useEffect(() => {
+    if(isInit) {
+      getPosts();
+    }
+  }, [])
+
+
+  useEffect(() => {
+    if(!isInit) {
+      loadMore();
+    }
   }, [pageNumber]);
 
-  const loadMorePosts = useCallback(async () => {
-    if (isInit) {
-      setLoading(true);
-    }
-    //  const data = await getAllItemsSorted(TABLE, 'postdate');
-    const data = await getPagedDataByDate(
-      pageNumber,
-      PAGE_SIZE,
-      TABLE,
-      "postdate"
-    );
-
-    setPosts((prevPosts) => {
-      return prevPosts.concat(data);
-    });
-    setLoading(false);
-    isInit = false;
-  }, [pageNumber]);
-
-  // get initial posts
-  useEffect(() => {
-    getPosts();
-  }, [getPosts]);
-
-  //Get posts when page number changes but not on initial render
-  useEffect(() => {
-    if (!isInit) {
-      loadMorePosts();
-    }
-  }, [pageNumber, loadMorePosts]);
-
-  const refreshPosts = useCallback(async () => {
+  const refreshPosts = async () => {
+    isInit = true;
     setPosts([]);
     setLoading(true);
     setPageNumber(0);
-    setEndOfList(false);
-    const data = await getPagedDataByDate(0, PAGE_SIZE, TABLE, "postdate");
-
+    const data = await getPagedDataByDate(0, PAGE_SIZE, TABLE, 'postdate');
     setPosts(data);
     setLoading(false);
-  }, [pageNumber]);
+    isInit = false;
+  }
 
   const incrementLike = async (postID) => {
     const { data, error } = await supabase.rpc("increment_like", {
@@ -199,9 +187,8 @@ const PrayersProvider = (props) => {
 
   useEffect(() => {
     if (payload) {
-     console.log(payload);
+      console.log(payload);
       if (payload.eventType === "INSERT") {
-        
         setPosts((prevPosts) => {
           const filtered = prevPosts.filter(
             (prevPost) => prevPost.id !== payload.new.id
@@ -210,6 +197,7 @@ const PrayersProvider = (props) => {
           return [payload.new, ...filtered];
         });
       }
+      
 
       if (payload.eventType === "DELETE") {
         setPosts((prevPosts) => {
@@ -226,7 +214,7 @@ const PrayersProvider = (props) => {
   useEffect(() => {
     console.log("establshing sub");
     const postSub = supabase
-      .from('prayers')
+      .from("prayers")
       .on("*", (payloadItem) => setPayload(payloadItem))
       .subscribe();
 

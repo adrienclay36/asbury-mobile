@@ -45,7 +45,7 @@ const JoysAndConcernsHomeScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* <Animated.View> */}
+    
       <Animated.FlatList
         onEndReached={({ distanceFromEnd }) => {
           if (distanceFromEnd < 0 || calledDuringMomentum) {
@@ -53,26 +53,31 @@ const JoysAndConcernsHomeScreen = ({ navigation, route }) => {
           }
           prayerContext.incrementPage();
         }}
+        bounces={true}
         onEndReachedThreshold={0.2}
         onMomentumScrollBegin={() => setCalledDuringMomentum(false)}
         refreshing={prayerContext.loading}
         refreshControl={
-          <RefreshControl onRefresh={() => prayerContext.refreshPosts()} />
+          <RefreshControl onRefresh={() => {
+            setCalledDuringMomentum(true);
+            prayerContext.refreshPosts()
+          }} />
         }
         data={prayerContext.posts}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         scrollEventThrottle={16}
-        initialNumToRender={7}
+        initialNumToRender={10}
         keyExtractor={(item, index) => index}
         renderItem={(itemData) => renderPostItem(itemData)}
+        style={{ height: Dimensions.get('window').height }}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: true }
         )}
       />
       
-      {/* </Animated.View> */}
+     
     </SafeAreaView>
   );
 };

@@ -43,6 +43,7 @@ export const getPagedDataByDate = async (page, size, table, dateColumn) => {
 
 export const getPagedDataByID = async (page, size, table, dateColumn) => {
   let { from, to } = getPagination(page, size);
+  
   const { data } = await supabase
     .from(table)
     .select()
