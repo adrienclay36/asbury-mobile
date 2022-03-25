@@ -159,6 +159,7 @@ const PrayersProvider = (props) => {
     };
     const response = await updateItemInTable(TABLE, postID, editedPost);
     setPosting(false);
+    await refreshPosts();
   };
 
   const deletePost = async (postID) => {
@@ -187,7 +188,7 @@ const PrayersProvider = (props) => {
 
   useEffect(() => {
     if (payload) {
-      console.log(payload);
+      
       if (payload.eventType === "INSERT") {
         setPosts((prevPosts) => {
           const filtered = prevPosts.filter(
