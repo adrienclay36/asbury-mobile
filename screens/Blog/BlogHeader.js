@@ -20,6 +20,7 @@ const BlogHeader = ({ navigation, route, back, props, title }) => {
   return (
     <>
       <SafeAreaView
+      forceInset={{ top: 'never' }}
         style={[
           styles.header,
           {

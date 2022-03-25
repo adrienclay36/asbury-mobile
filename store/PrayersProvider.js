@@ -1,6 +1,7 @@
 import React, { useState, useEffect, createContext, useCallback } from "react";
 import { supabase } from "../supabase-service";
 import axios from "axios";
+import { useRoute } from "@react-navigation/native";
 export const PrayerContext = createContext({
   posts: [],
   comments: [],
@@ -40,6 +41,7 @@ const PrayersProvider = (props) => {
   const [pageNumber, setPageNumber] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [endOfList, setEndOfList] = useState(false);
+  const route = useRoute();
 
   const getPosts = useCallback(async () => {
     if (isInit) {
@@ -157,7 +159,6 @@ const PrayersProvider = (props) => {
     };
 
     const response = await addItemToTable(TABLE, postToAdd);
-    console.log(response);
     setPosting(false);
     navigation.replace("JoysAndConcernsHome");
   };
@@ -198,8 +199,9 @@ const PrayersProvider = (props) => {
 
   useEffect(() => {
     if (payload) {
+     console.log(payload);
       if (payload.eventType === "INSERT") {
-        console.log("inserting payload");
+        
         setPosts((prevPosts) => {
           const filtered = prevPosts.filter(
             (prevPost) => prevPost.id !== payload.new.id
@@ -222,14 +224,16 @@ const PrayersProvider = (props) => {
   }, [payload]);
 
   useEffect(() => {
-    console.log("Attempting to establish database subscription");
+    console.log("establshing sub");
     const postSub = supabase
-      .from(TABLE)
+      .from('prayers')
       .on("*", (payloadItem) => setPayload(payloadItem))
       .subscribe();
 
-      
-    return () => supabase.removeSubscription(postSub);
+    return () => {
+      supabase.removeSubscription(postSub);
+      console.log("Sub Removed");
+    };
   }, []);
 
   const contextValue = {

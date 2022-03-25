@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import JoysAndConcernsHomeScreen from "../screens/JoysAndConcerns/JoysAndConcernsHomeScreen";
 import NewPostScreen from "../screens/JoysAndConcerns/NewPostScreen";
-import PrayersProvider from "../store/PrayersProvider";
+
 const Stack = createNativeStackNavigator();
 import JoysAndConcernsHeader from "../screens/JoysAndConcerns/JoysAndConcernsHeader";
 import NewPostHeader from "../screens/JoysAndConcerns/NewPostHeader";
@@ -13,7 +13,7 @@ import EditPostScreen from "../screens/JoysAndConcerns/EditPostScreen";
 const JoysAndConcernsStack = () => {
   
   return (
-    <PrayersProvider>
+   
       <View style={{ flex: 1 }} collapsable={false}>
         <Stack.Navigator>
           <Stack.Screen
@@ -45,7 +45,7 @@ const JoysAndConcernsStack = () => {
           <Stack.Screen options={{ headerShown: false, presentation: 'formSheet'}} name="EditPostScreen" component={EditPostScreen} />
         </Stack.Navigator>
       </View>
-    </PrayersProvider>
+   
   );
 };
 

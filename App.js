@@ -18,8 +18,9 @@ import AuthStack from "./navigators/AuthStack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import StartupScreen from "./screens/Auth/StartupScreen";
 const AppStack = createNativeStackNavigator();
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
-LogBox.ignoreLogs(['Setting a timer']);
+LogBox.ignoreLogs(["Setting a timer"]);
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -36,18 +37,23 @@ export default function App() {
   }
 
   return (
-    <PaperProvider>
-      <NavigationContainer>
-        <UserProvider>
-          <AppStack.Navigator screenOptions={{ headerShown: false }}>
-            <AppStack.Screen name="StartupScreen" component={StartupScreen} />
-            <AppStack.Screen name="AuthStack" component={AuthStack} />
-            <AppStack.Screen name="AppStack" component={MainDrawerNavigator} />
-          </AppStack.Navigator>
-          <StatusBar style="auto" />
-        </UserProvider>
-      </NavigationContainer>
-    </PaperProvider>
+    <UserProvider>
+      <SafeAreaProvider>
+        <PaperProvider>
+          <NavigationContainer>
+            <AppStack.Navigator screenOptions={{ headerShown: false }}>
+              <AppStack.Screen name="StartupScreen" component={StartupScreen} />
+              <AppStack.Screen name="AuthStack" component={AuthStack} />
+              <AppStack.Screen
+                name="AppStack"
+                component={MainDrawerNavigator}
+              />
+            </AppStack.Navigator>
+            <StatusBar style="auto" />
+          </NavigationContainer>
+        </PaperProvider>
+      </SafeAreaProvider>
+    </UserProvider>
   );
 }
 

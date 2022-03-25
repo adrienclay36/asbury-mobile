@@ -84,7 +84,6 @@ const OneTimeDonationScreen = ({ navigation }) => {
             <Text style={styles.dollarSign}>$</Text>
             <TextInput
               value={amount.value}
-              defaultValue="10"
               onChangeText={(text) => amountChangeHandler(text)}
               returnKeyType="done"
               style={styles.amount}

@@ -44,6 +44,7 @@ const GivingHomePageHeader = ({ navigation, route, back, props, title }) => {
   return (
     <>
       <SafeAreaView
+        forceInset="top"
         style={[
           styles.header,
           {

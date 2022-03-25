@@ -47,6 +47,7 @@ const JoysAndConcernsHeader = ({ navigation, route, back, props, title }) => {
   return (
     <>
       <SafeAreaView
+      forceInset={{ top: 'never' }}
         style={{
           flexDirection: "row",
           justifyContent: "space-between",

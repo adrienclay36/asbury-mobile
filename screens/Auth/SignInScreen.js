@@ -160,6 +160,7 @@ const SignInScreen = ({ navigation, route }) => {
       const { data: signInData, error } = await supabase.auth.signIn({ email: data.email, password: data.password})
       if(!error) {
         navigation.replace("AppStack");
+        return;
       } else {
         setFormError(true);
         setErrorMessage(error.message);

@@ -44,6 +44,7 @@ const BasicHeaderMenu = ({ navigation, route, back, props, title }) => {
   return (
     <>
       <SafeAreaView
+      forceInset={{ top: 'never' }}
         style={[
           styles.header,
           {

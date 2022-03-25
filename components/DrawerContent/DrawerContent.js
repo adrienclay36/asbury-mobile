@@ -5,6 +5,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Entypo from "react-native-vector-icons/Entypo";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { userColors } from "../../constants/userColors";
+import { supabase } from '../../supabase-service';
 import {
   Avatar,
   Title,
@@ -96,8 +97,9 @@ const DrawerContent = (props) => {
     </>
   );
 
-  const signOutHandler = () => {
+  const signOutHandler = async () => {
     userContext.signOutHandler();
+    const { data, error } = await supabase.from('users').update({ push_token: null }).match({ id: userContext.userInfo.id})
     props.navigation.replace("AuthStack");
   };
 

@@ -48,7 +48,7 @@ const HomeScreenHeader = ({ navigation, route, back, props, title }) => {
 
   return (
     <>
-      <SafeAreaView style={styles.header}>
+      <SafeAreaView forceInset={{ top: "never" }} style={styles.header}>
         <View style={styles.welcomeContainer}>
           <TouchableOpacity onPress={() => navigation.openDrawer()}>
             <View
