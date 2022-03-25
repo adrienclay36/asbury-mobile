@@ -1,8 +1,12 @@
 import React, { createContext, useEffect, useState } from "react";
 import { supabase } from "../supabase-service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as SecureStore from 'expo-secure-store';
-import { getPublicUrl, getUserPostCount, updateItemInTable } from "../supabase-util";
+import * as SecureStore from "expo-secure-store";
+import {
+  getPublicUrl,
+  getUserPostCount,
+  updateItemInTable,
+} from "../supabase-util";
 import * as Notifications from "expo-notifications";
 import axios from "axios";
 const TOKEN_KEY = "asbury_auth";
@@ -91,12 +95,18 @@ const UserProvider = (props) => {
         const response = await axios.get(
           `${SERVER_URL}/get-customer-invoices?customerID=${userData.customer_id}`
         );
-        setTransactions(response.data.payments);
+        const filteredTransactions = response.data.payments.filter(payment => payment.status === "succeeded");
+        setTransactions(filteredTransactions);
+        
         let totalDonated = 0;
-        for (let payment of response.data.payments) {
+        for (let payment of filteredTransactions) {
           let amount = payment.charges.data[0].amount;
           if (typeof amount === "number") {
             totalDonated += parseInt(amount) / 100;
+          }
+          let refunded = payment.charges.data[0].amount_refunded;
+          if (refunded) {
+            totalDonated -= parseInt(refunded / 100);
           }
         }
         setTotalDonations(totalDonated);
@@ -125,7 +135,7 @@ const UserProvider = (props) => {
     }
   };
 
-  const signInHandler = async (email, password, navigation) => {
+  const signInHandler = async (email, password) => {
     setAuthenticating(true);
     const { data, error } = await supabase.auth.signIn({ email, password });
     if (error) {
@@ -138,32 +148,34 @@ const UserProvider = (props) => {
     setAuthenticating(false);
     const credA = await SecureStore.setItemAsync(ASBURY_KEY_ONE, email);
     const credB = await SecureStore.setItemAsync(ASBURY_KEY_TWO, password);
-    console.log("Successful SignIn: UserProvider:: signInHandler")
+    console.log("Successful SignIn: UserProvider:: signInHandler");
     return { status: "ok", message: auth };
   };
 
   const sendPushNotification = async (userID, title, body, postID, type) => {
-    if (userValue.id !== userID) {
-      const { data, error } = await supabase
-        .from("users")
-        .select()
-        .match({ id: userID });
-      const token = data[0]?.push_token;
+    if (userValue) {
+      if (userValue?.id !== userID) {
+        const { data, error } = await supabase
+          .from("users")
+          .select()
+          .match({ id: userID });
+        const token = data[0]?.push_token;
 
-      if (token) {
-        const response = await axios.post(
-          "https://exp.host/--/api/v2/push/send",
-          { title, body, to: token, data: { postID, type: type } },
-          {
-            headers: {
-              Accept: "application/json",
-              "Accept-Encoding": "gzip deflate",
-              "Content-Type": "application/json",
-            },
-          }
-        );
-      } else {
-        return;
+        if (token) {
+          const response = await axios.post(
+            "https://exp.host/--/api/v2/push/send",
+            { title, body, to: token, data: { postID, type: type } },
+            {
+              headers: {
+                Accept: "application/json",
+                "Accept-Encoding": "gzip deflate",
+                "Content-Type": "application/json",
+              },
+            }
+          );
+        } else {
+          return;
+        }
       }
     }
   };
@@ -173,8 +185,11 @@ const UserProvider = (props) => {
     try {
       const removeCredA = await SecureStore.deleteItemAsync(ASBURY_KEY_ONE);
       const removeCredB = await SecureStore.deleteItemAsync(ASBURY_KEY_TWO);
-      console.log("UserProvider: signOutHandler:: Removed credentials from SecureStore");
-    } catch(err) {
+      console.log(
+        "UserProvider: signOutHandler:: Removed credentials from SecureStore"
+      );
+      await checkUser();
+    } catch (err) {
       console.log("UserProvider: signOutHandler:: ", err.message);
     }
   };
@@ -184,19 +199,23 @@ const UserProvider = (props) => {
 
     supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_OUT") {
+        console.log("SignOut Event: onAuthStateChanged");
         AsyncStorage.removeItem(TOKEN_KEY);
+        setAuth(null);
+        setUserInfo(null);
+        setUserValue(null);
+        setPermissions(null);
+        setAvatarURL(null);
+        return;
       }
 
       if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        console.log("Sign in event: onAuthStateChanged");
         AsyncStorage.setItem(TOKEN_KEY, session.refresh_token);
         checkUser();
-        return
+        setAuth(session);
       }
-
-      setAuth(session);
     });
-
-    checkUser();
   }, []);
 
   const getPushPermissions = async (userID) => {
@@ -245,12 +264,20 @@ const UserProvider = (props) => {
     const response = await axios.get(
       `${SERVER_URL}/get-customer-invoices?customerID=${customerID}`
     );
-    setTransactions(response.data.payments);
+
+    const filteredTransactions = response.data.payments.filter(
+      (payment) => payment.status === "succeeded"
+    );
+    setTransactions(filteredTransactions);
     let totalDonated = 0;
-    for (let payment of response.data.payments) {
+    for (let payment of filteredTransactions) {
       let amount = payment.charges.data[0].amount;
       if (typeof amount === "number") {
         totalDonated += parseInt(amount) / 100;
+      }
+      let refunded = payment.charges.data[0].amount_refunded;
+      if(refunded) {
+        totalDonated -= parseInt(refunded / 100);
       }
     }
 
@@ -258,26 +285,21 @@ const UserProvider = (props) => {
     setRefreshing(false);
   };
 
-
   const updateUserInfo = async (firstName, lastName, location, navigation) => {
     setLoading(true);
-    if(userValue.id){
-
+    if (userValue.id) {
       const newInfo = {
         first_name: firstName,
         last_name: lastName,
         location,
-      }
-  
-      const response = await updateItemInTable('users', userValue?.id , newInfo);
+      };
+
+      const response = await updateItemInTable("users", userValue?.id, newInfo);
       await checkUser();
-      navigation.goBack()
+      navigation.goBack();
     }
     setLoading(false);
-  }
-
-
-  
+  };
 
   const contextValue = {
     userValue,
@@ -301,7 +323,6 @@ const UserProvider = (props) => {
     gettingUser,
     updateUserInfo,
     loading,
-
   };
   return (
     <UserContext.Provider value={contextValue}>

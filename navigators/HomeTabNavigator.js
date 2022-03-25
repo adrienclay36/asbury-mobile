@@ -1,104 +1,148 @@
 import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useContext, useEffect } from "react";
+import { UserContext } from "../store/UserProvider";
 import LibraryStack from "./LibraryStack";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { Colors } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome5";
-import Feather from 'react-native-vector-icons/Feather';
+import Feather from "react-native-vector-icons/Feather";
 import { Ionicons } from "@expo/vector-icons";
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import JoysAndConcernsStack from "./JoysAndConcernsStack";
 import { userColors } from "../constants/userColors";
 import BlogStack from "./BlogStack";
 import GivingStack from "./GivingStack";
 import EventsStack from "./EventsStack";
 import HomeStack from "./HomeStack";
+import Toast from "react-native-toast-message";
 const Tab = createMaterialBottomTabNavigator();
-const HomeTabNavigator = () => {
+const HomeTabNavigator = ({ navigation }) => {
+  const userContext = useContext(UserContext);
+
+
+  const navigateToEditProfile = () => {
+
+    navigation.navigate("ProfileStack");
+    setTimeout(() => {
+      navigation.navigate("EditProfileScreen");
+    },
+    250)
+  }
+
+  const newUserNotification = () => {
+    setTimeout(() => {
+      console.log("Showing Toast: HomeTabNavigator");
+      Toast.show({
+        type: "info",
+        text1: "Welcome To Asbury Mobile!",
+        text2: "Click Here To Finish Setting Up Your Account!",
+        topOffset: 75,
+        position: "top",
+        visibilityTime: 10000,
+        onPress: navigateToEditProfile,
+      });
+    }, 2000)
+    
+  };
+
+  useEffect(() => {
+    if (userContext?.userInfo) {
+      if (
+        userContext.userInfo.first_name === "New" &&
+        userContext.userInfo.last_name === "User"
+      ) {
+        newUserNotification();
+      }
+    }
+  }, [userContext.userInfo]);
+
   return (
-    <Tab.Navigator
-      activeColor={userColors.seaFoam500}
-      inactiveColor={Colors.grey500}
-      shifting={true}
-    >
-      <Tab.Screen
-        options={{
-          tabBarColor: Colors.white,
+    <>
+      <Tab.Navigator
+        activeColor={userColors.seaFoam500}
+        inactiveColor={Colors.grey500}
+        shifting={true}
+      >
+        <Tab.Screen
+          options={{
+            tabBarColor: Colors.white,
 
-          tabBarLabel: "Home",
+            tabBarLabel: "Home",
 
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons
-              name="shield-cross"
-              color={color}
-              size={24}
-            />
-          ),
-        }}
-        name="HomeStack"
-        component={HomeStack}
-      />
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons
+                name="shield-cross"
+                color={color}
+                size={24}
+              />
+            ),
+          }}
+          name="HomeStack"
+          component={HomeStack}
+        />
 
-      <Tab.Screen
-        options={{
-          tabBarColor: Colors.white,
+        <Tab.Screen
+          options={{
+            tabBarColor: Colors.white,
 
-          tabBarLabel: "Bulletins",
+            tabBarLabel: "Bulletins",
 
-          tabBarIcon: ({ color }) => (
-            <Icon name="bell" color={color} size={24} />
-          ),
-        }}
-        name="BlogStack"
-        component={BlogStack}
-      />
-      <Tab.Screen
-        options={{
-          tabBarColor: Colors.white,
+            tabBarIcon: ({ color }) => (
+              <Icon name="list-ul" color={color} size={24} />
+            ),
+          }}
+          name="BlogStack"
+          component={BlogStack}
+        />
+        <Tab.Screen
+          options={{
+            tabBarColor: Colors.white,
 
-          tabBarLabel: "Events",
+            tabBarLabel: "Events",
 
-          tabBarIcon: ({ color }) => (
-            <Icon name="calendar-week" color={color} size={24} />
-          ),
-        }}
-        name="EventsStack"
-        component={EventsStack}
-      />
-      <Tab.Screen
-        options={{
-          tabBarColor: Colors.white,
-          tabBarLabel: "Joys/Concerns",
+            tabBarIcon: ({ color }) => (
+              <Icon name="calendar-week" color={color} size={24} />
+            ),
+          }}
+          name="EventsStack"
+          component={EventsStack}
+        />
+        <Tab.Screen
+          options={{
+            tabBarColor: Colors.white,
+            tabBarLabel: "Feed",
 
-          tabBarIcon: ({ color }) => (
-            <Ionicons
-              name="chatbubble-ellipses-outline"
-              color={color}
-              size={24}
-            />
-          ),
-        }}
-        name="JoysStack"
-        component={JoysAndConcernsStack}
-      />
+            tabBarIcon: ({ color }) => (
+              <Ionicons
+                name="chatbubble-ellipses-outline"
+                color={color}
+                size={24}
+              />
+            ),
+          }}
+          name="JoysStack"
+          component={JoysAndConcernsStack}
+        />
 
-      <Tab.Screen
-        options={{
-          tabBarColor: Colors.white,
-          tabBarLabel: "Giving",
+        <Tab.Screen
+          options={{
+            tabBarColor: Colors.white,
+            tabBarLabel: "Giving",
 
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons
-              name="account-cash"
-              color={color}
-              size={24}
-            />
-          ),
-        }}
-        name="GivingStack"
-        component={GivingStack}
-      />
-    </Tab.Navigator>
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons
+                name="account-cash"
+                color={color}
+                size={24}
+              />
+            ),
+          }}
+          name="GivingStack"
+          component={GivingStack}
+        />
+      </Tab.Navigator>
+      <Toast />
+    </>
   );
 };
 

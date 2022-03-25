@@ -18,23 +18,45 @@ import { formatTime, getDateInfo } from "../../helpers/dateTimes";
 import Card from "../ui/Card";
 import { primaryFont } from "../../constants/fonts";
 const DATE_SIZE = Dimensions.get("window").height * 0.09;
-const UpcomingEventItem = ({ date, end, id, start, summary, navigation }) => {
+import { useNavigation } from "@react-navigation/native";
+
+const UpcomingEventItem = ({ date, end, id, start, summary }) => {
   const formatStart = formatTime(new Date(start));
   const formatEnd = formatTime(new Date(end));
   const { day, monthText } = getDateInfo(date);
+  const navigation = useNavigation();
+
+
+  const navigateEventItem = () => {
+
+    navigation.navigate("EventsStack");
+    setTimeout(() => {
+      navigation.navigate("EventDetailsScreen", {
+        formatStart,
+        formatEnd,
+        day,
+        monthText,
+        summary,
+      });
+    }, 250)
+  }
   return (
-    <Card height={200}>
-      <Text style={styles.eventTitle}>{summary}</Text>
-      <View style={{ alignItems: "center", marginBottom: 10 }}>
-        <View style={styles.dateContainer}>
-          <Text style={styles.day}>{day}</Text>
-          <Text style={styles.month}>{monthText}</Text>
+    <TouchableOpacity onPress={navigateEventItem}>
+      <Card height={200}>
+        <Text style={styles.eventTitle} numberOfLines={1}>
+          {summary}
+        </Text>
+        <View style={{ alignItems: "center", marginBottom: 10 }}>
+          <View style={styles.dateContainer}>
+            <Text style={styles.day}>{day}</Text>
+            <Text style={styles.month}>{monthText}</Text>
+          </View>
         </View>
-      </View>
-      <Text style={styles.time}>
-        {formatStart} - {formatEnd}
-      </Text>
-    </Card>
+        <Text style={styles.time}>
+          {formatStart} - {formatEnd}
+        </Text>
+      </Card>
+    </TouchableOpacity>
   );
 };
 
@@ -50,24 +72,10 @@ const renderEventItem = (itemData) => {
   );
 };
 
-const UpcomingEvents = ({ navigation }) => {
-  const [loading, setLoading] = useState();
-  const [events, setEvents] = useState();
+const UpcomingEvents = ({ navigation, events: inputEvents }) => {
   const isCarousel = useRef(null);
 
-  const getEvents = async () => {
-    setLoading(true);
-    const response = await axios.get(`${SERVER_URL}/events`);
-    setEvents(response.data.events.slice(0, 3));
-
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    getEvents();
-  }, []);
-
-  if (!events) {
+  if (!inputEvents) {
     return <CenteredLoader />;
   }
   return (
@@ -79,7 +87,7 @@ const UpcomingEvents = ({ navigation }) => {
             name="calendar"
             style={{ marginLeft: 10 }}
             size={30}
-            color={Colors.seaFoam600}
+            color={userColors.seaFoam600}
           />
         </View>
         <View>
@@ -90,7 +98,7 @@ const UpcomingEvents = ({ navigation }) => {
       </View>
       <Carousel
         ref={isCarousel}
-        data={events}
+        data={inputEvents}
         renderItem={renderEventItem}
         sliderWidth={Dimensions.get("window").width}
         itemWidth={width - 100}

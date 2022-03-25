@@ -7,15 +7,18 @@ import GivingHomePageHeader from "../screens/Giving/GivingHomePageHeader";
 import { StripeProvider } from "@stripe/stripe-react-native";
 import NewSubscriptionScreen from "../screens/Giving/NewSubscriptionScreen";
 import axios from "axios";
+import NoAccountScreen from "../screens/Giving/NoAccountScreen";
 import CenteredLoader from "../components/ui/CenteredLoader";
+import OneTimeDonationScreen from "../screens/Giving/OneTimeDonationScreen";
 import { UserContext } from "../store/UserProvider";
+import { SERVER_URL } from "../constants/serverURL";
 const GivingStack = () => {
   const userContext = useContext(UserContext);
   const [publishableKey, setPublishableKey] = useState("");
 
   const getPublishableKey = async () => {
     const response = await axios.get(
-      "https://asbury-next-website.vercel.app/api/keys"
+      `${SERVER_URL}/keys`
     );
 
     setPublishableKey(response.data.publishableKey);
@@ -25,7 +28,7 @@ const GivingStack = () => {
     getPublishableKey();
   }, []);
 
-  if (!publishableKey || userContext.gettingUser) {
+  if (!publishableKey) {
     return <CenteredLoader />;
   }
 
@@ -33,21 +36,40 @@ const GivingStack = () => {
     <StripeProvider publishableKey={publishableKey}>
       <View style={{ flex: 1 }} collapsable={false}>
         <Stack.Navigator>
-          <Stack.Screen
+          {userContext.userInfo && (
+            <Stack.Screen
+              options={({ route }) => ({
+                header: (props) => (
+                  <GivingHomePageHeader
+                    {...props}
+                    props={props}
+                    route={route}
+                  />
+                ),
+              })}
+              name="GivingHomePage"
+              component={GivingHomePage}
+            />
+          )}
+          {userContext.userInfo && (
+            <Stack.Screen
+              name="NewSubscriptionScreen"
+              options={{ headerShown: false, presentation: "formSheet" }}
+              component={NewSubscriptionScreen}
+            />
+          )}
+          {userContext.userInfo && (
+            <Stack.Screen name="OneTimeDonationScreen" options={{ headerShown: false, presentation: 'formSheet'} } component={OneTimeDonationScreen} />
+          )}
+          {!userContext.userInfo && <Stack.Screen
             options={({ route }) => ({
               header: (props) => (
                 <GivingHomePageHeader {...props} props={props} route={route} />
               ),
             })}
-            name="GivingHomePage"
-            component={GivingHomePage}
-          />
-          <Stack.Screen
-            
-            name="NewSubscriptionScreen"
-            options={{ headerShown: false, presentation: "formSheet" }}
-            component={NewSubscriptionScreen}
-          />
+            name="NoAccountScreen"
+            component={NoAccountScreen}
+          />}
         </Stack.Navigator>
       </View>
     </StripeProvider>

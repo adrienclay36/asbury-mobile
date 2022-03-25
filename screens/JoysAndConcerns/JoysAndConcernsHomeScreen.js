@@ -19,13 +19,7 @@ const JoysAndConcernsHomeScreen = ({ navigation, route }) => {
   const [calledDuringMomentum, setCalledDuringMomentum] = useState(true);
   let scrollY = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () =>
-      prayerContext.getPosts()
-    );
 
-    return unsubscribe;
-  }, [prayerContext.getPosts]);
 
   const renderPostItem = (itemData) => {
     return (

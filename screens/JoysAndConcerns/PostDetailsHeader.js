@@ -23,11 +23,8 @@ const PostDetailsHeader = ({ userID, formatName, avatarURL, postID, postContent,
   const prayerContext = useContext(PrayerContext);
   const navigation = useNavigation();
 
-  const headerComponent = userContext.userInfo ? (
-    <Text style={styles.headerText}>{formatName}</Text>
-  ) : (
-    <Text style={styles.headerText}>New Post</Text>
-  );
+  const headerComponent = <Text style={styles.headerText}>{formatName}</Text>
+
 
   const imageComponent = avatarURL ? (
     <Avatar.Image
@@ -65,7 +62,7 @@ const PostDetailsHeader = ({ userID, formatName, avatarURL, postID, postContent,
             {imageComponent}
             {headerComponent}
           </View>
-          {userContext.userValue.id === userID && <View style={{flexDirection: 'row',}}>
+          {userContext.userValue?.id === userID && <View style={{flexDirection: 'row',}}>
             <Appbar.Action icon="pencil" color={Platform.OS === 'android' ? Colors.white : Colors.grey700} onPress={() => navigation.navigate('EditPostScreen', { liveLikes, userID, postID, postType, postContent, avatarURL, formatName, formatDate })} />
             <Appbar.Action icon="trash-can" color={Platform.OS === 'android' ? Colors.white : Colors.red700} onPress={deletePostHandler} />
           </View>}

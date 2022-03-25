@@ -6,10 +6,11 @@ import {
   View,
   Platform,
   Touchable,
+  useColorScheme,
 } from "react-native";
 import React, { useContext } from "react";
 import { userColors } from "../../constants/userColors";
-import { Appbar, Avatar, Button, Colors } from "react-native-paper";
+import { Appbar, Avatar, Colors } from "react-native-paper";
 import { primaryFont } from "../../constants/fonts";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,25 +20,28 @@ const HomeScreenHeader = ({ navigation, route, back, props, title }) => {
   const userContext = useContext(UserContext);
 
   const welcomeComponent = userContext.userValue ? (
-    <Text style={styles.welcome}>
-      {emoji.get('wave')} Welcome, {userContext.userInfo?.first_name}!
-    </Text>
+    <>
+      <View>
+        <Text style={styles.welcome}>Welcome Back</Text>
+        <Text style={styles.name}>{userContext.userInfo?.first_name}</Text>
+      </View>
+    </>
   ) : (
-    <Text style={styles.welcome}>Welcome!</Text>
+    <Text style={styles.welcome}>Welcome Back</Text>
   );
 
   const imageComponent = userContext.avatarURL ? (
     <Avatar.Image
       onPress={() => navigation.openDrawer()}
       source={{ uri: userContext.avatarURL }}
-      size={30}
+      size={50}
       style={{ backgroundColor: "transparent" }}
     />
   ) : (
     <Avatar.Image
       onPress={() => navigation.openDrawer()}
       source={require("../../assets/default-2.png")}
-      size={30}
+      size={50}
       style={{ backgroundColor: "transparent" }}
     />
   );
@@ -46,10 +50,24 @@ const HomeScreenHeader = ({ navigation, route, back, props, title }) => {
     <>
       <SafeAreaView style={styles.header}>
         <View style={styles.welcomeContainer}>
-          {welcomeComponent}
           <TouchableOpacity onPress={() => navigation.openDrawer()}>
-            {imageComponent}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {imageComponent}
+              {welcomeComponent}
+            </View>
           </TouchableOpacity>
+          <Appbar.Action
+            icon="menu"
+            size={30}
+            color={Platform.OS === "android" ? Colors.white : Colors.grey900}
+            onPress={() => navigation.openDrawer()}
+          />
         </View>
       </SafeAreaView>
     </>
@@ -68,13 +86,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginHorizontal: 30,
-    marginBottom: Platform.OS === "android" ? 20 : 0,
+    marginLeft: 30,
+    marginRight: 10,
+    marginBottom: Platform.OS === "android" ? 20 : -10,
   },
   welcome: {
-    fontFamily: primaryFont.semiBold,
+    fontSize: 14,
+    fontWeight: "600",
+    color: Platform.OS === "android" ? Colors.grey300 : Colors.grey500,
+    marginLeft: 10,
+  },
+  name: {
+    marginLeft: 10,
     fontSize: 20,
-    color: Platform.OS === "android" ? Colors.white : Colors.black,
+    fontWeight: "600",
+    color: Platform.OS === 'android' ? Colors.white : Colors.grey900
   },
   actionButtons: {
     justifyContent: "center",

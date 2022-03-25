@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
   modalText: {
     textAlign: "center",
     fontWeight: "500",
+    marginHorizontal: 20,
   },
   modalIcon: {
     marginBottom: 15,

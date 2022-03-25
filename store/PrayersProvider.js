@@ -30,6 +30,7 @@ import {
   updateItemInTable,
   getTotalPages,
 } from "../supabase-util";
+import { DrawerContentScrollView } from "@react-navigation/drawer";
 const PrayersProvider = (props) => {
   const [posts, setPosts] = useState([]);
   const [comments, setComments] = useState([]);
@@ -198,6 +199,7 @@ const PrayersProvider = (props) => {
   useEffect(() => {
     if (payload) {
       if (payload.eventType === "INSERT") {
+        console.log("inserting payload");
         setPosts((prevPosts) => {
           const filtered = prevPosts.filter(
             (prevPost) => prevPost.id !== payload.new.id
@@ -206,14 +208,6 @@ const PrayersProvider = (props) => {
           return [payload.new, ...filtered];
         });
       }
-
-      // if (payload.eventType === "UPDATE") {
-      //   const updatedPost = payload.new;
-      //   const index = posts.findIndex((item) => item.id === updatedPost.id);
-      //   const postsCopy = posts;
-      //   postsCopy[index] = updatedPost;
-      //   setPosts(postsCopy);
-      // }
 
       if (payload.eventType === "DELETE") {
         setPosts((prevPosts) => {
@@ -228,10 +222,13 @@ const PrayersProvider = (props) => {
   }, [payload]);
 
   useEffect(() => {
+    console.log("Attempting to establish database subscription");
     const postSub = supabase
       .from(TABLE)
       .on("*", (payloadItem) => setPayload(payloadItem))
       .subscribe();
+
+      
     return () => supabase.removeSubscription(postSub);
   }, []);
 

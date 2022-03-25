@@ -6,14 +6,11 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useContext } from "react";
+import React from "react";
 import { userColors } from "../../constants/userColors";
-import { Appbar, Avatar, Button, Colors } from "react-native-paper";
+import { Appbar, Colors } from "react-native-paper";
 import { primaryFont } from "../../constants/fonts";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { UserContext } from "../../store/UserProvider";
-import { PrayerContext } from "../../store/PrayersProvider";
+
 import UserHeader from "../../components/Headers/UserHeader";
 const AVATAR_SIZE = 40;
 const { width, height } = Dimensions.get("window");
@@ -23,7 +20,7 @@ const EventDetailsHeader = ({
   navigation,
   route
 }) => {
-  const userContext = useContext(UserContext);
+
   const { formatStart, formatEnd, day, monthText, summary } = route?.params;
 
   const headerComponent = <Text style={styles.headerText}>{summary.length > 30 ? summary.slice(0, 30) + "..." : summary}</Text>

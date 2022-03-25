@@ -19,7 +19,8 @@ import { supabase } from "../../supabase-service";
 import { updateItemInTable } from "../../supabase-util";
 import { decode } from "base64-arraybuffer";
 import { userColors } from "../../constants/userColors";
-import * as Animatable from 'react-native-animatable';
+import * as Animatable from "react-native-animatable";
+import Toast from "react-native-toast-message";
 const IMAGE_SIZE = 100;
 const EditProfileScreen = ({ navigation }) => {
   const userContext = useContext(UserContext);
@@ -27,6 +28,11 @@ const EditProfileScreen = ({ navigation }) => {
   const [lastName, setLastName] = useState(userContext.userInfo?.last_name);
   const [location, setLocation] = useState(userContext.userInfo?.location);
   const [saving, setSaving] = useState(false);
+
+  const isDefaultPhoto =
+    userContext.userInfo.avatar_url === "default-2.png"
+      ? Colors.pink600
+      : Colors.white;
 
   const [uploading, setUploading] = useState(false);
   const [valuesChanged, setValuesChanged] = useState({
@@ -41,12 +47,10 @@ const EditProfileScreen = ({ navigation }) => {
     firstNameIsValid: true,
     lastNameIsValid: true,
     locationIsValid: true,
-
-  })
+  });
 
   useEffect(() => {
-
-    if(data.location.trim() === userContext.userInfo.location) {
+    if (data.location.trim() === userContext.userInfo.location) {
       setValuesChanged({
         ...valuesChanged,
         locationChanged: false,
@@ -55,7 +59,7 @@ const EditProfileScreen = ({ navigation }) => {
       setValuesChanged({
         ...valuesChanged,
         locationChanged: true,
-      })
+      });
     }
   }, [data.location]);
 
@@ -87,28 +91,45 @@ const EditProfileScreen = ({ navigation }) => {
     }
   }, [data.lastName]);
 
+  const newUserNotification = () => {
+    setTimeout(() => {
+      Toast.show({
+        text1: "Add a Photo and Change Your Name!",
+        text2: "Let your friends and family know you're here!",
+        type: "info",
+        position: "bottom",
+        visibilityTime: 10000,
+      });
+    }, 1000)
+    
+  };
 
-
-
-
+  useEffect(() => {
+    if (userContext?.userInfo) {
+      if (
+        userContext.userInfo.first_name === "New" &&
+        userContext.userInfo.last_name === "User"
+      ) {
+        newUserNotification();
+      }
+    }
+  }, [userContext.userInfo]);
 
   const firstNameChangeHandler = (text) => {
-    if(text.trim().length > 1){
+    if (text.trim().length > 1) {
       setData({
         ...data,
         firstName: text,
         firstNameIsValid: true,
-      })
+      });
     } else {
       setData({
         ...data,
         firstName: text,
         firstNameIsValid: false,
-      })
+      });
     }
-
-    
-  }
+  };
 
   const lastNameChangeHandler = (text) => {
     if (text.trim().length > 1) {
@@ -126,7 +147,6 @@ const EditProfileScreen = ({ navigation }) => {
     }
   };
 
-
   const locationChangeHandler = (text) => {
     if (text.trim().length > 1) {
       setData({
@@ -141,18 +161,21 @@ const EditProfileScreen = ({ navigation }) => {
         locationIsValid: false,
       });
     }
-  }
-
+  };
 
   const saveChanges = () => {
     setSaving(true);
-    if(data.firstName && data.lastName && data.location) {
-      userContext.updateUserInfo(data.firstName, data.lastName, data.location, navigation)
+    if (data.firstName && data.lastName && data.location) {
+      userContext.updateUserInfo(
+        data.firstName,
+        data.lastName,
+        data.location,
+        navigation
+      );
     }
 
-
     setSaving(false);
-  }
+  };
 
   const uploadPhoto = async (image) => {
     setUploading(true);
@@ -302,8 +325,13 @@ const EditProfileScreen = ({ navigation }) => {
                     <Icon
                       name="camera"
                       size={30}
-                      color={Colors.white}
-                      style={styles.cameraIcon}
+                      color={isDefaultPhoto}
+                      style={[
+                        styles.cameraIcon,
+                        {
+                          borderColor: isDefaultPhoto,
+                        },
+                      ]}
                     />
                   </View>
                 </ImageBackground>
@@ -435,6 +463,7 @@ const EditProfileScreen = ({ navigation }) => {
           </View>
         </View>
       </TouchableWithoutFeedback>
+      <Toast />
     </>
   );
 };
@@ -453,8 +482,8 @@ const styles = StyleSheet.create({
   backgroundImage: {
     height: IMAGE_SIZE,
     width: IMAGE_SIZE,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   editImageContainer: {
     flex: 1,
@@ -467,7 +496,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: Colors.white,
+
     borderRadius: 10,
   },
   editContainer: {
@@ -497,17 +526,17 @@ const styles = StyleSheet.create({
   },
   formControl: {
     borderTopWidth: 0.5,
-    borderBottomWidth: .5,
+    borderBottomWidth: 0.5,
     borderColor: Colors.grey300,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
   rightIcon: {
-    marginRight: 15
+    marginRight: 15,
   },
   savingChanges: {
     backgroundColor: Colors.grey400,
-    opacity: .3
-  }
+    opacity: 0.3,
+  },
 });

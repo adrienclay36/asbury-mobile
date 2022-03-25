@@ -10,26 +10,38 @@ import { UserContext } from "../../store/UserProvider";
 const JoysAndConcernsHeader = ({ navigation, route, back, props, title }) => {
   const userContext = useContext(UserContext);
 
-  const welcomeComponent = userContext.userValue ? (
-    <Text style={styles.welcome}>
-      Welcome, {userContext.userInfo.first_name}!
-    </Text>
-  ) : (
-    <Text style={styles.welcome}>Welcome!</Text>
-  );
+
 
   const imageComponent = userContext.avatarURL ? (
     <Avatar.Image
       source={{ uri: userContext.avatarURL }}
       size={30}
-      style={{ backgroundColor: "transparent" }}
+      style={{ backgroundColor: "transparent", marginLeft: 30, }}
     />
   ) : (
     <Avatar.Image
       source={require("../../assets/default-2.png")}
       size={30}
-      style={{ backgroundColor: "transparent" }}
+      style={{ backgroundColor: "transparent", marginLeft: 30 }}
     />
+  );
+
+
+  const userHeader = (
+    <View style={{ flexDirection: "row", alignItems: "center" }}>
+      {imageComponent}
+      <Text style={{ marginLeft: 10 }}>
+        {userContext.userInfo?.first_name}'s Feed
+      </Text>
+    </View>
+  );
+  const nonUserHeader = (
+    <View style={{ flexDirection: "row", alignItems: "center" }}>
+      {imageComponent}
+      <Text style={{ marginLeft: 10 }}>
+        Joys & Concerns
+      </Text>
+    </View>
   );
 
   return (
@@ -37,10 +49,13 @@ const JoysAndConcernsHeader = ({ navigation, route, back, props, title }) => {
       <SafeAreaView
         style={{
           flexDirection: "row",
-          justifyContent: "flex-end",
+          justifyContent: "space-between",
           alignItems: "center",
         }}
       >
+        {userContext.userInfo ? userHeader : nonUserHeader}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+
         <Appbar.Action
           icon="plus"
           size={30}
@@ -52,7 +67,8 @@ const JoysAndConcernsHeader = ({ navigation, route, back, props, title }) => {
           size={30}
           color={Colors.grey900}
           onPress={() => navigation.openDrawer()}
-        />
+          />
+          </View>
       </SafeAreaView>
     </>
   );

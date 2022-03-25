@@ -1,9 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useContext } from 'react'
+import { UserContext } from '../store/UserProvider'
 import { supabase } from '../supabase-service'
 import { getItemById, getPublicUrl } from '../supabase-util'
 import { createDrawerNavigator } from '@react-navigation/drawer'
 import HomeTabNavigator from './HomeTabNavigator'
+import Toast from 'react-native-toast-message';
 const Drawer = createDrawerNavigator();
 import ProfileStack from './ProfileStack';
 import DrawerContent from '../components/DrawerContent/DrawerContent';
@@ -11,6 +13,11 @@ import * as Notifications from 'expo-notifications';
 import LibraryStack from './LibraryStack'
 import ServicesTabNavigator from './ServicesTabNavigator'
 const MainDrawerNavigator = ({ navigation, route }) => {
+  const userContext = useContext(UserContext);
+
+
+
+  
 
 
   useEffect(() => {
@@ -18,6 +25,8 @@ const MainDrawerNavigator = ({ navigation, route }) => {
       handleNotificationResponse
     );
   }, []);
+
+
 
   const handleNotificationResponse = async (response) => {
     const type = response.notification.request.content.data.type;
@@ -50,15 +59,18 @@ const MainDrawerNavigator = ({ navigation, route }) => {
 
 
   return (
+    <>
     <Drawer.Navigator
       drawerContent={(props) => <DrawerContent {...props} />}
       screenOptions={{ headerShown: false }}
-    >
+      >
       <Drawer.Screen name="Home" component={HomeTabNavigator} />
       <Drawer.Screen name="ProfileStack" component={ProfileStack} />
       <Drawer.Screen name="LibraryStack" component={LibraryStack} />
       <Drawer.Screen name="Services" component={ServicesTabNavigator} />
     </Drawer.Navigator>
+   
+      </>
   );
 }
 

@@ -1,14 +1,15 @@
 import { StyleSheet, Text, View, TouchableOpacity, Dimensions, ImageBackground, ScrollView, TextInput, Platform } from "react-native";
-import React, { useState, useContext} from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { userColors } from "../../constants/userColors";
 import { Colors, Button, Portal, Modal } from "react-native-paper";
 import * as Animatable from "react-native-animatable";
 import { primaryFont } from "../../constants/fonts";
 const { height, width } = Dimensions.get("window");
-import * as SecuresStore from 'expo-secure-store';
+import UIModal from '../../components/ui/UIModal';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import { UserContext } from "../../store/UserProvider";
+import { supabase } from "../../supabase-service";
 const emailRegex =
   /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -19,6 +20,8 @@ const SignInScreen = ({ navigation, route }) => {
   const [formError, setFormError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [signingUp, setSigningUp] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [data, setData] = useState({
     email: '',
     password: '',
@@ -30,6 +33,12 @@ const SignInScreen = ({ navigation, route }) => {
     isValidPassword: true,
     isValidConfirmPassword: true,
   })
+
+  useEffect(() => {
+    console.log("SignInScreen: useEffect:: Checking User");
+    userContext.checkUser()
+  }, [])
+
 
   const confirmPassword = (
     <>
@@ -55,7 +64,7 @@ const SignInScreen = ({ navigation, route }) => {
       {!data.isValidConfirmPassword && (
         <Animatable.View animation="fadeInLeft" duration={500}>
           <Text style={styles.errorMsg}>
-            Password must be at least six characters
+            Passwords Must Match
           </Text>
         </Animatable.View>
       )}
@@ -146,19 +155,39 @@ const SignInScreen = ({ navigation, route }) => {
  
 
   const loginHandler = async () => {
+    setLoading(true);
     if(data.isValidEmail && data.isValidPassword) {
-      const response = await userContext.signInHandler(data.email, data.password, navigation);
-      
-      if(response.status === 'ok') {
+      const { data: signInData, error } = await supabase.auth.signIn({ email: data.email, password: data.password})
+      if(!error) {
         navigation.replace("AppStack");
       } else {
         setFormError(true);
-        setErrorMessage(response.message);
+        setErrorMessage(error.message);
       }
     }
+
+    setLoading(false);
   }
 
-  const signUpHandler = () => {
+  const signUpHandler = async () => {
+    setLoading(true);
+    if(data.confirmPassword && data.isValidConfirmPassword && data.email && data.isValidEmail && data.password && data.isValidPassword){
+      const { data: signUpData, error: signingError } = await supabase.auth.signUp({ email: data.email, password: data.password });
+      console.log(signUpData);
+      if(signingError){
+        setFormError(true);
+        setErrorMessage(signingError.message);
+      } else {
+        setSuccess(true);
+        setTimeout(() => {
+          navigation.replace("AppStack");
+        }, 3000)
+      }
+    } else {
+      setFormError(true);
+      setErrorMessage("Invalid Input");
+    }
+    setLoading(false);
 
   }
 
@@ -178,11 +207,23 @@ const SignInScreen = ({ navigation, route }) => {
     
   return (
     <View style={styles.container}>
-      <Portal>
+      <UIModal
+        type="error"
+        text={errorMessage}
+        showModal={formError}
+        dismissModal={() => setFormError(false)}
+      />
+      <UIModal
+        type="success"
+        text="Sign Up Successful! You will receive an email containing a confirmation link. Come back to sign in after you've followed this link!"
+        showModal={success}
+        dismissModal={() => setSuccess(false)}
+      />
+      {/* <Portal>
         <Modal contentContainerStyle={styles.modalContainer} visible={formError} onDismiss={() => setFormError(false)}>
           <Text style={styles.modalTitle}>{errorMessage}</Text>
         </Modal>
-      </Portal>
+      </Portal> */}
       <ImageBackground
         style={styles.backgroundImage}
         resizeMode="cover"
@@ -190,7 +231,11 @@ const SignInScreen = ({ navigation, route }) => {
       >
         <View style={styles.card}>
           <View style={styles.titleContainer}>
-            {signingUp ? <Text style={styles.title}>sign up</Text> : <Text style={styles.title}>login</Text>}
+            {signingUp ? (
+              <Text style={styles.title}>sign up</Text>
+            ) : (
+              <Text style={styles.title}>login</Text>
+            )}
           </View>
           <ScrollView>
             <View style={styles.form}>
@@ -201,6 +246,7 @@ const SignInScreen = ({ navigation, route }) => {
                   style={styles.textInput}
                   placeholder="Your Email"
                   autoCapitalize="none"
+                  keyboardType="email-address"
                   value={data.email}
                   onChangeText={(text) => textInputChange(text)}
                   onEndEditing={(e) => validateEmail(e.nativeEvent.text)}
@@ -255,8 +301,12 @@ const SignInScreen = ({ navigation, route }) => {
               {!signingUp && (
                 <Button
                   onPress={loginHandler}
-                  disabled={!data.isValidEmail || !data.isValidPassword || userContext.authenticating}
-                  loading={userContext.authenticating}
+                  disabled={
+                    !data.isValidEmail ||
+                    !data.isValidPassword ||
+                    userContext.authenticating
+                  }
+                  loading={loading}
                   style={styles.button}
                   mode="contained"
                   color={userColors.seaFoam700}
@@ -267,6 +317,7 @@ const SignInScreen = ({ navigation, route }) => {
               )}
               {signingUp && (
                 <Button
+                  loading={loading}
                   onPress={signUpHandler}
                   style={styles.button}
                   mode="contained"
@@ -280,6 +331,15 @@ const SignInScreen = ({ navigation, route }) => {
                 {!signingUp ? "Sign Up" : "Log In"}
               </Button>
             </View>
+
+            <Button
+              onPress={() => navigation.replace("AppStack")}
+              style={{ marginTop: 30 }}
+              mode="outlined"
+              color={userColors.seaFoam700}
+            >
+              Back To App
+            </Button>
           </ScrollView>
         </View>
       </ImageBackground>

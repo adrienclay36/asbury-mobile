@@ -45,7 +45,7 @@ const ProfileCard = ({ navigation }) => {
 
 
   return (
-    <Animatable.View animation="fadeIn">
+    <Animatable.View style={{ flex: 1, height: Dimensions.get('window').height }} animation="fadeIn">
       <ScrollView
         style={styles.scrollView}
         refreshControl={
@@ -78,7 +78,7 @@ const ProfileCard = ({ navigation }) => {
               <IconButton
                 icon="cash"
                 color={userColors.seaFoam600}
-                onPress={() => {}}
+                onPress={() => navigation.navigate("OneTimeDonationScreen")}
                 text="One Time Donation"
               />
               <View
@@ -117,6 +117,7 @@ const ProfileCard = ({ navigation }) => {
                   index={index}
                   key={payment.charges.data[0].id}
                   amount={payment.charges.data[0].amount}
+                  refunded={payment.charges.data[0].amount_refunded}
                   receiptEmail={payment.charges.data[0].receipt_email}
                   receiptURL={payment.charges.data[0].receipt_url}
                   descriptor={

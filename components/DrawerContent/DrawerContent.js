@@ -17,6 +17,7 @@ import {
   Colors,
 } from "react-native-paper";
 import { UserContext } from "../../store/UserProvider";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const DrawerContent = (props) => {
   const userContext = useContext(UserContext);
@@ -48,7 +49,7 @@ const DrawerContent = (props) => {
       {userContext.userInfo.title}
     </Caption>
   ) : (
-    <Caption style={styles.caption}>Church Member</Caption>
+    <Caption style={styles.titleCaption}>Church Member</Caption>
   );
 
   const userInfoSection = (
@@ -82,11 +83,16 @@ const DrawerContent = (props) => {
 
   const signInSection = (
     <>
-      <View style={styles.row}>
-        <View style={styles.section}>
-          <Caption style={styles.caption}>Log In/Sign Up</Caption>
+      <TouchableOpacity
+        style={{ justifyContent: "center", alignItems: "center" }}
+        onPress={() => props.navigation.navigate("AuthStack")}
+      >
+        <View style={[styles.row]}>
+          <View style={styles.section}>
+            <Caption style={styles.caption}>Sign In/Sign Up</Caption>
+          </View>
         </View>
-      </View>
+      </TouchableOpacity>
     </>
   );
 
@@ -94,6 +100,34 @@ const DrawerContent = (props) => {
     userContext.signOutHandler();
     props.navigation.replace("AuthStack");
   };
+
+  const signOutButton = (
+    <>
+      <Drawer.Section style={styles.bottomDrawerSection}>
+        <Drawer.Item
+          onPress={signOutHandler}
+          icon={({ color, size }) => (
+            <Ionicons name="exit-outline" color={color} size={size} />
+          )}
+          label="Sign Out"
+        />
+      </Drawer.Section>
+    </>
+  );
+
+  const signInButton = (
+    <>
+      <Drawer.Section style={styles.bottomDrawerSection}>
+        <Drawer.Item
+          onPress={() => props.navigation.navigate("AuthStack")}
+          icon={({ color, size }) => (
+            <Ionicons name="enter-outline" color={color} size={size} />
+          )}
+          label="Sign In"
+        />
+      </Drawer.Section>
+    </>
+  );
 
   return (
     <View style={{ flex: 1 }}>
@@ -113,7 +147,7 @@ const DrawerContent = (props) => {
                 {titleComponent}
               </View>
             </View>
-            {userInfoSection}
+            {userContext.auth ? userInfoSection : signInSection}
           </View>
 
           <Drawer.Section style={styles.drawerSection}>
@@ -124,7 +158,7 @@ const DrawerContent = (props) => {
               label="Home"
               onPress={() => props.navigation.navigate("Home")}
             />
-            {userContext?.auth && (
+            {userContext?.userInfo && (
               <DrawerItem
                 icon={({ color, size }) => (
                   <Icon name="account-outline" color={color} size={size} />
@@ -164,15 +198,8 @@ const DrawerContent = (props) => {
           </Drawer.Section> */}
         </View>
       </DrawerContentScrollView>
-      <Drawer.Section style={styles.bottomDrawerSection}>
-        <Drawer.Item
-          onPress={signOutHandler}
-          icon={({ color, size }) => (
-            <Ionicons name="exit-outline" color={color} size={size} />
-          )}
-          label="Sign Out"
-        />
-      </Drawer.Section>
+
+      {userContext.userInfo ? signOutButton : signInButton}
     </View>
   );
 };

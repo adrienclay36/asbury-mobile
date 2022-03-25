@@ -8,6 +8,7 @@ import * as SecureStore from 'expo-secure-store';
 import { ASBURY_KEY_ONE, ASBURY_KEY_TWO } from '@env';
 const StartupScreen = ({ navigation, route }) => {
   const userContext = useContext(UserContext);
+  
 
   const refreshSession = async (token) => {
 
@@ -50,14 +51,13 @@ const StartupScreen = ({ navigation, route }) => {
     const token = await AsyncStorage.getItem("asbury_auth");
     if (token) {
       const response = await refreshSession(token);
-      if (response.status === "ok") {
+      if (response.status === "ok" && !userContext.gettingUser) {
         navigation.replace("AppStack");
-      } else {
-        navigation.replace("AuthStack"); 
-      }
-    } else {
-      navigation.replace("AuthStack");
+        return;
+      } 
     }
+    
+    navigation.replace("AppStack");
   };
 
   useEffect(() => {

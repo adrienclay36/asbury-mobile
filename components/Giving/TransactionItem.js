@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Linking,
 } from "react-native";
-import * as WebBrowser from 'expo-web-browser';
+import * as WebBrowser from "expo-web-browser";
 import React, { useContext } from "react";
 import { Colors } from "react-native-paper";
 import { userColors } from "../../constants/userColors";
@@ -18,6 +18,7 @@ const ICON_SIZE = 30;
 const TransactionItem = ({
   amount,
   receiptEmail,
+  refunded,
   receiptURL,
   descriptor,
   description,
@@ -27,9 +28,10 @@ const TransactionItem = ({
 }) => {
   const userContext = useContext(UserContext);
   const formatDate = new Date(date * 1000).toLocaleDateString("en-US");
+  const formatRefunded = refunded / 100;
 
   const iconComponent =
-    status === "succeeded" ? (
+    !formatRefunded > 0 ? (
       <Ionicons
         style={styles.icon}
         color={Colors.green800}
@@ -40,13 +42,25 @@ const TransactionItem = ({
       <Ionicons
         style={styles.icon}
         size={ICON_SIZE}
+        color={Colors.red700}
         name="md-close-circle-outline"
       />
     );
 
-    const linkToReceipt = async () => {
-        const result = await WebBrowser.openBrowserAsync(receiptURL);
+  const linkToReceipt = async () => {
+    const result = await WebBrowser.openBrowserAsync(receiptURL);
+  };
+
+  let formatDescription;
+  if (descriptor === "ASBURY_METHODIST") {
+    if (refunded) {
+      formatDescription = "One Time Donation - Refund";
+    } else {
+      formatDescription = "One Time Donation";
     }
+  } else {
+    formatDescription = description;
+  }
   return (
     <TouchableOpacity onPress={linkToReceipt}>
       <View
@@ -69,7 +83,7 @@ const TransactionItem = ({
           <View>
             <Text style={styles.date}>{formatDate}</Text>
             <Text style={styles.descriptor}>{descriptor}</Text>
-            <Text>{description}</Text>
+            <Text>{formatDescription}</Text>
           </View>
         </View>
         <Text style={styles.amount}>${amount / 100}</Text>

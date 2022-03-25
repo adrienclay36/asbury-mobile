@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   Platform,
+  TouchableOpacity
 } from "react-native";
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Avatar, Button, Colors } from "react-native-paper";
@@ -22,12 +23,13 @@ import { supabase } from "../../supabase-service";
 import CommentItem from "./CommentItem";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { addItemToTable } from "../../supabase-util";
-import PostDetailsHeader from './PostDetailsHeader';
+import PostDetailsHeader from "./PostDetailsHeader";
 import { StatusBar } from "expo-status-bar";
 
 let isInit = true;
 const PostDetailsScreen = ({ navigation, route }) => {
-  const { ITEM_SIZE, avatarURL, formatDate, formatName, id, postType, userID } = route?.params;
+  const { ITEM_SIZE, avatarURL, formatDate, formatName, id, postType, userID } =
+    route?.params;
   const [liveLikes, setLiveLikes] = useState(route.params?.liveLikes);
   const [liked, setLiked] = useState(false);
   const [comments, setComments] = useState([]);
@@ -48,13 +50,16 @@ const PostDetailsScreen = ({ navigation, route }) => {
     setLiveLikes(liveLikes + 1);
     prayerContext.incrementLike(route.params?.id);
     AsyncStorage.setItem(`post_${route.params?.id}`, "1");
-    userContext.sendPushNotification(
-      route.params?.userID,
-      "Someone Liked Your Post!",
-      `${userContext.formatName} liked one of your posts!`,
-      route.params?.id,
-      "POST_LIKED"
-    );
+    if(route.params?.userID){
+      userContext.sendPushNotification(
+        route.params?.userID,
+        "Someone Liked Your Post!",
+        `${userContext.formatName} liked one of your posts!`,
+        route.params?.id,
+        "POST_LIKED"
+      );
+
+    }
   };
 
   const getLikeStatus = async () => {
@@ -70,7 +75,6 @@ const PostDetailsScreen = ({ navigation, route }) => {
   useEffect(() => {
     getLikeStatus();
   }, [liveLikes]);
-
 
   const getComments = useCallback(async () => {
     setLoadingComments(true);
@@ -124,7 +128,7 @@ const PostDetailsScreen = ({ navigation, route }) => {
 
   const addCommentHandler = async () => {
     Keyboard.dismiss();
-    setPostingComment(true)
+    setPostingComment(true);
     if (commentContent) {
       const newComment = {
         commentcontent: commentContent,
@@ -133,32 +137,89 @@ const PostDetailsScreen = ({ navigation, route }) => {
         user_id: userContext.userValue.id,
       };
       try {
-
         const { data, error } = await addItemToTable("comments", newComment);
-        
-        userContext.sendPushNotification(
-          route.params?.userID,
-          "New Comment!",
-          `${userContext.formatName} commented on your post!`,
-          route.params?.id,
-          "NEW_COMMENT"
-        );
-        setCommentContent('');
+
+        if(route.params.userID){
+
+          userContext.sendPushNotification(
+            route.params?.userID,
+            "New Comment!",
+            `${userContext.formatName} commented on your post!`,
+            route.params?.id,
+            "NEW_COMMENT"
+          );
+        }
+        setCommentContent("");
       } catch (err) {
         setPostingComment(false);
       }
-    } 
+    }
 
     setPostingComment(false);
-
   };
+
+  const commentForm = (
+    <>
+      <KeyboardAvoidingView style={styles.commentContainer}>
+        <TextInput
+          editable={!postingComment}
+          numberOfLines={5}
+          multiline={true}
+          placeholderTextColor={Colors.grey400}
+          placeholder="Add A Comment"
+          style={styles.commentInput}
+          value={commentContent}
+          onChangeText={(text) => setCommentContent(text)}
+        />
+        <Button
+          loading={postingComment}
+          onPress={addCommentHandler}
+          disabled={postingComment}
+          color={userColors.seaFoam600}
+        >
+          Post
+        </Button>
+      </KeyboardAvoidingView>
+    </>
+  );
+
+  const signInToCommentForm = (
+    <>
+      <TouchableOpacity onPress={() => navigation.replace("AuthStack")}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            marginVertical: 15,
+          }}
+        >
+          <Text style={{ color: Colors.grey500, fontWeight: "600" }}>
+            Sign In/Sign Up To Comment
+          </Text>
+        </View>
+      </TouchableOpacity>
+    </>
+  );
 
   return (
     <>
-    <StatusBar style={Platform.OS === 'android' ? 'dark' : 'light'}/>
-    <PostDetailsHeader userID={userID} liveLikes={liveLikes} formatName={formatName} avatarURL={avatarURL} formatDate={formatDate} postID={route.params?.id} postContent={route.params?.postContent} postType={route.params?.postType}/>
+      <StatusBar style={Platform.OS === "android" ? "dark" : "light"} />
+      <PostDetailsHeader
+        userID={userID}
+        liveLikes={liveLikes}
+        formatName={formatName}
+        avatarURL={avatarURL}
+        formatDate={formatDate}
+        postID={route.params?.id}
+        postContent={route.params?.postContent}
+        postType={route.params?.postType}
+      />
       <SafeAreaView style={{ marginBottom: 30 }}>
-        <ScrollView onScroll={() => Keyboard.dismiss()} scrollEventThrottle={16}>
+        <ScrollView
+          onScroll={() => Keyboard.dismiss()}
+          scrollEventThrottle={16}
+        >
           <View style={styles.postContent}>
             <Text>{route.params?.postContent}</Text>
           </View>
@@ -204,20 +265,7 @@ const PostDetailsScreen = ({ navigation, route }) => {
             </View>
           </View>
 
-          <KeyboardAvoidingView style={styles.commentContainer}>
-            <TextInput
-              numberOfLines={5}
-              multiline={true}
-              placeholderTextColor={Colors.grey400}
-              placeholder="Add A Comment"
-              style={styles.commentInput}
-              value={commentContent}
-              onChangeText={(text) => setCommentContent(text)}
-            />
-            <Button loading={postingComment} onPress={addCommentHandler} disabled={postingComment} color={userColors.seaFoam600}>
-              Post
-            </Button>
-          </KeyboardAvoidingView>
+          {userContext.userInfo ? commentForm : signInToCommentForm}
 
           <View style={{ height: Dimensions.get("window").height }}>
             {comments.map((comment) => (
@@ -232,8 +280,7 @@ const PostDetailsScreen = ({ navigation, route }) => {
           </View>
         </ScrollView>
       </SafeAreaView>
-  </>
-
+    </>
   );
 };
 
