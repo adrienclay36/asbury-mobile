@@ -121,14 +121,17 @@ const UserProvider = (props) => {
         const response = await axios.get(
           `${SERVER_URL}/get-customer-invoices?customerID=${userData.customer_id}`
         );
-        const filteredTransactions = response.data.payments.filter(payment => payment.status === "succeeded");
+        const filteredTransactions = response.data.payments.filter(payment => payment.status !== 'requires_payment_method');
         setTransactions(filteredTransactions);
         
         let totalDonated = 0;
         for (let payment of filteredTransactions) {
+        
           let amount = payment.charges.data[0].amount;
+          
           if (typeof amount === "number") {
             totalDonated += parseInt(amount) / 100;
+            
           }
           let refunded = payment.charges.data[0].amount_refunded;
           if (refunded) {
@@ -294,7 +297,7 @@ const UserProvider = (props) => {
     );
 
     const filteredTransactions = response.data.payments.filter(
-      (payment) => payment.status === "succeeded"
+      (payment) => payment.status !== "requires_payment_method"
     );
     setTransactions(filteredTransactions);
     let totalDonated = 0;
