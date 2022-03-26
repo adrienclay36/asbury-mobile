@@ -62,16 +62,41 @@ const UserProvider = (props) => {
   const [subscribed, setSubscribed] = useState(false);
   const [gettingUser, setGettingUser] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [googleUser, setGoogleUser] = useState();
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
   const getPermissions = async (user) => {
     const { data, error } = await supabase
       .from("users")
       .select()
       .match({ id: user.id });
-
     if (data) {
       const userData = data[0];
       setUserInfo(userData);
+      
+
+       if (user.app_metadata.provider === "google") {
+         const googleArray = user.user_metadata.full_name.split(" ");
+         setFirstName(googleArray[0]);
+         setLastName(googleArray[1]);
+         if (
+           googleArray[0] !== userData?.first_name ||
+           googleArray[1] !== userData?.last_name
+         ) {
+           const { data, error } = await updateItemInTable(
+             TABLE_NAME,
+             user.id,
+             {
+               first_name: googleArray[0],
+               last_name: googleArray[1],
+             }
+           );
+         }
+       } else {
+         setFirstName(userData.first_name);
+         setLastName(userData.last_name);
+       }
 
       const name = `${userData.first_name} ${userData.last_name}`;
       setFormatName(name);
@@ -130,7 +155,9 @@ const UserProvider = (props) => {
     const user = supabase.auth.user();
     if (user) {
       setUserValue(user);
-
+      if(user.app_metadata.provider === "google"){
+        setGoogleUser(true);
+      }
       await getPermissions(user);
     }
   };

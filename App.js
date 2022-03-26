@@ -6,6 +6,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { LogBox } from "react-native";
 import UserProvider from "./store/UserProvider";
 import MainDrawerNavigator from "./navigators/MainDrawerNavigator";
+import PrayersProvider from "./store/PrayersProvider";
 import {
   Provider as PaperProvider,
   DefaultTheme,
@@ -38,21 +39,26 @@ export default function App() {
 
   return (
     <UserProvider>
-      <SafeAreaProvider>
-        <PaperProvider>
-          <NavigationContainer>
-            <AppStack.Navigator screenOptions={{ headerShown: false }}>
-              <AppStack.Screen name="StartupScreen" component={StartupScreen} />
-              <AppStack.Screen name="AuthStack" component={AuthStack} />
-              <AppStack.Screen
-                name="AppStack"
-                component={MainDrawerNavigator}
-              />
-            </AppStack.Navigator>
-            <StatusBar style="auto" />
-          </NavigationContainer>
-        </PaperProvider>
-      </SafeAreaProvider>
+      <PrayersProvider>
+        <SafeAreaProvider>
+          <PaperProvider>
+            <NavigationContainer>
+              <AppStack.Navigator screenOptions={{ headerShown: false }}>
+                <AppStack.Screen
+                  name="StartupScreen"
+                  component={StartupScreen}
+                />
+                <AppStack.Screen name="AuthStack" component={AuthStack} />
+                <AppStack.Screen
+                  name="AppStack"
+                  component={MainDrawerNavigator}
+                />
+              </AppStack.Navigator>
+              <StatusBar style="auto" />
+            </NavigationContainer>
+          </PaperProvider>
+        </SafeAreaProvider>
+      </PrayersProvider>
     </UserProvider>
   );
 }

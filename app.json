@@ -2,6 +2,7 @@
   "expo": {
     "name": "asbury-mobile",
     "slug": "asbury-mobile",
+    "scheme": "asbury-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

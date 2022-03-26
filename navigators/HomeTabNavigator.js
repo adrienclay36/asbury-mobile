@@ -5,7 +5,6 @@ import LibraryStack from "./LibraryStack";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { Colors } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome5";
-import PrayersProvider from "../store/PrayersProvider";
 import { Ionicons } from "@expo/vector-icons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import JoysAndConcernsStack from "./JoysAndConcernsStack";
@@ -54,7 +53,7 @@ const HomeTabNavigator = ({ navigation }) => {
 
   return (
     <>
-      <PrayersProvider>
+     
         <Tab.Navigator
           activeColor={userColors.seaFoam500}
           inactiveColor={Colors.grey500}
@@ -139,7 +138,7 @@ const HomeTabNavigator = ({ navigation }) => {
           />
         </Tab.Navigator>
         <Toast />
-      </PrayersProvider>
+     
     </>
   );
 };

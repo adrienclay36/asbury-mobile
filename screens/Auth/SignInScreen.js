@@ -10,6 +10,9 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import { UserContext } from "../../store/UserProvider";
 import { supabase } from "../../supabase-service";
+import * as WebBrowser from 'expo-web-browser';
+import { GOOGLE_AUTH } from '@env';
+import * as AuthSession from 'expo-auth-session';
 const emailRegex =
   /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -205,6 +208,23 @@ const SignInScreen = ({ navigation, route }) => {
       isValidPassword: true,
     })
   }
+
+  const googleAuth = async () => {
+    
+    const redirectUri = AuthSession.makeRedirectUri({ useProxy: false });
+    
+    const fullURI = `${GOOGLE_AUTH}&redirect_to=${redirectUri}`;
+    const response = await AuthSession.startAsync({
+      authUrl: fullURI,
+      returnUrl: redirectUri,
+    });
+
+    const { user, session, error } = await supabase.auth.signIn({
+      refreshToken: response.params?.refresh_token,
+    });
+
+    navigation.replace("AppStack");
+  }
     
   return (
     <View style={styles.container}>
@@ -312,10 +332,11 @@ const SignInScreen = ({ navigation, route }) => {
                   mode="contained"
                   color={userColors.seaFoam700}
                   icon={"login"}
-                >
+                  >
                   Log In
                 </Button>
               )}
+              <Button style={{ marginBottom: 20, }} mode="contained" color={Colors.blue600} icon="google" onPress={googleAuth}>Sign In With Google</Button>
               {signingUp && (
                 <Button
                   loading={loading}
@@ -341,6 +362,7 @@ const SignInScreen = ({ navigation, route }) => {
             >
               Back To App
             </Button>
+
           </ScrollView>
         </View>
       </ImageBackground>

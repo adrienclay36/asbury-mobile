@@ -1,7 +1,6 @@
 import React, { useState, useEffect, createContext, useCallback } from "react";
 import { supabase } from "../supabase-service";
 import axios from "axios";
-import { useRoute } from "@react-navigation/native";
 export const PrayerContext = createContext({
   posts: [],
   comments: [],
@@ -39,7 +38,7 @@ const PrayersProvider = (props) => {
   const [pageNumber, setPageNumber] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [endOfList, setEndOfList] = useState(false);
-  const route = useRoute();
+
 
   const getPosts = async (paged) => {
     if(isInit){
