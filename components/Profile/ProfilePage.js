@@ -79,7 +79,8 @@ const ProfilePage = ({ navigation }) => {
               <Text style={styles.menuItemText}>Edit Your Information</Text>
             </View>
           </TouchableRipple>
-          <TouchableRipple
+          {!userContext?.googleUser && <TouchableRipple
+            disabled={userContext.googleUser}
             onPress={() => navigation.navigate("ChangePasswordScreen")}
           >
             <View style={styles.menuRow}>
@@ -91,7 +92,7 @@ const ProfilePage = ({ navigation }) => {
               />
               <Text style={styles.menuItemText}>Change Your Password</Text>
             </View>
-          </TouchableRipple>
+          </TouchableRipple>}
           <TouchableRipple onPress={() => onShare(SHARE_MESSAGE, SHARE_LINK)}>
             <View style={styles.menuRow}>
               <MaterialCommunityIcons

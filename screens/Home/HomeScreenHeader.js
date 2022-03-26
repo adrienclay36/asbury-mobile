@@ -14,7 +14,7 @@ import { Appbar, Avatar, Colors } from "react-native-paper";
 import { primaryFont } from "../../constants/fonts";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-const emoji = require("node-emoji");
+import * as Animatable from "react-native-animatable";
 import { UserContext } from "../../store/UserProvider";
 const HomeScreenHeader = ({ navigation, route, back, props, title }) => {
   const userContext = useContext(UserContext);
@@ -31,12 +31,14 @@ const HomeScreenHeader = ({ navigation, route, back, props, title }) => {
   );
 
   const imageComponent = userContext.avatarURL ? (
-    <Avatar.Image
-      onPress={() => navigation.openDrawer()}
-      source={{ uri: userContext.avatarURL }}
-      size={50}
-      style={{ backgroundColor: "transparent" }}
-    />
+  
+      <Avatar.Image
+        onPress={() => navigation.openDrawer()}
+        source={{ uri: userContext.avatarURL }}
+        size={50}
+        style={{ backgroundColor: "transparent" }}
+      />
+    
   ) : (
     <Avatar.Image
       onPress={() => navigation.openDrawer()}
@@ -46,10 +48,39 @@ const HomeScreenHeader = ({ navigation, route, back, props, title }) => {
     />
   );
 
+  if(!userContext?.avatarURL && userContext.authenticating){
+
+    return (
+      <>
+        <SafeAreaView forceInset={{ top: "never" }} style={styles.header}>
+          <Animatable.View animation="fadeIn" style={styles.welcomeContainer}>
+            <TouchableOpacity onPress={() => navigation.openDrawer()}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                
+              </View>
+            </TouchableOpacity>
+            <Appbar.Action
+              icon="menu"
+              size={30}
+              color={Platform.OS === "android" ? Colors.white : Colors.grey900}
+              onPress={() => navigation.openDrawer()}
+            />
+          </Animatable.View>
+        </SafeAreaView>
+      </>
+    );
+  }
+
   return (
     <>
       <SafeAreaView forceInset={{ top: "never" }} style={styles.header}>
-        <View style={styles.welcomeContainer}>
+        <Animatable.View animation="fadeIn" style={styles.welcomeContainer}>
           <TouchableOpacity onPress={() => navigation.openDrawer()}>
             <View
               style={{
@@ -68,7 +99,7 @@ const HomeScreenHeader = ({ navigation, route, back, props, title }) => {
             color={Platform.OS === "android" ? Colors.white : Colors.grey900}
             onPress={() => navigation.openDrawer()}
           />
-        </View>
+        </Animatable.View>
       </SafeAreaView>
     </>
   );
@@ -100,7 +131,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 20,
     fontWeight: "600",
-    color: Platform.OS === 'android' ? Colors.white : Colors.grey900
+    color: Platform.OS === "android" ? Colors.white : Colors.grey900,
   },
   actionButtons: {
     justifyContent: "center",

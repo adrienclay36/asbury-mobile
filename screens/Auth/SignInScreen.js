@@ -1,51 +1,62 @@
-import { StyleSheet, Text, View, TouchableOpacity, Dimensions, ImageBackground, ScrollView, TextInput, Platform } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Dimensions,
+  ImageBackground,
+  ScrollView,
+  TextInput,
+  Platform,
+} from "react-native";
 import React, { useState, useContext, useEffect } from "react";
 import { userColors } from "../../constants/userColors";
 import { Colors, Button, Portal, Modal } from "react-native-paper";
 import * as Animatable from "react-native-animatable";
 import { primaryFont } from "../../constants/fonts";
 const { height, width } = Dimensions.get("window");
-import UIModal from '../../components/ui/UIModal';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Feather from 'react-native-vector-icons/Feather';
+import UIModal from "../../components/ui/UIModal";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Feather from "react-native-vector-icons/Feather";
 import { UserContext } from "../../store/UserProvider";
 import { supabase } from "../../supabase-service";
-import * as WebBrowser from 'expo-web-browser';
-import { GOOGLE_AUTH } from '@env';
-import * as AuthSession from 'expo-auth-session';
+import * as WebBrowser from "expo-web-browser";
+import { GOOGLE_AUTH } from "@env";
+import * as AuthSession from "expo-auth-session";
 const emailRegex =
   /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-const CARD_HEIGHT = Dimensions.get('window').height / 1.3;
+const CARD_HEIGHT = Dimensions.get("window").height / 1.3;
 
 const SignInScreen = ({ navigation, route }) => {
   const userContext = useContext(UserContext);
   const [formError, setFormError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
   const [signingUp, setSigningUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [data, setData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
+    email: "",
+    password: "",
+    confirmPassword: "",
     checkTextInputChange: false,
     secureTextEntry: true,
     confirmSecureTextEntry: true,
     isValidEmail: true,
     isValidPassword: true,
     isValidConfirmPassword: true,
-  })
+  });
 
   useEffect(() => {
     console.log("SignInScreen: useEffect:: Checking User");
-    userContext.checkUser()
-  }, [])
-
+    userContext.checkUser();
+  }, []);
 
   const confirmPassword = (
     <>
-      <Text style={[styles.text_footer, { marginTop: 25 }]}>Confirm Password</Text>
+      <Text style={[styles.text_footer, { marginTop: 25 }]}>
+        Confirm Password
+      </Text>
       <View style={styles.action}>
         <Feather name="lock" color="#05375a" size={20} />
         <TextInput
@@ -66,9 +77,7 @@ const SignInScreen = ({ navigation, route }) => {
 
       {!data.isValidConfirmPassword && (
         <Animatable.View animation="fadeInLeft" duration={500}>
-          <Text style={styles.errorMsg}>
-            Passwords Must Match
-          </Text>
+          <Text style={styles.errorMsg}>Passwords Must Match</Text>
         </Animatable.View>
       )}
     </>
@@ -92,76 +101,76 @@ const SignInScreen = ({ navigation, route }) => {
     }
   };
 
-   const handlePasswordChange = (val) => {
-     if (val.trim().length >= 6) {
-       setData({
-         ...data,
-         password: val,
-         isValidPassword: true,
-       });
-     } else {
-       setData({
-         ...data,
-         password: val,
-         isValidPassword: false,
-       });
-     }
-   };
-
-   const handleConfirmPasswordChange = (val) => {
-     if (val.trim() === data.password) {
-       setData({
-         ...data,
-         confirmPassword: val,
-         isValidConfirmPassword: true,
-       });
-     } else {
-       setData({
-         ...data,
-         confirmPassword: val,
-         isValidConfirmPassword: false,
-       });
-     }
-   };
-
-    const updateSecureTextEntry = () => {
+  const handlePasswordChange = (val) => {
+    if (val.trim().length >= 6) {
       setData({
         ...data,
-        secureTextEntry: !data.secureTextEntry,
+        password: val,
+        isValidPassword: true,
       });
-    };
-
-    const updateConfirmSecureTextEntry = () => {
+    } else {
       setData({
         ...data,
-        confirmSecureTextEntry: !data.confirmSecureTextEntry,
+        password: val,
+        isValidPassword: false,
       });
-    };
+    }
+  };
 
-    const validateEmail = (val) => {
-      if (emailRegex.test(val.trim().toLowerCase())) {
-        setData({
-          ...data,
-          isValidEmail: true,
-          checkTextInputChange: true,
-        });
-      } else {
-        setData({
-          ...data,
-          isValidEmail: false,
-          checkTextInputChange: false,
-        });
-      }
-    };
+  const handleConfirmPasswordChange = (val) => {
+    if (val.trim() === data.password) {
+      setData({
+        ...data,
+        confirmPassword: val,
+        isValidConfirmPassword: true,
+      });
+    } else {
+      setData({
+        ...data,
+        confirmPassword: val,
+        isValidConfirmPassword: false,
+      });
+    }
+  };
 
-   
- 
+  const updateSecureTextEntry = () => {
+    setData({
+      ...data,
+      secureTextEntry: !data.secureTextEntry,
+    });
+  };
+
+  const updateConfirmSecureTextEntry = () => {
+    setData({
+      ...data,
+      confirmSecureTextEntry: !data.confirmSecureTextEntry,
+    });
+  };
+
+  const validateEmail = (val) => {
+    if (emailRegex.test(val.trim().toLowerCase())) {
+      setData({
+        ...data,
+        isValidEmail: true,
+        checkTextInputChange: true,
+      });
+    } else {
+      setData({
+        ...data,
+        isValidEmail: false,
+        checkTextInputChange: false,
+      });
+    }
+  };
 
   const loginHandler = async () => {
     setLoading(true);
-    if(data.isValidEmail && data.isValidPassword) {
-      const { data: signInData, error } = await supabase.auth.signIn({ email: data.email, password: data.password})
-      if(!error) {
+    if (data.isValidEmail && data.isValidPassword) {
+      const { data: signInData, error } = await supabase.auth.signIn({
+        email: data.email,
+        password: data.password,
+      });
+      if (!error) {
         navigation.replace("AppStack");
         return;
       } else {
@@ -171,61 +180,71 @@ const SignInScreen = ({ navigation, route }) => {
     }
 
     setLoading(false);
-  }
+  };
 
   const signUpHandler = async () => {
     setLoading(true);
-    if(data.confirmPassword && data.isValidConfirmPassword && data.email && data.isValidEmail && data.password && data.isValidPassword){
-      const { data: signUpData, error: signingError } = await supabase.auth.signUp({ email: data.email, password: data.password });
+    if (
+      data.confirmPassword &&
+      data.isValidConfirmPassword &&
+      data.email &&
+      data.isValidEmail &&
+      data.password &&
+      data.isValidPassword
+    ) {
+      const { data: signUpData, error: signingError } =
+        await supabase.auth.signUp({
+          email: data.email,
+          password: data.password,
+        });
       console.log(signUpData);
-      if(signingError){
+      if (signingError) {
         setFormError(true);
         setErrorMessage(signingError.message);
       } else {
         setSuccess(true);
         setTimeout(() => {
           navigation.replace("AppStack");
-        }, 3000)
+        }, 3000);
       }
     } else {
       setFormError(true);
       setErrorMessage("Invalid Input");
     }
     setLoading(false);
-
-  }
-
+  };
 
   const switchFormHandler = () => {
     setSigningUp(!signingUp);
     setData({
       ...data,
-      password: '',
-      email: '',
-      confirmPassword: '',
+      password: "",
+      email: "",
+      confirmPassword: "",
       isValidConfirmPassword: true,
       isValidEmail: true,
       isValidPassword: true,
-    })
-  }
+    });
+  };
 
   const googleAuth = async () => {
-    
     const redirectUri = AuthSession.makeRedirectUri({ useProxy: false });
-    
+
     const fullURI = `${GOOGLE_AUTH}&redirect_to=${redirectUri}`;
     const response = await AuthSession.startAsync({
       authUrl: fullURI,
       returnUrl: redirectUri,
     });
 
-    const { user, session, error } = await supabase.auth.signIn({
-      refreshToken: response.params?.refresh_token,
-    });
+    if (response.params?.refresh_token) {
+      const { user, session, error } = await supabase.auth.signIn({
+        refreshToken: response.params?.refresh_token,
+      });
 
-    navigation.replace("AppStack");
-  }
-    
+      navigation.replace("AppStack");
+    }
+  };
+
   return (
     <View style={styles.container}>
       <UIModal
@@ -240,11 +259,6 @@ const SignInScreen = ({ navigation, route }) => {
         showModal={success}
         dismissModal={() => setSuccess(false)}
       />
-      {/* <Portal>
-        <Modal contentContainerStyle={styles.modalContainer} visible={formError} onDismiss={() => setFormError(false)}>
-          <Text style={styles.modalTitle}>{errorMessage}</Text>
-        </Modal>
-      </Portal> */}
       <ImageBackground
         style={styles.backgroundImage}
         resizeMode="cover"
@@ -332,11 +346,19 @@ const SignInScreen = ({ navigation, route }) => {
                   mode="contained"
                   color={userColors.seaFoam700}
                   icon={"login"}
-                  >
+                >
                   Log In
                 </Button>
               )}
-              <Button style={{ marginBottom: 20, }} mode="contained" color={Colors.blue600} icon="google" onPress={googleAuth}>Sign In With Google</Button>
+              <Button
+                style={{ marginBottom: 20 }}
+                mode="contained"
+                color={Colors.blue600}
+                icon="google"
+                onPress={googleAuth}
+              >
+                Sign In With Google
+              </Button>
               {signingUp && (
                 <Button
                   loading={loading}
@@ -362,7 +384,6 @@ const SignInScreen = ({ navigation, route }) => {
             >
               Back To App
             </Button>
-
           </ScrollView>
         </View>
       </ImageBackground>
@@ -398,7 +419,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   card: {
-    height: Platform.OS === 'android' ? CARD_HEIGHT + 50 : CARD_HEIGHT,
+    height: Platform.OS === "android" ? CARD_HEIGHT + 50 : CARD_HEIGHT,
     width: "90%",
     backgroundColor: Colors.white,
     borderRadius: 25,
@@ -444,7 +465,6 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontFamily: primaryFont.semiBold,
     fontSize: 20,
-
   },
   errorText: {
     fontFamily: primaryFont.bold,
@@ -480,6 +500,3 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
-
-
-

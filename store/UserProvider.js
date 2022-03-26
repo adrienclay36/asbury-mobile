@@ -43,6 +43,7 @@ export const UserContext = createContext({
   gettingUser: false,
   updateUserInfo: (firstName, lastName, location, navigation) => {},
   loading: false,
+  googleUser: false,
 });
 const UserProvider = (props) => {
   const [userValue, setUserValue] = useState();
@@ -85,7 +86,7 @@ const UserProvider = (props) => {
            googleArray[1] !== userData?.last_name
          ) {
            const { data, error } = await updateItemInTable(
-             TABLE_NAME,
+             'users',
              user.id,
              {
                first_name: googleArray[0],
@@ -350,6 +351,7 @@ const UserProvider = (props) => {
     gettingUser,
     updateUserInfo,
     loading,
+    googleUser,
   };
   return (
     <UserContext.Provider value={contextValue}>

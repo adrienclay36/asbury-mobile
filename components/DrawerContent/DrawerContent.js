@@ -47,7 +47,7 @@ const DrawerContent = (props) => {
 
   const titleComponent = userContext.userInfo?.title ? (
     <Caption style={[styles.titleCaption]}>
-      {userContext.userInfo.title}
+      {userContext.userInfo?.title}
     </Caption>
   ) : (
     <Caption style={styles.titleCaption}>Church Member</Caption>
@@ -98,9 +98,9 @@ const DrawerContent = (props) => {
   );
 
   const signOutHandler = async () => {
+    props.navigation.replace("AuthStack");
     userContext.signOutHandler();
     const { data, error } = await supabase.from('users').update({ push_token: null }).match({ id: userContext.userInfo.id})
-    props.navigation.replace("AuthStack");
   };
 
   const signOutButton = (

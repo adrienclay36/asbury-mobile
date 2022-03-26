@@ -24,23 +24,6 @@ const ProfileScreenHeader = ({ navigation, route, back, props, title }) => {
     .replace("---", "-")
     .toLowerCase();
 
-  const shareURL = `${BASE_URL}/${route.params?.id}/${formatTitle}`;
-  const shareMessage = `Check out this post by ${route.params?.author} on Asbury UMC!`;
-
-  const imageComponent = userContext.avatarURL ? (
-    <Avatar.Image
-      size={IMAGE_SIZE}
-      source={{ uri: userContext.avatarURL }}
-      style={styles.image}
-    />
-  ) : (
-    <Avatar.Image
-      size={IMAGE_SIZE}
-      source={require("../../assets/default-2.png")}
-      style={styles.image}
-    />
-  );
-
   return (
     <>
       <SafeAreaView
@@ -53,7 +36,6 @@ const ProfileScreenHeader = ({ navigation, route, back, props, title }) => {
           },
         ]}
       >
-        {/* <Text style={styles.title}>Library</Text> */}
 
         <Appbar.Action
           icon="menu"

@@ -100,8 +100,7 @@ const EditProfileScreen = ({ navigation }) => {
         position: "bottom",
         visibilityTime: 10000,
       });
-    }, 1000)
-    
+    }, 1000);
   };
 
   useEffect(() => {
@@ -354,9 +353,12 @@ const EditProfileScreen = ({ navigation }) => {
                   size={30}
                 />
                 <TextInput
-                  editable={!userContext.loading}
+                  editable={!userContext.loading && !userContext?.googleUser}
                   placeholder="First Name"
-                  style={styles.textInput}
+                  style={[
+                    styles.textInput,
+                    userContext?.googleUser && styles.googleUser,
+                  ]}
                   value={data.firstName}
                   onChangeText={(text) => firstNameChangeHandler(text)}
                 />
@@ -394,9 +396,12 @@ const EditProfileScreen = ({ navigation }) => {
                   size={30}
                 />
                 <TextInput
-                  editable={!userContext.loading}
+                  editable={!userContext.loading && !userContext?.googleUser}
                   placeholder="Last Name"
-                  style={styles.textInput}
+                  style={[
+                    styles.textInput,
+                    userContext?.googleUser && styles.googleUser,
+                  ]}
                   value={data.lastName}
                   onChangeText={(text) => lastNameChangeHandler(text)}
                 />
@@ -460,6 +465,13 @@ const EditProfileScreen = ({ navigation }) => {
                 </Animatable.View>
               )}
             </View>
+            {userContext?.googleUser && (
+              <Text style={styles.text}>
+                Your name was provided to us through your Google account. If
+                you'd like to change it, visit your Google Account settings and
+                the changes will reflect here after some time. This may require a reload of the app to show up everywhere.
+              </Text>
+            )}
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -538,5 +550,15 @@ const styles = StyleSheet.create({
   savingChanges: {
     backgroundColor: Colors.grey400,
     opacity: 0.3,
+  },
+  googleUser: {
+    opacity: 0.2,
+  },
+  text: {
+    textAlign: "center",
+    marginTop: 30,
+    color: Colors.grey400,
+    fontWeight: "500",
+    marginHorizontal: 10,
   },
 });

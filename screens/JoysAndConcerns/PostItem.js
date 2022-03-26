@@ -38,8 +38,6 @@ const PostItem = ({
   postDate,
   postType,
   userID,
-  scrollY,
-  index,
   navigation,
   fromHomePage,
   itemHeight,
@@ -78,6 +76,10 @@ const PostItem = ({
   const { user, avatarURL, loadingUser } = useGetUser(userID);
 
   const formatDate = new Date(postDate).toLocaleDateString("en-US");
+
+  if (itemHeight && loadingUser) {
+    return <Card height={ITEM_SIZE}></Card>
+  }
 
   if (loadingUser) {
     return null;

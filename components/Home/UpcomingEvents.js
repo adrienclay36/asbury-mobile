@@ -19,7 +19,7 @@ import Card from "../ui/Card";
 import { primaryFont } from "../../constants/fonts";
 const DATE_SIZE = Dimensions.get("window").height * 0.09;
 import { useNavigation } from "@react-navigation/native";
-
+const ITEM_SIZE = 200;
 const UpcomingEventItem = ({ date, end, id, start, summary }) => {
   const formatStart = formatTime(new Date(start));
   const formatEnd = formatTime(new Date(end));
@@ -42,7 +42,7 @@ const UpcomingEventItem = ({ date, end, id, start, summary }) => {
   }
   return (
     <TouchableOpacity onPress={navigateEventItem}>
-      <Card height={200}>
+      <Card height={ITEM_SIZE}>
         <Text style={styles.eventTitle} numberOfLines={1}>
           {summary}
         </Text>
@@ -76,7 +76,7 @@ const UpcomingEvents = ({ navigation, events: inputEvents }) => {
   const isCarousel = useRef(null);
 
   if (!inputEvents) {
-    return <CenteredLoader />;
+    return <Card height={ITEM_SIZE}></Card>;
   }
   return (
     <>

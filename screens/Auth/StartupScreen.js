@@ -30,6 +30,7 @@ const StartupScreen = ({ navigation, route }) => {
 
           if(signInData?.user) {
             if(signInData.user?.aud === 'authenticated'){
+              userContext.checkUser();
               return { status: 'ok' }
             }
           }
