@@ -47,12 +47,13 @@ const HomeScreenHeader = ({ navigation, route, back, props, title }) => {
       style={{ backgroundColor: "transparent" }}
     />
   );
+  
 
   if(!userContext?.avatarURL && userContext.authenticating){
 
     return (
       <>
-        <SafeAreaView forceInset={{ top: "never" }} style={styles.header}>
+        <SafeAreaView forceInset={{ top: "always" }} style={styles.header}>
           <Animatable.View animation="fadeIn" style={styles.welcomeContainer}>
             <TouchableOpacity onPress={() => navigation.openDrawer()}>
               <View
