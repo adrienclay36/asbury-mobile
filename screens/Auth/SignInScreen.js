@@ -384,6 +384,9 @@ const SignInScreen = ({ navigation, route }) => {
             >
               Back To App
             </Button>
+            {!signingUp && <TouchableOpacity onPress={() => {}}>
+              <Text style={styles.forgotPassword}>Forgot Password?</Text>
+            </TouchableOpacity>}
           </ScrollView>
         </View>
       </ImageBackground>
@@ -499,4 +502,11 @@ const styles = StyleSheet.create({
     color: "#FF0000",
     fontSize: 14,
   },
+  forgotPassword: {
+    textAlign: 'center',
+    marginTop: 20,
+    color: userColors.seaFoam600,
+    fontSize: 12,
+    fontWeight: '600',
+  }
 });
