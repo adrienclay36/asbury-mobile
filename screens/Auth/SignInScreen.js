@@ -375,19 +375,18 @@ const SignInScreen = ({ navigation, route }) => {
                 {!signingUp ? "Sign Up" : "Log In"}
               </Button>
             </View>
+            {!signingUp && (
+              <TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center'}} onPress={() => navigation.navigate("ForgotPasswordScreen")}>
+                <Text style={styles.forgotPassword}>Forgot Password?</Text>
+              </TouchableOpacity>
+            )}
 
-            <Button
-              onPress={() => navigation.replace("AppStack")}
-              style={{ marginTop: 30 }}
-              mode="outlined"
-              color={userColors.seaFoam700}
-            >
-              Back To App
-            </Button>
-            {!signingUp && <TouchableOpacity onPress={() => {}}>
-              <Text style={styles.forgotPassword}>Forgot Password?</Text>
-            </TouchableOpacity>}
+              <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center' }} onPress={() => navigation.replace("AppStack")}>
+                <Text style={styles.forgotPassword}>Back To App</Text>
+              </TouchableOpacity>
+            
           </ScrollView>
+         
         </View>
       </ImageBackground>
     </View>
@@ -422,7 +421,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   card: {
-    height: Platform.OS === "android" ? CARD_HEIGHT + 50 : CARD_HEIGHT,
+    height: Platform.OS === "android" ? CARD_HEIGHT + 70 : CARD_HEIGHT,
     width: "90%",
     backgroundColor: Colors.white,
     borderRadius: 25,
