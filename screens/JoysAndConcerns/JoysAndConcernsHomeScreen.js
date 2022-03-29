@@ -13,7 +13,7 @@ import {
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { PrayerContext } from "../../store/PrayersProvider";
 import PostItem from "./PostItem";
-import CenteredLoader from "../../components/ui/CenteredLoader";
+import LottieView from 'lottie-react-native'
 const JoysAndConcernsHomeScreen = ({ navigation, route }) => {
   const prayerContext = useContext(PrayerContext);
   const [calledDuringMomentum, setCalledDuringMomentum] = useState(true);
@@ -39,7 +39,7 @@ const JoysAndConcernsHomeScreen = ({ navigation, route }) => {
   };
 
   if (prayerContext.loading) {
-    return <CenteredLoader />;
+    return <LottieView source={require("../../loaders/dotloader.json")} autoPlay loop />;
   }
 
 

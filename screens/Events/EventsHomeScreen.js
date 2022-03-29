@@ -5,6 +5,7 @@ import axios from "axios";
 import { SERVER_URL } from "../../constants/serverURL";
 import CenteredLoader from "../../components/ui/CenteredLoader";
 import EventItem from "./EventItem";
+import LottieView from 'lottie-react-native';
 const EventsHomeScreen = ({ route, navigation }) => {
   const [loading, setLoading] = useState();
   const [events, setEvents] = useState();
@@ -22,7 +23,7 @@ const EventsHomeScreen = ({ route, navigation }) => {
   }, []);
 
   if (!events) {
-    return <CenteredLoader />;
+    return <LottieView source={require("../../loaders/dotloader.json")} autoPlay loop />;
   }
   return (
     <View>

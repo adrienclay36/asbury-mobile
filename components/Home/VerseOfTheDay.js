@@ -56,7 +56,7 @@ const VerseOfTheDay = () => {
     <View style={styles.container}>
       <ImageBackground
         style={styles.backgroundImage}
-        source={randomImage}
+        source={require("../../assets/votd/votd-2.jpg")}
         resizeMode="cover"
       >
         <LinearGradient

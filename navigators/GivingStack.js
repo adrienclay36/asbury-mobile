@@ -8,7 +8,7 @@ import { StripeProvider } from "@stripe/stripe-react-native";
 import NewSubscriptionScreen from "../screens/Giving/NewSubscriptionScreen";
 import axios from "axios";
 import NoAccountScreen from "../screens/Giving/NoAccountScreen";
-import CenteredLoader from "../components/ui/CenteredLoader";
+import LottieView from 'lottie-react-native';
 import OneTimeDonationScreen from "../screens/Giving/OneTimeDonationScreen";
 import { UserContext } from "../store/UserProvider";
 import { SERVER_URL } from "../constants/serverURL";
@@ -29,7 +29,7 @@ const GivingStack = () => {
   }, []);
 
   if (!publishableKey) {
-    return <CenteredLoader />;
+    return <LottieView autoPlay loop source={require("../loaders/dotloader.json")} />;
   }
 
   return (

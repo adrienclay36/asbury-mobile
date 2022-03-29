@@ -5,6 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserContext } from "../../store/UserProvider";
 import { supabase } from "../../supabase-service";
 import * as SecureStore from 'expo-secure-store';
+import LottieView from 'lottie-react-native';
 import { ASBURY_KEY_ONE, ASBURY_KEY_TWO } from '@env';
 const StartupScreen = ({ navigation, route }) => {
   const userContext = useContext(UserContext);
@@ -67,7 +68,7 @@ const StartupScreen = ({ navigation, route }) => {
 
 
 
-  return <CenteredLoader />;
+  return null;
 };
 
 export default StartupScreen;

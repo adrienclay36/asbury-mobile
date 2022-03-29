@@ -13,7 +13,7 @@ import React, { useContext, useRef, useState } from "react";
 import { LibraryContext } from "../../store/LibraryContextProvider";
 import BookItem from "./BookItem";
 import { primaryFont } from "../../constants/fonts";
-import CenteredLoader from "../../components/ui/CenteredLoader";
+import LottieView from 'lottie-react-native';
 import { TextInput } from "react-native-paper";
 import { userColors } from "../../constants/userColors";
 import * as Animatable from "react-native-animatable";
@@ -71,7 +71,7 @@ const LibraryHomeScreen = ({ navigation, route }) => {
           placeholder="Start Typing To Search"
         />
       </Animatable.View>
-      {libraryContext.loading && <CenteredLoader />}
+      {libraryContext.loading && <LottieView source={require("../../loaders/dotloader.json")} autoPlay loop />}
       {libraryContext.noData && (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}

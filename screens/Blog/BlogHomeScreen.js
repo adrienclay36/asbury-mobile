@@ -3,14 +3,14 @@ import React, { useContext } from "react";
 import { Colors } from "react-native-paper";
 import { BlogContext } from "../../store/BlogProvider";
 import CenteredLoader from '../../components/ui/CenteredLoader';
-
+import LottieView from 'lottie-react-native';
 import BlogItem from "./BlogItem";
 
 const BlogHomeScreen = ({ navigation, route }) => {
   const blogContext = useContext(BlogContext);
 
-  if(!blogContext.posts) {
-    return <CenteredLoader/>
+  if(blogContext.loading) {
+    return <LottieView source={require("../../loaders/dotloader.json")} autoPlay loop />
   }
   return (
     <SafeAreaView style={styles.container}>

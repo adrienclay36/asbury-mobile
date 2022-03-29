@@ -4,9 +4,11 @@ import { createMaterialBottomTabNavigator } from "@react-navigation/material-bot
 import { Colors } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { userColors } from "../constants/userColors";
 import LivestreamStack from "./LivestreamStack";
 import ProgramsStack from "./ProgramsStack";
+import SermonsStack from "./SermonsStack";
 const Tab = createMaterialBottomTabNavigator();
 const ServicesTabNavigator = () => {
   return (
@@ -31,12 +33,27 @@ const ServicesTabNavigator = () => {
           tabBarColor: Colors.white,
           tabBarLabel: "Programs",
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="file-document" color={color} size={24} />
+            <MaterialCommunityIcons
+              name="file-document"
+              color={color}
+              size={24}
+            />
           ),
         }}
         name="ProgramsStack"
         component={ProgramsStack}
       />
+      {/* <Tab.Screen
+        options={{
+          tabBarColor: Colors.white,
+          tabBarLabel: "Sermons",
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="multitrack-audio" color={color} size={24} />
+          ),
+        }}
+        name="SermonsStack"
+        component={SermonsStack}
+      /> */}
     </Tab.Navigator>
   );
 };
