@@ -71,7 +71,7 @@ export default GivingHomePageHeader;
 
 const styles = StyleSheet.create({
   header: {
-    marginTop: StatusBar.currentHeight,
+
     marginHorizontal: 10,
   },
   userHeader: {

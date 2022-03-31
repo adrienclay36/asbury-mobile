@@ -46,7 +46,6 @@ export default BlogHeader;
 
 const styles = StyleSheet.create({
   header: {
-    marginTop: StatusBar.currentHeight,
     marginHorizontal: 10,
     marginBottom: -40,
   },

@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, FlatList, SafeAreaView, StatusBar, RefreshControl } from "react-native";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { BlogContext } from "../../store/BlogProvider";
 
 import LottieView from 'lottie-react-native';
@@ -7,6 +7,13 @@ import BlogItem from "./BlogItem";
 
 const BlogHomeScreen = ({ navigation, route }) => {
   const blogContext = useContext(BlogContext);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      blogContext.setBadgeCount(0);
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   if(blogContext.loading) {
     return <LottieView source={require("../../loaders/dotloader.json")} autoPlay loop />

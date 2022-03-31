@@ -44,7 +44,6 @@ const BasicHeaderMenu = ({ navigation, route, back, props, title }) => {
   return (
     <>
       <SafeAreaView
-      forceInset={{ top: 'never' }}
         style={[
           styles.header,
           {
@@ -71,7 +70,7 @@ export default BasicHeaderMenu;
 
 const styles = StyleSheet.create({
   header: {
-    marginTop: StatusBar.currentHeight,
+ 
     marginHorizontal: 10,
   },
   userHeader: {

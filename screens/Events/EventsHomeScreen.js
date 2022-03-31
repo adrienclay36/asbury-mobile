@@ -49,6 +49,7 @@ const EventsHomeScreen = ({ route, navigation }) => {
         end={itemData.item.end}
         title={itemData.item.summary}
         image={require("../../assets/event-item-hero.jpg")}
+        navigation={navigation}
       />
     );
   };

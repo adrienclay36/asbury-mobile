@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { Dimensions, StatusBar, StyleSheet, Text, View } from "react-native";
 import React, { useContext } from "react";
 import { userColors } from "../../constants/userColors";
 import { Appbar, Avatar, Button, Colors } from "react-native-paper";
@@ -52,6 +52,7 @@ const JoysAndConcernsHeader = ({ navigation, route, back, props, title }) => {
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
+       
         }}
       >
         {userContext.userInfo ? userHeader : nonUserHeader}

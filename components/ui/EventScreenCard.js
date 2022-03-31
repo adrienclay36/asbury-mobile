@@ -12,15 +12,27 @@ import { Colors } from "react-native-paper";
 import { primaryFont } from "../../constants/fonts";
 const { width, height } = Dimensions.get("window");
 import { getDateInfo, formatTime } from "../../helpers/dateTimes";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 const CONTAINER_HEIGHT = Platform.OS === 'android' ? height * .35 : height * .25;
-const EventScreenCard = ({ title, start, end, date, image }) => {
+const EventScreenCard = ({ title, start, end, date, image, navigation }) => {
   const { day, monthText } = getDateInfo(date);
   const formatDate = new Date(date).toLocaleDateString();
   
   const formatStart = formatTime(new Date(start));
   const formatEnd = formatTime(new Date(end));
   return (
-    <View style={styles.container}>
+    <TouchableWithoutFeedback
+      onPress={() =>
+        navigation.navigate("EventDetailsScreen", {
+          formatStart,
+          formatEnd,
+          day,
+          monthText,
+          summary: title,
+        })
+      }
+      style={styles.container}
+    >
       <ImageBackground
         source={image}
         resizeMode="cover"
@@ -34,13 +46,8 @@ const EventScreenCard = ({ title, start, end, date, image }) => {
         <Text style={styles.subTitle}>
           {formatStart} - {formatEnd}
         </Text>
-        {/* {buttonText && <View style={{ justifyContent: "center", alignItems: "center" }}>
-          <TouchableOpacity onPress={onPress} style={styles.btn}>
-            <Text style={styles.btnText}>{buttonText}</Text>
-          </TouchableOpacity>
-        </View>} */}
       </ImageBackground>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
