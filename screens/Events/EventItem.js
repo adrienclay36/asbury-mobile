@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   },
   summary: {
     textTransform: "uppercase",
-    fontFamily: primaryFont.semiBold,
+    fontFamily: primaryFont.medium,
     width: "80%",
     fontSize: DATE_SIZE / 6,
   },

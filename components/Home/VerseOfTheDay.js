@@ -65,7 +65,7 @@ const VerseOfTheDay = () => {
           style={styles.background}
         />
 
-        <Text style={styles.text}>{title}</Text>
+        <Text style={styles.title}>{title}</Text>
         <Text style={[styles.text, styles.verse]}>{text}</Text>
       </ImageBackground>
     </View>
@@ -82,32 +82,22 @@ const styles = StyleSheet.create({
     height: VOTD_HEIGHT,
     width: "100%",
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "flex-start",
 
     opacity: 1,
   },
-  innerContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "black",
-    width: "100%",
-    opacity: 0.3,
-  },
-  title: {
-    color: Colors.white,
-    fontWeight: "700",
-  },
+  
   text: {
     color: Colors.white,
-    textAlign: 'center',
+    textAlign: 'right',
     marginHorizontal: 10,
- 
     fontSize: 20,
   },
   verse: {
-    marginTop: 10,
-    fontSize: 16,
+
+    padding: 30,
+    fontSize: 20,
+    fontFamily: primaryFont.semiBold,
 
   },
   background: {
@@ -120,5 +110,12 @@ const styles = StyleSheet.create({
   placeholder: {
     width: width,
     height: VOTD_HEIGHT,
+  },
+  title: {
+    fontSize: 30,
+    color: Colors.white,
+  
+    fontFamily: primaryFont.semiBold,
+    padding: 30,
   }
 });

@@ -1,8 +1,7 @@
 import { StyleSheet, Text, View, FlatList, SafeAreaView, StatusBar, RefreshControl } from "react-native";
 import React, { useContext } from "react";
-import { Colors } from "react-native-paper";
 import { BlogContext } from "../../store/BlogProvider";
-import CenteredLoader from '../../components/ui/CenteredLoader';
+
 import LottieView from 'lottie-react-native';
 import BlogItem from "./BlogItem";
 

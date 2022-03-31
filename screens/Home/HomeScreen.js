@@ -9,7 +9,11 @@ import VerseOfTheDay from "../../components/Home/VerseOfTheDay";
 import RecentPosts from "../../components/Home/RecentPosts";
 import { ScrollView } from "react-native-gesture-handler";
 import UpcomingEvents from "../../components/Home/UpcomingEvents";
+import BulletinHero from "../../components/Home/BulletinHero";
 import Toast from "react-native-toast-message";
+import HomeScreenCard from "../../components/ui/HomeScreenCard";
+import CardSlider from "../../components/Home/CardSlider";
+const bulletinHero = require('../../assets/bulletin-hero.jpg');
 const HomeScreen = ({ navigation, route }) => {
   const userContext = useContext(UserContext);
   const prayerContext = useContext(PrayerContext);
@@ -38,18 +42,19 @@ const HomeScreen = ({ navigation, route }) => {
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
-          refreshing={prayerContext.loading}
-          onRefresh={() => {
-            prayerContext.refreshPosts();
-            getEvents();
-          }}
+            refreshing={prayerContext.loading}
+            onRefresh={() => {
+              prayerContext.refreshPosts();
+              getEvents();
+            }}
           />
         }
       >
-        <VerseOfTheDay />
+        {/* <VerseOfTheDay /> */}
+        <CardSlider navigation={navigation}/>
+
         <RecentPosts navigation={navigation} />
         <UpcomingEvents events={events} navigation={navigation} />
-        
       </ScrollView>
     </>
   );

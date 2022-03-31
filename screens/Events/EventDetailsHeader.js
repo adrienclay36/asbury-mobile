@@ -77,8 +77,8 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: Platform.OS === "android" ? Colors.white : Colors.black,
-    fontFamily: primaryFont.semiBold,
-    fontSize: 18,
+    fontFamily: primaryFont.regular,
+    fontSize: 14,
     textAlign: 'center'
   },
 });

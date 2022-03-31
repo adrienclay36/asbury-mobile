@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import React, { useContext, useEffect } from "react";
 import { UserContext } from "../store/UserProvider";
-import LibraryStack from "./LibraryStack";
+import { PrayerContext } from "../store/PrayersProvider";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { Colors } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome5";
@@ -15,8 +15,12 @@ import EventsStack from "./EventsStack";
 import HomeStack from "./HomeStack";
 import Toast from "react-native-toast-message";
 const Tab = createMaterialBottomTabNavigator();
+import { BlogContext } from "../store/BlogProvider";
+
 const HomeTabNavigator = ({ navigation }) => {
   const userContext = useContext(UserContext);
+  const prayerContext = useContext(PrayerContext);
+  const blogContext = useContext(BlogContext);
 
   const navigateToEditProfile = () => {
     navigation.navigate("ProfileStack");
@@ -34,7 +38,7 @@ const HomeTabNavigator = ({ navigation }) => {
         text2: "Click Here To Finish Setting Up Your Account!",
         topOffset: 75,
         position: "top",
-        visibilityTime: 10000,
+        visibilityTime: 15000,
         onPress: navigateToEditProfile,
       });
     }, 2000);
@@ -62,7 +66,7 @@ const HomeTabNavigator = ({ navigation }) => {
           <Tab.Screen
             options={{
               tabBarColor: Colors.white,
-
+              
               tabBarLabel: "Home",
 
               tabBarIcon: ({ color }) => (
@@ -80,7 +84,7 @@ const HomeTabNavigator = ({ navigation }) => {
           <Tab.Screen
             options={{
               tabBarColor: Colors.white,
-
+              tabBarBadge: blogContext.badgeCount === 0 ? null : blogContext.badgeCount,
               tabBarLabel: "Bulletins",
 
               tabBarIcon: ({ color }) => (
@@ -105,6 +109,7 @@ const HomeTabNavigator = ({ navigation }) => {
           />
           <Tab.Screen
             options={{
+              tabBarBadge: prayerContext.badgeCount === 0 ? null : prayerContext.badgeCount,
               tabBarColor: Colors.white,
               tabBarLabel: "Feed",
 

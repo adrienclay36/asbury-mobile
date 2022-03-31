@@ -51,7 +51,7 @@ const MainDrawerNavigator = ({ navigation, route }) => {
     }
   };
 
-  if (userContext.gettingUser) {
+  if (userContext.gettingUser && userContext.init) {
     return (
       <LottieView source={require("../loaders/dotloader.json")} autoPlay loop />
     );

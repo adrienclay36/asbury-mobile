@@ -18,6 +18,7 @@ import * as Animatable from "react-native-animatable";
 import axios from "axios";
 import { SERVER_URL } from "../../constants/serverURL";
 import * as WebBrowser from 'expo-web-browser';
+import { primaryFont } from "../../constants/fonts";
 const IMAGE_SIZE = 100;
 const ProfileCard = ({ navigation }) => {
   const userContext = useContext(UserContext);
@@ -149,7 +150,7 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 25,
-    fontWeight: "700",
+    fontFamily: primaryFont.bold,
     textAlign: "center",
   },
   caption: {
@@ -163,7 +164,7 @@ const styles = StyleSheet.create({
   },
   donationAmount: {
     fontSize: 40,
-    fontWeight: "500",
+    fontFamily: primaryFont.semiBold,
     textAlign: "center",
     marginTop: 20,
   },

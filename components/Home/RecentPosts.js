@@ -53,8 +53,8 @@ const RecentPosts = ({ navigation, route }) => {
         data={prayerContext.posts.slice(0, 3)}
         renderItem={renderPostItem}
         sliderWidth={Dimensions.get("window").width}
-        itemWidth={width - 100}
-        
+        itemWidth={width - 25}
+        layout="stack"
         loop={false}
       />
     </>

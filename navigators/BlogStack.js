@@ -10,7 +10,7 @@ import BlogHeader from "../screens/Blog/BlogHeader";
 const BlogStack = () => {
   return (
 
-      <BlogProvider>
+      
         <Stack.Navigator>
           <Stack.Screen
             options={({ route }) => ({
@@ -35,7 +35,7 @@ const BlogStack = () => {
             component={BlogDetailsScreen}
           />
         </Stack.Navigator>
-      </BlogProvider>
+   
 
   );
 };

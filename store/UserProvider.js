@@ -44,6 +44,7 @@ export const UserContext = createContext({
   updateUserInfo: (firstName, lastName, location, navigation) => {},
   loading: false,
   googleUser: false,
+  init: true,
 });
 const UserProvider = (props) => {
   const [userValue, setUserValue] = useState();
@@ -66,6 +67,7 @@ const UserProvider = (props) => {
   const [googleUser, setGoogleUser] = useState();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [init, setInit] = useState(true);
 
   const getPermissions = async (user) => {
     const { data, error } = await supabase
@@ -144,6 +146,7 @@ const UserProvider = (props) => {
       }
     }
     setGettingUser(false);
+    setInit(false);
   };
 
   const getSubscriptionStatus = async (customerID) => {
@@ -163,6 +166,8 @@ const UserProvider = (props) => {
         setGoogleUser(true);
       }
       await getPermissions(user);
+    } else {
+      setGettingUser(false);
     }
   };
 
@@ -219,6 +224,7 @@ const UserProvider = (props) => {
       console.log(
         "UserProvider: signOutHandler:: Removed credentials from SecureStore"
       );
+      setInit(true);
       await checkUser();
     } catch (err) {
       console.log("UserProvider: signOutHandler:: ", err.message);
@@ -355,6 +361,7 @@ const UserProvider = (props) => {
     updateUserInfo,
     loading,
     googleUser,
+    init,
   };
   return (
     <UserContext.Provider value={contextValue}>

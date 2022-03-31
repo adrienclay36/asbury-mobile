@@ -103,6 +103,14 @@ const EventDetailsScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     getLocationHandler();
+    return () => {
+      setPolyline(null);
+      setUserLocation(null);
+      setDestination(null);
+      setGettingLocation(null);
+      setMapRegion(null);
+      
+    }
   }, []);
 
   const month = getMonthFromDateCode(monthText);
@@ -126,10 +134,10 @@ const EventDetailsScreen = ({ navigation, route }) => {
         <Text style={[styles.header, { color: userColors.seaFoam700 }]}>
           {summary}
         </Text>
-        <Text style={styles.header}>
+        <Text style={[styles.header, styles.time]}>
           {formatStart} - {formatEnd}{" "}
         </Text>
-        <Text style={styles.header}>
+        <Text style={[styles.header, styles.time]}>
           {day} {month}, {new Date().getFullYear()}
         </Text>
       </View>
@@ -190,7 +198,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 18,
     textAlign: "center",
-    fontFamily: primaryFont.semiBold,
+    fontFamily: primaryFont.medium,
     textTransform: "uppercase",
     marginVertical: 5,
   },
@@ -226,4 +234,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 5,
   },
+  time: {
+    color: userColors.seaFoam700,
+  }
 });

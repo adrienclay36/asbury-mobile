@@ -22,7 +22,7 @@ const CommentItem = ({ author, content, postDate, user_id, id }) => {
     <Avatar.Image
       source={{ uri: avatarURL }}
       size={50}
-      style={{ backgroundColor: userColors.seaFoam300 }}
+      style={{ backgroundColor: 'transparent' }}
     />
   ) : (
     <Avatar.Image

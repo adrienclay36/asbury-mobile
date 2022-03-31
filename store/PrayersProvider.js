@@ -18,6 +18,8 @@ export const PrayerContext = createContext({
   pageNumber: 0,
   incrementPage: () => {},
   endOfList: false,
+  badgeCount: 0,
+  setBadgeCount: (count) => {},
 });
 const TABLE = "prayers";
 let isInit = true;
@@ -38,6 +40,7 @@ const PrayersProvider = (props) => {
   const [pageNumber, setPageNumber] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [endOfList, setEndOfList] = useState(false);
+  const [badgeCount, setBadgeCount] = useState(0);
 
 
   const getPosts = async (paged) => {
@@ -189,6 +192,10 @@ const PrayersProvider = (props) => {
     if (payload) {
       
       if (payload.eventType === "INSERT") {
+        if(payload.new.user_id){
+
+          setBadgeCount(badgeCount + 1);
+        }
         setPosts((prevPosts) => {
           const filtered = prevPosts.filter(
             (prevPost) => prevPost.id !== payload.new.id
@@ -212,7 +219,7 @@ const PrayersProvider = (props) => {
   }, [payload]);
 
   useEffect(() => {
-    console.log("establshing sub");
+    console.log("Establishing Joys & Concerns Sub");
     const postSub = supabase
       .from("prayers")
       .on("*", (payloadItem) => setPayload(payloadItem))
@@ -241,6 +248,8 @@ const PrayersProvider = (props) => {
     totalPages,
     pageNumber,
     endOfList,
+    badgeCount,
+    setBadgeCount,
   };
   return (
     <PrayerContext.Provider value={contextValue}>

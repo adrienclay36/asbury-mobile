@@ -19,6 +19,7 @@ import Card from "../ui/Card";
 import { primaryFont } from "../../constants/fonts";
 const DATE_SIZE = Dimensions.get("window").height * 0.09;
 import { useNavigation } from "@react-navigation/native";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 const ITEM_SIZE = 200;
 const UpcomingEventItem = ({ date, end, id, start, summary }) => {
   const formatStart = formatTime(new Date(start));
@@ -41,7 +42,7 @@ const UpcomingEventItem = ({ date, end, id, start, summary }) => {
     }, 250)
   }
   return (
-    <TouchableOpacity onPress={navigateEventItem}>
+    <TouchableWithoutFeedback onPress={navigateEventItem}>
       <Card height={ITEM_SIZE}>
         <Text style={styles.eventTitle} numberOfLines={1}>
           {summary}
@@ -56,7 +57,7 @@ const UpcomingEventItem = ({ date, end, id, start, summary }) => {
           {formatStart} - {formatEnd}
         </Text>
       </Card>
-    </TouchableOpacity>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -101,8 +102,9 @@ const UpcomingEvents = ({ navigation, events: inputEvents }) => {
         data={inputEvents}
         renderItem={renderEventItem}
         sliderWidth={Dimensions.get("window").width}
-        itemWidth={width - 100}
-        loop={false}
+        itemWidth={width - 25}
+        loop={true}
+        layout="stack"
       />
     </>
   );
@@ -127,8 +129,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   eventTitle: {
-    fontSize: 20,
-    fontFamily: primaryFont.semiBold,
+    fontSize: 16,
+    fontFamily: primaryFont.regular,
     textAlign: "center",
     marginBottom: 10,
   },

@@ -45,6 +45,7 @@ const NewPostScreen = ({ navigation, route }) => {
       return;
     }
     setError(true);
+    prayerContext.setBadgeCount(0);
   };
 
   if (prayerContext.posting) {
@@ -95,16 +96,6 @@ const NewPostScreen = ({ navigation, route }) => {
               <Picker.Item label="Joy" value="joy" />
               <Picker.Item label="Concern" value="concern" />
             </Picker>
-            {/* {!userContext.userInfo && (
-              <CustomTextInput
-                multiline={false}
-                mode="flat"
-                value={name}
-                setValue={setName}
-                style={{ margin: 10 }}
-                label="Enter a display name"
-              />
-            )} */}
           </ScrollView>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>

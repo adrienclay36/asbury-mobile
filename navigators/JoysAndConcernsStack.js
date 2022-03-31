@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import JoysAndConcernsHomeScreen from "../screens/JoysAndConcerns/JoysAndConcernsHomeScreen";
 import NewPostScreen from "../screens/JoysAndConcerns/NewPostScreen";
@@ -11,6 +11,8 @@ import PostDetailsScreen from "../screens/JoysAndConcerns/PostDetailsScreen";
 import PostDetailsHeader from "../screens/JoysAndConcerns/PostDetailsHeader";
 import EditPostScreen from "../screens/JoysAndConcerns/EditPostScreen";
 const JoysAndConcernsStack = () => {
+
+  useEffect(() => {}, []);
   
   return (
    

@@ -20,6 +20,14 @@ const JoysAndConcernsHomeScreen = ({ navigation, route }) => {
   let scrollY = useRef(new Animated.Value(0)).current;
 
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      prayerContext.setBadgeCount(0);
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+
 
   const renderPostItem = (itemData) => {
     return (

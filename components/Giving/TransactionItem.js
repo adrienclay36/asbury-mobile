@@ -54,7 +54,7 @@ const TransactionItem = ({
   let formatDescription;
   if (descriptor === "ASBURY_METHODIST") {
     if (refunded) {
-      formatDescription = "One Time Donation - Refund";
+      formatDescription = "Refund";
     } else {
       formatDescription = "One Time Donation";
     }

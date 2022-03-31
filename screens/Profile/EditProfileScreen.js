@@ -98,7 +98,7 @@ const EditProfileScreen = ({ navigation }) => {
         text2: "Let your friends and family know you're here!",
         type: "info",
         position: "bottom",
-        visibilityTime: 10000,
+        visibilityTime: 15000,
       });
     }, 1000);
   };

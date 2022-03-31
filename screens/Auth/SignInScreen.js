@@ -203,9 +203,16 @@ const SignInScreen = ({ navigation, route }) => {
         setErrorMessage(signingError.message);
       } else {
         setSuccess(true);
-        setTimeout(() => {
-          navigation.replace("AppStack");
-        }, 3000);
+        setData({
+          email: '',
+          password: '',
+          confirmPassword: '',
+          isValidConfirmPassword: true,
+          isValidEmail: true,
+          isValidPassword: true,
+        })
+        
+        setSigningUp(false);
       }
     } else {
       setFormError(true);
@@ -307,6 +314,7 @@ const SignInScreen = ({ navigation, route }) => {
               <View style={styles.action}>
                 <Feather name="lock" color="#05375a" size={20} />
                 <TextInput
+                  value={data.password}
                   style={styles.textInput}
                   secureTextEntry={data.secureTextEntry}
                   placeholder="Your Password"
@@ -362,6 +370,7 @@ const SignInScreen = ({ navigation, route }) => {
               {signingUp && (
                 <Button
                   loading={loading}
+                  disabled={loading}
                   onPress={signUpHandler}
                   style={styles.button}
                   mode="contained"
