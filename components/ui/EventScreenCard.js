@@ -39,7 +39,7 @@ const EventScreenCard = ({ title, start, end, date, image, navigation }) => {
         style={styles.bgImage}
         imageStyle={styles.image}
       >
-        <Text style={styles.titleText}>{title}</Text>
+        <Text numberOfLines={2} style={styles.titleText}>{title}</Text>
         <Text style={[styles.subTitle, styles.date]}>
           {monthText} {day}
         </Text>
