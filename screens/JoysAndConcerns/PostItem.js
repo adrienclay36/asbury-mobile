@@ -46,7 +46,6 @@ const PostItem = ({
   const [liked, setLiked] = useState(false);
   const [commentCount, setCommentCount] = useState(0);
   const userContext = useContext(UserContext);
-
   const getLikeStatus = useCallback(async () => {
     const storedPost = await AsyncStorage.getItem(`post_${id}`);
     if (storedPost) {

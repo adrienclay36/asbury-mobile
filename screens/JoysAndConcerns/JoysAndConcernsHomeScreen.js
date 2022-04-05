@@ -54,7 +54,7 @@ const JoysAndConcernsHomeScreen = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.container}>
     
-      <Animated.FlatList
+      {prayerContext.posts && <FlatList
         onEndReached={({ distanceFromEnd }) => {
           if (distanceFromEnd < 0 || calledDuringMomentum) {
             return;
@@ -76,14 +76,11 @@ const JoysAndConcernsHomeScreen = ({ navigation, route }) => {
         showsHorizontalScrollIndicator={false}
         scrollEventThrottle={16}
         initialNumToRender={10}
-        keyExtractor={(item, index) => index}
+        keyExtractor={(item, index) => item.id}
         renderItem={(itemData) => renderPostItem(itemData)}
         style={{ height: Dimensions.get('window').height }}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true }
-        )}
-      />
+        
+      />}
       
      
     </SafeAreaView>

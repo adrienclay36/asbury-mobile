@@ -45,7 +45,6 @@ const NewPostScreen = ({ navigation, route }) => {
       return;
     }
     setError(true);
-    prayerContext.setBadgeCount(0);
   };
 
   if (prayerContext.posting) {

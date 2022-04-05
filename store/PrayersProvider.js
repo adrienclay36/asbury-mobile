@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useCallback } from "react";
+import React, { useState, useEffect, createContext, useCallback, useContext } from "react";
 import { supabase } from "../supabase-service";
 import axios from "axios";
 export const PrayerContext = createContext({
@@ -31,7 +31,9 @@ import {
   updateItemInTable,
   getTotalPages,
 } from "../supabase-util";
+import { UserContext } from "./UserProvider";
 const PrayersProvider = (props) => {
+  const userContext = useContext(UserContext);
   const [posts, setPosts] = useState([]);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -42,41 +44,48 @@ const PrayersProvider = (props) => {
   const [endOfList, setEndOfList] = useState(false);
   const [badgeCount, setBadgeCount] = useState(0);
 
-
   const getPosts = async (paged) => {
-    if(isInit){
-
+    if (isInit) {
       setLoading(true);
     }
-    const data = await getPagedDataByDate(pageNumber, PAGE_SIZE, TABLE, 'postdate');
-    if(paged){
-      setPosts(prevPosts => {
+    const data = await getPagedDataByDate(
+      pageNumber,
+      PAGE_SIZE,
+      TABLE,
+      "postdate"
+    );
+    if (paged) {
+      setPosts((prevPosts) => {
         return prevPosts.concat(data);
-      })
+      });
     } else {
       setPosts(data);
     }
     setPosts(data);
     setLoading(false);
     isInit = false;
-  }
+  };
 
   const loadMore = async () => {
-    const data = await getPagedDataByDate(pageNumber, PAGE_SIZE, TABLE, 'postdate');
-    setPosts(prevPosts => {
-      return [...prevPosts, ...data]
-    })
-  }
+    const data = await getPagedDataByDate(
+      pageNumber,
+      PAGE_SIZE,
+      TABLE,
+      "postdate"
+    );
+    setPosts((prevPosts) => {
+      return [...prevPosts, ...data];
+    });
+  };
 
   useEffect(() => {
-    if(isInit) {
+    if (isInit) {
       getPosts();
     }
-  }, [])
-
+  }, []);
 
   useEffect(() => {
-    if(!isInit) {
+    if (!isInit) {
       loadMore();
     }
   }, [pageNumber]);
@@ -86,11 +95,11 @@ const PrayersProvider = (props) => {
     setPosts([]);
     setLoading(true);
     setPageNumber(0);
-    const data = await getPagedDataByDate(0, PAGE_SIZE, TABLE, 'postdate');
+    const data = await getPagedDataByDate(0, PAGE_SIZE, TABLE, "postdate");
     setPosts(data);
     setLoading(false);
     isInit = false;
-  }
+  };
 
   const incrementLike = async (postID) => {
     const { data, error } = await supabase.rpc("increment_like", {
@@ -150,7 +159,7 @@ const PrayersProvider = (props) => {
 
     const response = await addItemToTable(TABLE, postToAdd);
     setPosting(false);
-    navigation.replace("JoysAndConcernsHome");
+    navigation.goBack();
   };
 
   const editPost = async (postID, content, type, navigation) => {
@@ -188,12 +197,22 @@ const PrayersProvider = (props) => {
     initTotalPages();
   }, []);
 
+
+  const getPostsAfterUpdate = async () => {
+    const data = await getPagedDataByDate(
+      0,
+      PAGE_SIZE,
+      TABLE,
+      "postdate"
+    );
+    console.log(data);
+    setPosts(data);
+  }
+
   useEffect(() => {
     if (payload) {
-      
       if (payload.eventType === "INSERT") {
-        if(payload.new.user_id){
-
+        if (payload.new.user_id !== userContext?.userInfo?.id) {
           setBadgeCount(badgeCount + 1);
         }
         setPosts((prevPosts) => {
@@ -204,7 +223,13 @@ const PrayersProvider = (props) => {
           return [payload.new, ...filtered];
         });
       }
-      
+
+      if(payload.eventType === 'UPDATE') {
+        const index = posts.findIndex(post => post.id === payload.new.id);
+        const postCopy = posts;
+        postCopy[index] = payload.new;
+        setPosts(postCopy);
+      }
 
       if (payload.eventType === "DELETE") {
         setPosts((prevPosts) => {

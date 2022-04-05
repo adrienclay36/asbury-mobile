@@ -1,13 +1,16 @@
-import { StyleSheet, Text, View, Dimensions } from "react-native";
-import React from "react";
+import { StyleSheet, Text, View, Dimensions, Alert } from "react-native";
+import React, { useContext } from "react";
 import useGetUser from "../../hooks/useGetUser";
 import * as Animatable from "react-native-animatable";
 import { Avatar, Colors } from "react-native-paper";
 import { userColors } from "../../constants/userColors";
 import { primaryFont } from "../../constants/fonts";
-import Card from "../../components/ui/Card";
+import { UserContext } from "../../store/UserProvider";
+import { AntDesign } from "@expo/vector-icons";
+import { supabase } from "../../supabase-service";
 const CommentItem = ({ author, content, postDate, user_id, id }) => {
   const formatDate = new Date(postDate).toLocaleDateString("en-US");
+  const userContext = useContext(UserContext);
 
   const { user, avatarURL, loadingUser } = useGetUser(user_id);
 
@@ -18,11 +21,27 @@ const CommentItem = ({ author, content, postDate, user_id, id }) => {
     formatName = author;
   }
 
+  const deleteComment = async () => {
+    const { data, error } = await supabase
+      .from("comments")
+      .delete()
+      .match({ id });
+      if(error) {
+        console.log("Error in CommentItem::, ", error.message);
+      }
+  }
+
+  const deleteCommentHandler = async () => {
+    Alert.alert("Delete Comment", "Are you sure you want to delete this comment?", [ { text: 'Delete', style: "destructive", onPress: () => deleteComment() }, { text: 'Cancel', style: 'cancel'}])
+    
+    
+  };
+
   const imageComponent = avatarURL ? (
     <Avatar.Image
       source={{ uri: avatarURL }}
       size={50}
-      style={{ backgroundColor: 'transparent' }}
+      style={{ backgroundColor: "transparent" }}
     />
   ) : (
     <Avatar.Image
@@ -33,16 +52,34 @@ const CommentItem = ({ author, content, postDate, user_id, id }) => {
   );
 
   return (
-    <Animatable.View animation="fadeIn" style={{ borderBottomWidth: 1, borderColor: Colors.grey400 }}>
-      <View style={{ marginHorizontal: 5}}>
+    <Animatable.View
+      animation="fadeIn"
+      style={{ borderBottomWidth: 1, borderColor: Colors.grey400 }}
+    >
+      <View style={{ marginHorizontal: 5 }}>
         <View style={styles.headerSection}>
           <View style={styles.userInfoContainer}>
             {imageComponent}
-            <View style={{ marginHorizontal: 10 }}>
-              <Text style={styles.userName}>{formatName}</Text>
-              <View style={styles.postContent}>
-                <Text>{content}</Text>
+            <View
+              style={{
+                marginHorizontal: 10,
+                width: "90%",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <View>
+                <Text style={styles.userName}>{formatName}</Text>
+                <View style={styles.postContent}>
+                  <Text>{content}</Text>
+                </View>
               </View>
+              {userContext?.userInfo?.id === user_id && <AntDesign
+                onPress={() => deleteCommentHandler()}
+                name="close"
+                size={15}
+              />}
             </View>
           </View>
         </View>
@@ -68,7 +105,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontFamily: primaryFont.bold,
-    color: Colors.grey600
+    color: Colors.grey600,
   },
   date: {
     fontFamily: primaryFont.regular,
@@ -77,7 +114,6 @@ const styles = StyleSheet.create({
   },
   postContent: {
     fontFamily: primaryFont.regular,
-    
   },
   likesContainer: {
     justifyContent: "space-between",

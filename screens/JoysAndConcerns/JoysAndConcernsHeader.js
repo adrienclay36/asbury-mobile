@@ -1,11 +1,9 @@
-import { Dimensions, StatusBar, StyleSheet, Text, View } from "react-native";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
 import React, { useContext } from "react";
 import { userColors } from "../../constants/userColors";
-import { Appbar, Avatar, Button, Colors } from "react-native-paper";
+import { Appbar, Avatar, Colors } from "react-native-paper";
 import { primaryFont } from "../../constants/fonts";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import * as Animatable from "react-native-animatable";
 import { UserContext } from "../../store/UserProvider";
 const JoysAndConcernsHeader = ({ navigation, route, back, props, title }) => {
   const userContext = useContext(UserContext);
@@ -47,7 +45,6 @@ const JoysAndConcernsHeader = ({ navigation, route, back, props, title }) => {
   return (
     <>
       <SafeAreaView
-      forceInset={{ top: 'never' }}
         style={{
           flexDirection: "row",
           justifyContent: "space-between",

@@ -42,8 +42,8 @@ const OneTimeDonationScreen = ({ navigation }) => {
             const result = await WebBrowser.openBrowserAsync(response.data.sessionURL);
 
             setTimeout(() => {
-              navigation.push("GivingHomePage");
-            }, 250);
+              navigation.replace("GivingHomePage");
+            }, 100);
           }
         }
       } catch (err) {

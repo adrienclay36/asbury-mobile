@@ -104,6 +104,7 @@ const PostDetailsScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     if (payload) {
+      console.log(payload.eventType);
       if (payload.eventType === "INSERT") {
         setComments((prevComments) => {
           const filtered = prevComments.filter(
@@ -163,7 +164,6 @@ const PostDetailsScreen = ({ navigation, route }) => {
       <KeyboardAvoidingView style={styles.commentContainer}>
         <TextInput
           editable={!postingComment}
-          numberOfLines={5}
           multiline={true}
           placeholderTextColor={Colors.grey400}
           placeholder="Add A Comment"
@@ -172,6 +172,8 @@ const PostDetailsScreen = ({ navigation, route }) => {
           onChangeText={(text) => setCommentContent(text)}
         />
         <Button
+          
+          style={{ marginLeft: 2,}}
           loading={postingComment}
           onPress={addCommentHandler}
           disabled={postingComment}
@@ -275,6 +277,7 @@ const PostDetailsScreen = ({ navigation, route }) => {
                 content={comment.commentcontent}
                 author={comment.author}
                 postDate={comment.postdate}
+                id={comment.id}
               />
             ))}
           </View>
@@ -325,18 +328,19 @@ const styles = StyleSheet.create({
   commentInput: {
     flex: 1,
     marginVertical: 10,
-    height: 50,
-    borderWidth: 1,
-    borderColor: Colors.grey300,
-    borderRadius: 5,
     paddingHorizontal: 10,
     justifyContent: "flex-start",
     alignItems: "center",
   },
   commentContainer: {
+    marginVertical: 5,
     marginHorizontal: 10,
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: Colors.grey300,
+    borderRadius: 10,
+    padding: 4,
   },
 });

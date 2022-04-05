@@ -37,7 +37,6 @@ const ProfileCard = ({ navigation }) => {
         response.data.sessionURL
       );
     }
-    // userContext.checkUser();
     setTimeout(() => {
       navigation.push("GivingHomePage");
     }, 500);
