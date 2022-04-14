@@ -158,6 +158,30 @@ const PostItem = ({
     }, 250);
   };
 
+  const joyLabel = (
+    <View style={{
+      backgroundColor: Colors.teal600,
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      borderRadius: 25,
+    }}>
+      <Text style={{  color: 'white', fontWeight: '600', fontSize: 12}}>Joy</Text>
+    </View>
+  )
+
+  const concernLabel = (
+    <View
+      style={{
+        backgroundColor: Colors.indigo700,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 25,
+      }}
+    >
+      <Text style={{ color: "white", fontWeight: "600", fontSize: 12 }}>Concern</Text>
+    </View>
+  );
+
   return (
     <TouchableWithoutFeedback
       onPress={fromHomePage ? navigateJoysHome : navigatePostDetails}
@@ -194,17 +218,9 @@ const PostItem = ({
               <View style={{ flexDirection: "row" }}>
                 <View style={{ marginRight: 10 }}>
                   {postType === "joy" ? (
-                    <Ionicons
-                      name="ios-happy-outline"
-                      color={Colors.green600}
-                      size={25}
-                    />
+                    joyLabel
                   ) : (
-                    <Ionicons
-                      name="ios-sad-outline"
-                      color={Colors.blue600}
-                      size={25}
-                    />
+                    concernLabel
                   )}
                 </View>
                 <View

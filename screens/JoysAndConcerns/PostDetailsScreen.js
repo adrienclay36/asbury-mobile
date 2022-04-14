@@ -204,6 +204,37 @@ const PostDetailsScreen = ({ navigation, route }) => {
     </>
   );
 
+
+  const joyLabel = (
+    <View
+      style={{
+        backgroundColor: Colors.teal600,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 25,
+      }}
+    >
+      <Text style={{ color: "white", fontWeight: "600", fontSize: 12 }}>
+        Joy
+      </Text>
+    </View>
+  );
+
+  const concernLabel = (
+    <View
+      style={{
+        backgroundColor: Colors.indigo700,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 25,
+      }}
+    >
+      <Text style={{ color: "white", fontWeight: "600", fontSize: 12 }}>
+        Concern
+      </Text>
+    </View>
+  );
+
   return (
     <>
       <StatusBar style={Platform.OS === "android" ? "dark" : "light"} />
@@ -228,17 +259,9 @@ const PostDetailsScreen = ({ navigation, route }) => {
           <View style={styles.likesContainer}>
             <View>
               {route.params?.postType === "joy" ? (
-                <Ionicons
-                  name="ios-happy-outline"
-                  color={Colors.green600}
-                  size={25}
-                />
+                joyLabel
               ) : (
-                <Ionicons
-                  name="ios-sad-outline"
-                  color={Colors.blue600}
-                  size={25}
-                />
+                concernLabel
               )}
             </View>
             <View

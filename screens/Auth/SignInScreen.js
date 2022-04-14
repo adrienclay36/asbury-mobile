@@ -165,7 +165,7 @@ const SignInScreen = ({ navigation, route }) => {
 
   const loginHandler = async () => {
     setLoading(true);
-    if (data.isValidEmail && data.isValidPassword) {
+    if (data.isValidEmail && data.isValidPassword && data.email && data.password) {
       const { data: signInData, error } = await supabase.auth.signIn({
         email: data.email,
         password: data.password,
