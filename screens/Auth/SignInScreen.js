@@ -184,6 +184,9 @@ const SignInScreen = ({ navigation, route }) => {
                         value={values.email}
                         onChangeText={handleChange("email")}
                         onBlur={handleBlur("email")}
+                        onSubmitEditing={() => this.secondTextInput.focus()}
+                        blurOnSubmit={false}
+                        returnKeyType="next"
                       />
                       {validator.isEmail(values.email) ? (
                         <Animatable.View animation="bounceIn">
@@ -211,6 +214,7 @@ const SignInScreen = ({ navigation, route }) => {
                     <View style={styles.action}>
                       <Feather name="lock" color="#05375a" size={20} />
                       <TextInput
+                        ref={(input) => this.secondTextInput = input}
                         value={values.password}
                         style={styles.textInput}
                         secureTextEntry={!showPassword}

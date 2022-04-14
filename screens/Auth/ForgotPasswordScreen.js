@@ -8,6 +8,7 @@ import {
   ScrollView,
   TextInput,
   Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 import React, { useState, useContext, useEffect } from "react";
 import { userColors } from "../../constants/userColors";
@@ -125,7 +126,7 @@ const ForgotPasswordScreen = ({ navigation, route }) => {
         <View style={styles.card}>
           <View style={styles.form}>
             <Text style={styles.text_footer}>Email</Text>
-            <View style={styles.action}>
+            <KeyboardAvoidingView style={styles.action}>
               <FontAwesome name="user-o" color="#05375a" size={20} />
               <TextInput
                 style={styles.textInput}
@@ -141,7 +142,7 @@ const ForgotPasswordScreen = ({ navigation, route }) => {
                   <Feather name="check-circle" color="green" size={20} />
                 </Animatable.View>
               ) : null}
-            </View>
+            </KeyboardAvoidingView>
 
             {!data.isValidEmail && (
               <Animatable.View animation="fadeInLeft" duration={500}>

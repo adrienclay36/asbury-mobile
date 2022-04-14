@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   Platform,
-  TouchableOpacity
+  TouchableOpacity,
 } from "react-native";
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Avatar, Button, Colors } from "react-native-paper";
@@ -50,7 +50,7 @@ const PostDetailsScreen = ({ navigation, route }) => {
     setLiveLikes(liveLikes + 1);
     prayerContext.incrementLike(route.params?.id);
     AsyncStorage.setItem(`post_${route.params?.id}`, "1");
-    if(route.params?.userID){
+    if (route.params?.userID) {
       userContext.sendPushNotification(
         route.params?.userID,
         "Someone Liked Your Post!",
@@ -58,7 +58,6 @@ const PostDetailsScreen = ({ navigation, route }) => {
         route.params?.id,
         "POST_LIKED"
       );
-
     }
   };
 
@@ -130,7 +129,7 @@ const PostDetailsScreen = ({ navigation, route }) => {
   const addCommentHandler = async () => {
     Keyboard.dismiss();
     setPostingComment(true);
-    if (commentContent) {
+    if (commentContent.trim().length) {
       const newComment = {
         commentcontent: commentContent,
         postid: route.params?.id,
@@ -140,8 +139,7 @@ const PostDetailsScreen = ({ navigation, route }) => {
       try {
         const { data, error } = await addItemToTable("comments", newComment);
 
-        if(route.params.userID){
-
+        if (route.params.userID) {
           userContext.sendPushNotification(
             route.params?.userID,
             "New Comment!",
@@ -154,6 +152,8 @@ const PostDetailsScreen = ({ navigation, route }) => {
       } catch (err) {
         setPostingComment(false);
       }
+    } else {
+      setCommentContent("");
     }
 
     setPostingComment(false);
@@ -161,7 +161,7 @@ const PostDetailsScreen = ({ navigation, route }) => {
 
   const commentForm = (
     <>
-      <KeyboardAvoidingView style={styles.commentContainer}>
+      <View style={styles.commentContainer}>
         <TextInput
           editable={!postingComment}
           multiline={true}
@@ -170,10 +170,11 @@ const PostDetailsScreen = ({ navigation, route }) => {
           style={styles.commentInput}
           value={commentContent}
           onChangeText={(text) => setCommentContent(text)}
+          returnKeyType="default"
+          onSubmitEditing={() => addCommentHandler()}
         />
         <Button
-          
-          style={{ marginLeft: 2,}}
+          style={{ marginLeft: 2 }}
           loading={postingComment}
           onPress={addCommentHandler}
           disabled={postingComment}
@@ -181,7 +182,7 @@ const PostDetailsScreen = ({ navigation, route }) => {
         >
           Post
         </Button>
-      </KeyboardAvoidingView>
+      </View>
     </>
   );
 
@@ -203,7 +204,6 @@ const PostDetailsScreen = ({ navigation, route }) => {
       </TouchableOpacity>
     </>
   );
-
 
   const joyLabel = (
     <View
@@ -249,62 +249,60 @@ const PostDetailsScreen = ({ navigation, route }) => {
         postType={route.params?.postType}
       />
       <SafeAreaView style={{ marginBottom: 30 }}>
-        <ScrollView
-          onScroll={() => Keyboard.dismiss()}
-          scrollEventThrottle={16}
-        >
-          <View style={styles.postContent}>
-            <Text>{route.params?.postContent}</Text>
-          </View>
-          <View style={styles.likesContainer}>
-            <View>
-              {route.params?.postType === "joy" ? (
-                joyLabel
-              ) : (
-                concernLabel
-              )}
+        <KeyboardAvoidingView behavior="padding">
+          <ScrollView
+            
+            scrollEventThrottle={16}
+          >
+            <View style={styles.postContent}>
+              <Text>{route.params?.postContent}</Text>
             </View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {liked ? (
-                <Ionicons
-                  onPress={() => incrementLikeHandler()}
-                  name="heart"
-                  size={25}
-                  color={Colors.red600}
-                />
-              ) : (
-                <Ionicons
-                  onPress={() => incrementLikeHandler()}
-                  color={Colors.red600}
-                  name="heart-outline"
-                  size={25}
-                />
-              )}
-              <Text style={{ marginLeft: 5 }}>{liveLikes}</Text>
+            <View style={styles.likesContainer}>
+              <View>
+                {route.params?.postType === "joy" ? joyLabel : concernLabel}
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {liked ? (
+                  <Ionicons
+                    onPress={() => incrementLikeHandler()}
+                    name="heart"
+                    size={25}
+                    color={Colors.red600}
+                  />
+                ) : (
+                  <Ionicons
+                    onPress={() => incrementLikeHandler()}
+                    color={Colors.red600}
+                    name="heart-outline"
+                    size={25}
+                  />
+                )}
+                <Text style={{ marginLeft: 5 }}>{liveLikes}</Text>
+              </View>
             </View>
-          </View>
 
-          {userContext.userInfo ? commentForm : signInToCommentForm}
+            {userContext.userInfo ? commentForm : signInToCommentForm}
 
-          <View style={{ height: Dimensions.get("window").height }}>
-            {comments.map((comment) => (
-              <CommentItem
-                key={comment.id}
-                user_id={comment.user_id}
-                content={comment.commentcontent}
-                author={comment.author}
-                postDate={comment.postdate}
-                id={comment.id}
-              />
-            ))}
-          </View>
-        </ScrollView>
+            <View style={{ height: Dimensions.get("window").height }}>
+              {comments.map((comment) => (
+                <CommentItem
+                  key={comment.id}
+                  user_id={comment.user_id}
+                  content={comment.commentcontent}
+                  author={comment.author}
+                  postDate={comment.postdate}
+                  id={comment.id}
+                />
+              ))}
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </>
   );

@@ -8,6 +8,7 @@ import {
   TouchableWithoutFeedback,
   Alert,
   Platform,
+  Linking,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../store/UserProvider";
@@ -94,7 +95,7 @@ const EditProfileScreen = ({ navigation }) => {
   const newUserNotification = () => {
     setTimeout(() => {
       Toast.show({
-        text1: "Add a Photo and Change Your Name!",
+        text1: "Change your profile photo!",
         text2: "Let your friends and family know you're here!",
         type: "info",
         position: "bottom",
@@ -106,8 +107,7 @@ const EditProfileScreen = ({ navigation }) => {
   useEffect(() => {
     if (userContext?.userInfo) {
       if (
-        userContext.userInfo.first_name === "New" &&
-        userContext.userInfo.last_name === "User"
+        userContext?.avatarURL.includes("default-2")
       ) {
         newUserNotification();
       }

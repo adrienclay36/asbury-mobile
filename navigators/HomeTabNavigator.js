@@ -47,8 +47,7 @@ const HomeTabNavigator = ({ navigation }) => {
   useEffect(() => {
     if (userContext?.userInfo) {
       if (
-        userContext.userInfo.first_name === "New" &&
-        userContext.userInfo.last_name === "User"
+        userContext?.avatarURL?.includes("default-2")
       ) {
         newUserNotification();
       }
