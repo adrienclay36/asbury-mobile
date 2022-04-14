@@ -165,7 +165,12 @@ const SignInScreen = ({ navigation, route }) => {
 
   const loginHandler = async () => {
     setLoading(true);
-    if (data.isValidEmail && data.isValidPassword && data.email && data.password) {
+    if (
+      data.isValidEmail &&
+      data.isValidPassword &&
+      data.email &&
+      data.password
+    ) {
       const { data: signInData, error } = await supabase.auth.signIn({
         email: data.email,
         password: data.password,
@@ -204,14 +209,14 @@ const SignInScreen = ({ navigation, route }) => {
       } else {
         setSuccess(true);
         setData({
-          email: '',
-          password: '',
-          confirmPassword: '',
+          email: "",
+          password: "",
+          confirmPassword: "",
           isValidConfirmPassword: true,
           isValidEmail: true,
           isValidPassword: true,
-        })
-        
+        });
+
         setSigningUp(false);
       }
     } else {
@@ -279,7 +284,7 @@ const SignInScreen = ({ navigation, route }) => {
               <Text style={styles.title}>login</Text>
             )}
           </View>
-          <ScrollView>
+          <KeyboardAvoidingView>
             <View style={styles.form}>
               <Text style={styles.text_footer}>Email</Text>
               <View style={styles.action}>
@@ -385,17 +390,21 @@ const SignInScreen = ({ navigation, route }) => {
               </Button>
             </View>
             {!signingUp && (
-              <TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center'}} onPress={() => navigation.navigate("ForgotPasswordScreen")}>
+              <TouchableOpacity
+                style={{ justifyContent: "center", alignItems: "center" }}
+                onPress={() => navigation.navigate("ForgotPasswordScreen")}
+              >
                 <Text style={styles.forgotPassword}>Forgot Password?</Text>
               </TouchableOpacity>
             )}
 
-              <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center' }} onPress={() => navigation.replace("AppStack")}>
-                <Text style={styles.forgotPassword}>Back To App</Text>
-              </TouchableOpacity>
-            
-          </ScrollView>
-         
+            <TouchableOpacity
+              style={{ justifyContent: "center", alignItems: "center" }}
+              onPress={() => navigation.replace("AppStack")}
+            >
+              <Text style={styles.forgotPassword}>Back To App</Text>
+            </TouchableOpacity>
+          </KeyboardAvoidingView>
         </View>
       </ImageBackground>
     </View>
@@ -511,10 +520,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   forgotPassword: {
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 20,
     color: userColors.seaFoam600,
     fontSize: 12,
-    fontWeight: '600',
-  }
+    fontWeight: "600",
+  },
 });
