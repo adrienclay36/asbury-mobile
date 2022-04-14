@@ -8,6 +8,7 @@ import {
   ScrollView,
   TextInput,
   Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 import React, { useState, useContext, useEffect } from "react";
 import { userColors } from "../../constants/userColors";
@@ -23,10 +24,18 @@ import { supabase } from "../../supabase-service";
 import * as WebBrowser from "expo-web-browser";
 import { GOOGLE_AUTH } from "@env";
 import * as AuthSession from "expo-auth-session";
-const emailRegex =
-  /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+import { Formik } from "formik";
+import * as Yup from "yup";
+import validator from "validator";
 
 const CARD_HEIGHT = Dimensions.get("window").height / 1.3;
+
+const loginFormSchema = Yup.object().shape({
+  email: Yup.string().email().required("Please Enter A Valid Email Address"),
+  password: Yup.string()
+    .required()
+    .min(6, "Passwords must be at least 6 characters"),
+});
 
 const SignInScreen = ({ navigation, route }) => {
   const userContext = useContext(UserContext);
@@ -35,209 +44,69 @@ const SignInScreen = ({ navigation, route }) => {
   const [signingUp, setSigningUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [data, setData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-    checkTextInputChange: false,
-    secureTextEntry: true,
-    confirmSecureTextEntry: true,
-    isValidEmail: true,
-    isValidPassword: true,
-    isValidConfirmPassword: true,
-  });
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     console.log("SignInScreen: useEffect:: Checking User");
     userContext.checkUser();
   }, []);
 
-  const confirmPassword = (
-    <>
-      <Text style={[styles.text_footer, { marginTop: 25 }]}>
-        Confirm Password
-      </Text>
-      <View style={styles.action}>
-        <Feather name="lock" color="#05375a" size={20} />
-        <TextInput
-          style={styles.textInput}
-          secureTextEntry={data.confirmSecureTextEntry}
-          placeholder="Your Password"
-          autoCapitalize="none"
-          onChangeText={(text) => handleConfirmPasswordChange(text)}
-        />
-        <TouchableOpacity onPress={() => updateConfirmSecureTextEntry()}>
-          {data.confirmSecureTextEntry ? (
-            <Feather name="eye-off" color="grey" size={20} />
-          ) : (
-            <Feather name="eye" color="grey" size={20} />
-          )}
-        </TouchableOpacity>
-      </View>
-
-      {!data.isValidConfirmPassword && (
-        <Animatable.View animation="fadeInLeft" duration={500}>
-          <Text style={styles.errorMsg}>Passwords Must Match</Text>
-        </Animatable.View>
-      )}
-    </>
-  );
-
-  const textInputChange = (val) => {
-    if (val.length >= 1) {
-      setData({
-        ...data,
-        email: val,
-        checkTextInputChange: true,
-        isValidEmail: true,
-      });
-    } else {
-      setData({
-        ...data,
-        email: val,
-        checkTextInputChange: false,
-        isValidEmail: false,
-      });
-    }
-  };
-
-  const handlePasswordChange = (val) => {
-    if (val.trim().length >= 6) {
-      setData({
-        ...data,
-        password: val,
-        isValidPassword: true,
-      });
-    } else {
-      setData({
-        ...data,
-        password: val,
-        isValidPassword: false,
-      });
-    }
-  };
-
-  const handleConfirmPasswordChange = (val) => {
-    if (val.trim() === data.password) {
-      setData({
-        ...data,
-        confirmPassword: val,
-        isValidConfirmPassword: true,
-      });
-    } else {
-      setData({
-        ...data,
-        confirmPassword: val,
-        isValidConfirmPassword: false,
-      });
-    }
-  };
-
-  const updateSecureTextEntry = () => {
-    setData({
-      ...data,
-      secureTextEntry: !data.secureTextEntry,
-    });
-  };
-
-  const updateConfirmSecureTextEntry = () => {
-    setData({
-      ...data,
-      confirmSecureTextEntry: !data.confirmSecureTextEntry,
-    });
-  };
-
-  const validateEmail = (val) => {
-    if (emailRegex.test(val.trim().toLowerCase())) {
-      setData({
-        ...data,
-        isValidEmail: true,
-        checkTextInputChange: true,
-      });
-    } else {
-      setData({
-        ...data,
-        isValidEmail: false,
-        checkTextInputChange: false,
-      });
-    }
-  };
-
-  const loginHandler = async () => {
+  const loginHandler = async (email, password) => {
     setLoading(true);
-    if (
-      data.isValidEmail &&
-      data.isValidPassword &&
-      data.email &&
-      data.password
-    ) {
-      const { data: signInData, error } = await supabase.auth.signIn({
-        email: data.email,
-        password: data.password,
-      });
-      if (!error) {
-        navigation.replace("AppStack");
-        return;
-      } else {
-        setFormError(true);
-        setErrorMessage(error.message);
-      }
-    }
 
-    setLoading(false);
-  };
-
-  const signUpHandler = async () => {
-    setLoading(true);
-    if (
-      data.confirmPassword &&
-      data.isValidConfirmPassword &&
-      data.email &&
-      data.isValidEmail &&
-      data.password &&
-      data.isValidPassword
-    ) {
-      const { data: signUpData, error: signingError } =
-        await supabase.auth.signUp({
-          email: data.email,
-          password: data.password,
-        });
-      console.log(signUpData);
-      if (signingError) {
-        setFormError(true);
-        setErrorMessage(signingError.message);
-      } else {
-        setSuccess(true);
-        setData({
-          email: "",
-          password: "",
-          confirmPassword: "",
-          isValidConfirmPassword: true,
-          isValidEmail: true,
-          isValidPassword: true,
-        });
-
-        setSigningUp(false);
-      }
+    const { data: signInData, error } = await supabase.auth.signIn({
+      email: email,
+      password: password,
+    });
+    if (!error) {
+      navigation.replace("AppStack");
+      return;
     } else {
       setFormError(true);
-      setErrorMessage("Invalid Input");
+      setErrorMessage(error.message);
     }
+
     setLoading(false);
   };
 
-  const switchFormHandler = () => {
-    setSigningUp(!signingUp);
-    setData({
-      ...data,
-      password: "",
-      email: "",
-      confirmPassword: "",
-      isValidConfirmPassword: true,
-      isValidEmail: true,
-      isValidPassword: true,
-    });
-  };
+  // const signUpHandler = async () => {
+  //   setLoading(true);
+  //   if (
+  //     data.confirmPassword &&
+  //     data.isValidConfirmPassword &&
+  //     data.email &&
+  //     data.isValidEmail &&
+  //     data.password &&
+  //     data.isValidPassword
+  //   ) {
+  //     const { data: signUpData, error: signingError } =
+  //       await supabase.auth.signUp({
+  //         email: data.email,
+  //         password: data.password,
+  //       });
+  //     console.log(signUpData);
+  //     if (signingError) {
+  //       setFormError(true);
+  //       setErrorMessage(signingError.message);
+  //     } else {
+  //       setSuccess(true);
+  //       setData({
+  //         email: "",
+  //         password: "",
+  //         confirmPassword: "",
+  //         isValidConfirmPassword: true,
+  //         isValidEmail: true,
+  //         isValidPassword: true,
+  //       });
+
+  //       setSigningUp(false);
+  //     }
+  //   } else {
+  //     setFormError(true);
+  //     setErrorMessage("Invalid Input");
+  //   }
+  //   setLoading(false);
+  // };
 
   const googleAuth = async () => {
     const redirectUri = AuthSession.makeRedirectUri({ useProxy: false });
@@ -255,6 +124,10 @@ const SignInScreen = ({ navigation, route }) => {
 
       navigation.replace("AppStack");
     }
+  };
+
+  const toggleSecureTextEntry = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -276,127 +149,147 @@ const SignInScreen = ({ navigation, route }) => {
         resizeMode="cover"
         source={require("../../assets/hero.jpg")}
       >
-        <View style={styles.card}>
+        <Animatable.View animation="fadeInUpBig" style={styles.card}>
           <View style={styles.titleContainer}>
-            {signingUp ? (
-              <Text style={styles.title}>sign up</Text>
-            ) : (
-              <Text style={styles.title}>login</Text>
-            )}
+            <Text style={styles.title}>login</Text>
           </View>
-          <KeyboardAvoidingView>
-            <View style={styles.form}>
-              <Text style={styles.text_footer}>Email</Text>
-              <View style={styles.action}>
-                <FontAwesome name="user-o" color="#05375a" size={20} />
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Your Email"
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  value={data.email}
-                  onChangeText={(text) => textInputChange(text)}
-                  onEndEditing={(e) => validateEmail(e.nativeEvent.text)}
-                />
-                {data.checkTextInputChange ? (
-                  <Animatable.View animation="bounceIn">
-                    <Feather name="check-circle" color="green" size={20} />
-                  </Animatable.View>
-                ) : null}
-              </View>
+          <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={15}>
+            <Formik
+              initialValues={{ email: "", password: "" }}
+              validationSchema={loginFormSchema}
+              validateOnMount={true}
+              onSubmit={(values, actions) => {
+                loginHandler(values.email, values.password);
+              }}
+            >
+              {({
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                values,
+                errors,
+                isValid,
+              }) => (
+                <>
+                  <View style={styles.form}>
+                    <Text style={styles.text_footer}>Email</Text>
+                    <View style={styles.action}>
+                      <FontAwesome name="user-o" color="#05375a" size={20} />
+                      <TextInput
+                        style={styles.textInput}
+                        placeholder="Your Email"
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                        autoComplete="email"
+                        value={values.email}
+                        onChangeText={handleChange("email")}
+                        onBlur={handleBlur("email")}
+                      />
+                      {validator.isEmail(values.email) ? (
+                        <Animatable.View animation="bounceIn">
+                          <Feather
+                            name="check-circle"
+                            color="green"
+                            size={20}
+                          />
+                        </Animatable.View>
+                      ) : null}
+                    </View>
 
-              {!data.isValidEmail && (
-                <Animatable.View animation="fadeInLeft" duration={500}>
-                  <Text style={styles.errorMsg}>
-                    Please Enter a Valid Email
-                  </Text>
-                </Animatable.View>
+                    {1 > values.email.length ||
+                      (values.email.length < 6 && (
+                        <Animatable.View animation="fadeInLeft" duration={500}>
+                          <Text style={styles.errorMsg}>
+                            Please Enter a Valid Email
+                          </Text>
+                        </Animatable.View>
+                      ))}
+
+                    <Text style={[styles.text_footer, { marginTop: 25 }]}>
+                      Password
+                    </Text>
+                    <View style={styles.action}>
+                      <Feather name="lock" color="#05375a" size={20} />
+                      <TextInput
+                        value={values.password}
+                        style={styles.textInput}
+                        secureTextEntry={!showPassword}
+                        placeholder="Your Password"
+                        autoCapitalize="none"
+                        onChangeText={handleChange("password")}
+                        onBlur={handleBlur("password")}
+                      />
+                      <TouchableOpacity onPress={() => toggleSecureTextEntry()}>
+                        {!showPassword ? (
+                          <Feather name="eye-off" color="grey" size={20} />
+                        ) : (
+                          <Feather name="eye" color="grey" size={20} />
+                        )}
+                      </TouchableOpacity>
+                    </View>
+
+                    {1 > values.password.length ||
+                      (values.password.length < 6 && (
+                        <Animatable.View animation="fadeInLeft" duration={500}>
+                          <Text style={styles.errorMsg}>
+                            Password must be at least six characters
+                          </Text>
+                        </Animatable.View>
+                      ))}
+                  </View>
+                  <View
+                    style={{ justifyContent: "center", alignItems: "center" }}
+                  >
+                    <Button
+                      onPress={handleSubmit}
+                      loading={loading}
+                      style={styles.button}
+                      mode="contained"
+                      color={userColors.seaFoam700}
+                      icon={"login"}
+                    >
+                      Log In
+                    </Button>
+                    <Button
+                      style={{ marginBottom: 20 }}
+                      mode="contained"
+                      color={Colors.blue600}
+                      icon="google"
+                      onPress={googleAuth}
+                    >
+                      Sign In With Google
+                    </Button>
+                  </View>
+                </>
               )}
+            </Formik>
 
-              <Text style={[styles.text_footer, { marginTop: 25 }]}>
-                Password
+            <View style={{ marginVertical: 10 }}>
+              <Text style={{ textAlign: "center" }}>
+                Don't have an account?
               </Text>
-              <View style={styles.action}>
-                <Feather name="lock" color="#05375a" size={20} />
-                <TextInput
-                  value={data.password}
-                  style={styles.textInput}
-                  secureTextEntry={data.secureTextEntry}
-                  placeholder="Your Password"
-                  autoCapitalize="none"
-                  onChangeText={(text) => handlePasswordChange(text)}
-                />
-                <TouchableOpacity onPress={() => updateSecureTextEntry()}>
-                  {data.secureTextEntry ? (
-                    <Feather name="eye-off" color="grey" size={20} />
-                  ) : (
-                    <Feather name="eye" color="grey" size={20} />
-                  )}
-                </TouchableOpacity>
-              </View>
-
-              {!data.isValidPassword && (
-                <Animatable.View animation="fadeInLeft" duration={500}>
-                  <Text style={styles.errorMsg}>
-                    Password must be at least six characters
-                  </Text>
-                </Animatable.View>
-              )}
-
-              {signingUp && confirmPassword}
-            </View>
-            <View style={styles.buttonContainer}>
-              {!signingUp && (
-                <Button
-                  onPress={loginHandler}
-                  disabled={
-                    !data.isValidEmail ||
-                    !data.isValidPassword ||
-                    userContext.authenticating
-                  }
-                  loading={loading}
-                  style={styles.button}
-                  mode="contained"
-                  color={userColors.seaFoam700}
-                  icon={"login"}
-                >
-                  Log In
-                </Button>
-              )}
-              <Button
-                style={{ marginBottom: 20 }}
-                mode="contained"
-                color={Colors.blue600}
-                icon="google"
-                onPress={googleAuth}
-              >
-                Sign In With Google
-              </Button>
-              {signingUp && (
-                <Button
-                  loading={loading}
-                  disabled={loading}
-                  onPress={signUpHandler}
-                  style={styles.button}
-                  mode="contained"
-                  color={userColors.seaFoam700}
-                  icon="transfer-up"
-                >
-                  Sign Up
-                </Button>
-              )}
-              <Button color={userColors.seaFoam700} onPress={switchFormHandler}>
-                {!signingUp ? "Sign Up" : "Log In"}
-              </Button>
-            </View>
-            {!signingUp && (
               <TouchableOpacity
-                style={{ justifyContent: "center", alignItems: "center" }}
-                onPress={() => navigation.navigate("ForgotPasswordScreen")}
+                onPress={() => navigation.navigate("SignUpScreen")}
               >
-                <Text style={styles.forgotPassword}>Forgot Password?</Text>
+                <Text
+                  style={{
+                    color: userColors.seaFoam500,
+                    fontWeight: "600",
+                    textAlign: "center",
+                  }}
+                >
+                  {" "}
+                  Sign Up Now!
+                </Text>
               </TouchableOpacity>
-            )}
+            </View>
+
+            <TouchableOpacity
+              style={{ justifyContent: "center", alignItems: "center" }}
+              onPress={() => navigation.navigate("ForgotPasswordScreen")}
+            >
+              <Text style={styles.forgotPassword}>Forgot Password?</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity
               style={{ justifyContent: "center", alignItems: "center" }}
@@ -405,7 +298,7 @@ const SignInScreen = ({ navigation, route }) => {
               <Text style={styles.forgotPassword}>Back To App</Text>
             </TouchableOpacity>
           </KeyboardAvoidingView>
-        </View>
+        </Animatable.View>
       </ImageBackground>
     </View>
   );
@@ -521,7 +414,7 @@ const styles = StyleSheet.create({
   },
   forgotPassword: {
     textAlign: "center",
-    marginTop: 20,
+    marginTop: 10,
     color: userColors.seaFoam600,
     fontSize: 12,
     fontWeight: "600",
