@@ -16,6 +16,7 @@ import EventItem from "./EventItem";
 import LottieView from "lottie-react-native";
 import { primaryFont } from "../../constants/fonts";
 const { width, height } = Dimensions.get("window");
+import DrawerHeader from "../../components/ui/DrawerHeader";
 const EventsHomeScreen = ({ route, navigation }) => {
   const [loading, setLoading] = useState();
   const [events, setEvents] = useState();
@@ -54,6 +55,8 @@ const EventsHomeScreen = ({ route, navigation }) => {
     );
   };
   return (
+    <>
+    <DrawerHeader/>
     <View>
       <Text style={styles.title}>Upcoming</Text>
       <View>
@@ -86,6 +89,7 @@ const EventsHomeScreen = ({ route, navigation }) => {
         )}
       />
     </View>
+  </>
   );
 };
 

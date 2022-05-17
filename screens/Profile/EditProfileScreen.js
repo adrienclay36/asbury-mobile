@@ -31,7 +31,7 @@ const EditProfileScreen = ({ navigation }) => {
   const [saving, setSaving] = useState(false);
 
   const isDefaultPhoto =
-    userContext.userInfo.avatar_url === "default-2.png"
+    userContext.userInfo.avatar_path === "default-2.png"
       ? Colors.pink600
       : Colors.white;
 
@@ -106,9 +106,7 @@ const EditProfileScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (userContext?.userInfo) {
-      if (
-        userContext?.avatarURL.includes("default-2")
-      ) {
+      if (userContext?.avatarURL.includes("default-2")) {
         newUserNotification();
       }
     }
@@ -162,18 +160,26 @@ const EditProfileScreen = ({ navigation }) => {
     }
   };
 
-  const saveChanges = () => {
+  const saveChanges = async () => {
     setSaving(true);
     if (data.firstName && data.lastName && data.location) {
-      userContext.updateUserInfo(
-        data.firstName,
-        data.lastName,
-        data.location,
-        navigation
-      );
-    }
+      const { data: updateData, error } = await supabase
+        .from("users")
+        .update({
+          first_name: data.firstName,
+          last_name: data.lastName,
+          location: data.location,
+        })
+        .match({ id: userContext?.userInfo?.id });
+      userContext?.checkUser();
 
-    setSaving(false);
+      if (error) {
+        console.log("error updating user profile:: ", error.message);
+        return;
+      }
+      setSaving(false);
+      navigation.goBack();
+    }
   };
 
   const uploadPhoto = async (image) => {
@@ -215,10 +221,14 @@ const EditProfileScreen = ({ navigation }) => {
       if (photoUploadError) {
         console.log("Photo Upload Error::", photoUploadError);
       }
+
+      const { publicURL, error } = await supabase.storage
+        .from("avatars")
+        .getPublicUrl(newAvatarPath);
       const response = await updateItemInTable(
         "users",
         userContext.userInfo.id,
-        { avatar_url: newAvatarPath }
+        { avatar_url: publicURL, avatar_path: newAvatarPath }
       );
     } catch (error) {
       console.log("Photo upload error:: ", error.message);
@@ -299,6 +309,7 @@ const EditProfileScreen = ({ navigation }) => {
         valuesChanged={valuesChanged}
         navigation={navigation}
         saveChanges={saveChanges}
+        loading={saving}
       />
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View>
@@ -469,7 +480,8 @@ const EditProfileScreen = ({ navigation }) => {
               <Text style={styles.text}>
                 Your name was provided to us through your Google account. If
                 you'd like to change it, visit your Google Account settings and
-                the changes will reflect here after some time. This may require a reload of the app to show up everywhere.
+                the changes will reflect here after some time. This may require
+                a reload of the app to show up everywhere.
               </Text>
             )}
           </View>

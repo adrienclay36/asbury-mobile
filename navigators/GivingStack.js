@@ -3,7 +3,6 @@ import React, { useEffect, useState, useContext } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import GivingHomePage from "../screens/Giving/GivingHomePage";
 const Stack = createNativeStackNavigator();
-import GivingHomePageHeader from "../screens/Giving/GivingHomePageHeader";
 import { StripeProvider } from "@stripe/stripe-react-native";
 import NewSubscriptionScreen from "../screens/Giving/NewSubscriptionScreen";
 import axios from "axios";
@@ -35,18 +34,10 @@ const GivingStack = () => {
   return (
     <StripeProvider publishableKey={publishableKey}>
       <View style={{ flex: 1 }} collapsable={false}>
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
           {userContext.userInfo && (
             <Stack.Screen
-              options={({ route }) => ({
-                header: (props) => (
-                  <GivingHomePageHeader
-                    {...props}
-                    props={props}
-                    route={route}
-                  />
-                ),
-              })}
+              options={{ headerShown: false }}
               name="GivingHomePage"
               component={GivingHomePage}
             />
@@ -62,11 +53,7 @@ const GivingStack = () => {
             <Stack.Screen name="OneTimeDonationScreen" options={{ headerShown: false, presentation: 'formSheet'} } component={OneTimeDonationScreen} />
           )}
           {!userContext.userInfo && <Stack.Screen
-            options={({ route }) => ({
-              header: (props) => (
-                <GivingHomePageHeader {...props} props={props} route={route} />
-              ),
-            })}
+            
             name="NoAccountScreen"
             component={NoAccountScreen}
           />}

@@ -6,10 +6,12 @@ import { Colors, Button } from "react-native-paper";
 import * as Animatable from "react-native-animatable";
 import { userColors } from "../../constants/userColors";
 const { height, width } = Dimensions.get("window");
+import DrawerHeader from "../../components/ui/DrawerHeader";
 const ITEM_SIZE = height;
 const NoAccountScreen = ({ navigation }) => {
   return (
     <>
+    <DrawerHeader/>
       <View style={{ height: height * 0.2 }}></View>
       <Animatable.View animation="fadeInUpBig">
         <Card height={ITEM_SIZE}>

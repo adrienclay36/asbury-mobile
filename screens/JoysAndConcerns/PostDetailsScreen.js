@@ -28,9 +28,10 @@ import { StatusBar } from "expo-status-bar";
 
 let isInit = true;
 const PostDetailsScreen = ({ navigation, route }) => {
-  const { ITEM_SIZE, avatarURL, formatDate, formatName, id, postType, userID } =
-    route?.params;
-  const [liveLikes, setLiveLikes] = useState(route.params?.liveLikes);
+
+  const { post } = route?.params;
+  const formatDate = new Date(post?.created_at).toLocaleDateString("en-US");
+  const [liveLikes, setLiveLikes] = useState(post?.likes);
   const [liked, setLiked] = useState(false);
   const [comments, setComments] = useState([]);
   const [payload, setPayload] = useState();
@@ -50,9 +51,9 @@ const PostDetailsScreen = ({ navigation, route }) => {
     setLiveLikes(liveLikes + 1);
     prayerContext.incrementLike(route.params?.id);
     AsyncStorage.setItem(`post_${route.params?.id}`, "1");
-    if (route.params?.userID) {
+    if (post?.user_id) {
       userContext.sendPushNotification(
-        route.params?.userID,
+        post?.user_id,
         "Someone Liked Your Post!",
         `${userContext.formatName} liked one of your posts!`,
         route.params?.id,
@@ -80,14 +81,14 @@ const PostDetailsScreen = ({ navigation, route }) => {
     const { data } = await supabase
       .from("comments")
       .select()
-      .match({ postid: route.params?.id })
+      .match({ post_id: post?.id })
       .order("id", { ascending: true });
     if (data.length > 0) {
       setComments(data);
     }
     isInit = false;
     setLoadingComments(false);
-  }, [route.params?.id]);
+  }, [post?.id]);
 
   useEffect(() => {
     getComments();
@@ -131,20 +132,25 @@ const PostDetailsScreen = ({ navigation, route }) => {
     setPostingComment(true);
     if (commentContent.trim().length) {
       const newComment = {
-        commentcontent: commentContent,
-        postid: route.params?.id,
-        postdate: new Date(),
-        user_id: userContext.userValue.id,
+        content: commentContent,
+        post_id: post?.id,
+        user_id: userContext.userInfo.id,
+        avatar_url: userContext?.userInfo?.avatar_url,
+        author: `${userContext?.userInfo?.first_name} ${userContext?.userInfo?.last_name}`,
       };
       try {
-        const { data, error } = await addItemToTable("comments", newComment);
+        const { data, error } = await supabase.from('comments').insert(newComment);
+        if(error) {
+          console.log("Error adding comment:: ", error.message);
+          return;
+        }
 
-        if (route.params.userID) {
+        if (post?.user_id) {
           userContext.sendPushNotification(
-            route.params?.userID,
+            post?.user_id,
             "New Comment!",
             `${userContext.formatName} commented on your post!`,
-            route.params?.id,
+            post?.id,
             "NEW_COMMENT"
           );
         }
@@ -239,27 +245,17 @@ const PostDetailsScreen = ({ navigation, route }) => {
     <>
       <StatusBar style={Platform.OS === "android" ? "dark" : "light"} />
       <PostDetailsHeader
-        userID={userID}
-        liveLikes={liveLikes}
-        formatName={formatName}
-        avatarURL={avatarURL}
-        formatDate={formatDate}
-        postID={route.params?.id}
-        postContent={route.params?.postContent}
-        postType={route.params?.postType}
+        post={post}
       />
       <SafeAreaView style={{ marginBottom: 30 }}>
         <KeyboardAvoidingView behavior="padding">
-          <ScrollView
-            
-            scrollEventThrottle={16}
-          >
+          <ScrollView scrollEventThrottle={16}>
             <View style={styles.postContent}>
-              <Text>{route.params?.postContent}</Text>
+              <Text>{post?.postcontent}</Text>
             </View>
             <View style={styles.likesContainer}>
               <View>
-                {route.params?.postType === "joy" ? joyLabel : concernLabel}
+                {post?.posttype === "joy" ? joyLabel : concernLabel}
               </View>
               <View
                 style={{
@@ -293,11 +289,7 @@ const PostDetailsScreen = ({ navigation, route }) => {
               {comments.map((comment) => (
                 <CommentItem
                   key={comment.id}
-                  user_id={comment.user_id}
-                  content={comment.commentcontent}
-                  author={comment.author}
-                  postDate={comment.postdate}
-                  id={comment.id}
+                  comment={comment}
                 />
               ))}
             </View>

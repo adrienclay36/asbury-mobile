@@ -1,92 +1,74 @@
 import { StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import { Avatar, Card } from "react-native-paper";
-import useGetUser from "../../hooks/useGetUser";
+
 import RenderHTML from "react-native-render-html";
 import { useWindowDimensions } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { onShare } from "../../helpers/onShare";
 import * as Animatable from "react-native-animatable";
+import { useNavigation } from "@react-navigation/native";
 const BASE_URL = `https://asbury-next-website.vercel.app/blog`;
-const BlogItem = ({
-  title,
-  author,
-  image,
-  postDate,
-  postContent,
-  userID,
-  navigation,
-  route,
-  id,
-}) => {
+const BlogItem = ({ post }) => {
   const { width, height } = useWindowDimensions();
+  const navigation = useNavigation();
 
-  const { user, avatarURL, loadingUser } = useGetUser(userID);
+  const rightContent = (props) => (
+    <Avatar.Image
+      {...props}
+      style={styles.avatar}
+      source={{ uri: post?.avatar_url }}
+    />
+  );
 
-  
-
-  if (loadingUser || !user) {
-    return null;
-  }
-  let rightContent;
-  if (avatarURL) {
-    rightContent = (props) => (
-      <Avatar.Image
-        {...props}
-        style={styles.avatar}
-        source={{ uri: avatarURL }}
-      />
-    );
-  } else {
-    rightContent = (props) => (
-      <Avatar.Image
-        {...props}
-        style={styles.avatar}
-        source={require("../../assets/default-2.png")}
-      />
-    );
-  }
-
-  const source = { html: postContent };
-  const formatTitle = title
+  const source = { html: post?.postcontent };
+  const formatTitle = post?.title
     .replace(/([a-z])([A-Z])/g, "$1-$2")
     .replace(/\s+/g, "-")
     .replace("---", "-")
     .toLowerCase();
 
   let imageComponent;
-  if (image.includes("http")) {
-    imageComponent = <Card.Cover source={{ uri: image }} />;
+  if (post?.image.includes("http")) {
+    imageComponent = <Card.Cover source={{ uri: post?.image }} />;
   } else {
     imageComponent = (
       <Card.Cover source={require("../../assets/blog-default.png")} />
     );
   }
 
-  const shareMessage = `Check out this post by ${author} on Asbury UMC!`;
-  const shareURL = `${BASE_URL}/${id}/${formatTitle}`;
+  const shareMessage = `Check out this post by ${post?.author} on Asbury UMC!`;
+  const shareURL = `${BASE_URL}/${post?.id}/${formatTitle}`;
 
   return (
     <TouchableOpacity
       onLongPress={() => onShare(shareMessage, shareURL)}
       onPress={() =>
         navigation.navigate("BlogDetailsScreen", {
-          id,
-          title,
-          author: `${user.first_name} ${user.last_name}`,
-          image,
-          postDate,
-          postContent,
-          userID,
-          avatarURL,
+          post,
         })
       }
     >
       <Animatable.View animation="fadeIn">
         <Card style={styles.card}>
           {imageComponent}
-          <Card.Title title={title} subtitle={`${user.first_name} ${user.last_name}`} right={rightContent} />
-          <RenderHTML baseStyle={{ marginHorizontal: 20, textAlign: 'left'}} source={{ html: postContent.length > 100 ? postContent.slice(0, 100) + "..." : postContent }} contentWidth={width} />
+          <Card.Title
+            titleStyle={{ color: "black" }}
+            subtitleStyle={{ color: "black" }}
+            title={post?.title}
+            subtitle={post?.author}
+            right={rightContent}
+          />
+          <RenderHTML
+            baseStyle={{ marginHorizontal: 20, textAlign: "left" }}
+            source={{
+              html:
+                post?.postcontent.length > 100
+                  ? post.postcontent.slice(0, 100) + "..."
+                  : post?.postcontent,
+            }}
+            contentWidth={width}
+          />
         </Card>
       </Animatable.View>
     </TouchableOpacity>
@@ -99,11 +81,12 @@ const styles = StyleSheet.create({
   card: {
     marginHorizontal: 10,
     marginVertical: 10,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
+    backgroundColor: "white",
   },
   avatar: {
     marginRight: 20,
     marginLeft: 10,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
 });

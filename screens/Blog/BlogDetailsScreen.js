@@ -7,15 +7,17 @@ import { userColors } from "../../constants/userColors";
 import RenderHtml from "react-native-render-html";
 import IframeRenderer, { iframeModel } from "@native-html/iframe-plugin";
 import WebView from "react-native-webview";
-
+import PaddedScrollView from '../../components/ui/PaddedScrollView';
 const { height, width } = Dimensions.get("window");
+import FloatingBackButton from "../../components/ui/FloatingBackButton";
 const BlogDetailsScreen = ({ navigation, route }) => {
-  const { title, author, postContent, userID, image, postDate, avatarURL } =
-    route?.params;
-  const formatDate = new Date(postDate).toLocaleDateString("en-US");
+  const { post } = route?.params;
+  const formatDate = new Date(post?.postdate).toLocaleDateString("en-US");
   let imageComponent;
-  if (image.includes("http")) {
-    imageComponent = <Image source={{ uri: image }} style={styles.image} />;
+  if (post?.image.includes("http")) {
+    imageComponent = (
+      <Image source={{ uri: post?.image }} style={styles.image} />
+    );
   } else {
     imageComponent = (
       <Image
@@ -25,7 +27,7 @@ const BlogDetailsScreen = ({ navigation, route }) => {
     );
   }
 
-  const source = { html: postContent };
+  const source = { html: post?.postcontent };
 
   const renderersProps = {
     img: {
@@ -33,7 +35,7 @@ const BlogDetailsScreen = ({ navigation, route }) => {
     },
     iframe: {
       scalePageToFit: false,
-    }
+    },
   };
 
   const renderers = {
@@ -54,14 +56,16 @@ const BlogDetailsScreen = ({ navigation, route }) => {
   };
 
   return (
-    <ScrollView>
+    <>
+    <FloatingBackButton/>
+    <PaddedScrollView>
       {imageComponent}
-      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.title}>{post?.title}</Text>
       <View style={styles.postData}>
         <View style={styles.authorBox}>
-          <Avatar.Image source={{ uri: avatarURL }} size={60} />
+          <Avatar.Image source={{ uri: post?.avatar_url }} style={{ backgroundColor: 'transparent' }} size={60} />
           <View style={styles.textData}>
-            <Text style={styles.author}>{author}</Text>
+            <Text style={styles.author}>{post?.author}</Text>
             <Text style={styles.date}>{formatDate}</Text>
           </View>
         </View>
@@ -78,7 +82,8 @@ const BlogDetailsScreen = ({ navigation, route }) => {
           contentWidth={width}
         />
       </View>
-    </ScrollView>
+    </PaddedScrollView>
+  </>
   );
 };
 
@@ -88,7 +93,7 @@ const styles = StyleSheet.create({
   image: {
     height: height * 0.3,
     width: width,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
   title: {
     fontFamily: primaryFont.semiBold,

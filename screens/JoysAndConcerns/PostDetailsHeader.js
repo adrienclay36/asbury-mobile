@@ -18,54 +18,80 @@ const AVATAR_SIZE = 40;
 const { width, height } = Dimensions.get("window");
 const HEADER_HEIGHT =
   Platform.OS === "android" ? height * 0.13 : height * 0.109;
-const PostDetailsHeader = ({ userID, formatName, avatarURL, postID, postContent, postType, formatDate, liveLikes }) => {
+const PostDetailsHeader = ({ post }) => {
   const userContext = useContext(UserContext);
   const prayerContext = useContext(PrayerContext);
   const navigation = useNavigation();
 
-  const headerComponent = <Text style={styles.headerText}>{formatName}</Text>
+  const headerComponent = <Text style={styles.headerText}>{post?.author}</Text>;
 
-
-  const imageComponent = avatarURL ? (
+  const imageComponent = (
     <Avatar.Image
       style={styles.avatar}
       size={AVATAR_SIZE}
-      source={{ uri: avatarURL }}
-    />
-  ) : (
-    <Avatar.Image
-      style={styles.avatar}
-      size={AVATAR_SIZE}
-      source={require("../../assets/default-2.png")}
+      source={{ uri: post?.avatar_url }}
     />
   );
 
-
   const deletePostHandler = async () => {
-    Alert.alert('Delete Post?', 'Are you sure you want to delete this post? This action cannot be undone', [
-      { text: 'Delete', style: 'destructive', onPress: () => deletePostConfirmed()},
-      { text: 'Cancel' }
-    ])
-    
-  }
+    Alert.alert(
+      "Delete Post?",
+      "Are you sure you want to delete this post? This action cannot be undone",
+      [
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => deletePostConfirmed(),
+        },
+        { text: "Cancel" },
+      ]
+    );
+  };
 
   const deletePostConfirmed = () => {
-    prayerContext.deletePost(postID);
+    prayerContext.deletePost(post?.id);
     navigation.popToTop();
-  }
+  };
   return (
     <>
       <View style={styles.header}>
         <View style={styles.contentContainer}>
-          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-            {Platform.OS === 'android' && <Appbar.BackAction onPress={() => navigation.goBack()}  color={Colors.white}/>}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {Platform.OS === "android" && (
+              <Appbar.BackAction
+                onPress={() => navigation.goBack()}
+                color={Colors.white}
+              />
+            )}
             {imageComponent}
             {headerComponent}
           </View>
-          {userContext.userValue?.id === userID && <View style={{flexDirection: 'row',}}>
-            <Appbar.Action icon="pencil" color={Platform.OS === 'android' ? Colors.white : Colors.grey700} onPress={() => navigation.navigate('EditPostScreen', { liveLikes, userID, postID, postType, postContent, avatarURL, formatName, formatDate })} />
-            <Appbar.Action icon="trash-can" color={Platform.OS === 'android' ? Colors.white : Colors.red700} onPress={deletePostHandler} />
-          </View>}
+          {userContext.userValue?.id === post?.user_id && (
+            <View style={{ flexDirection: "row" }}>
+              <Appbar.Action
+                icon="pencil"
+                color={
+                  Platform.OS === "android" ? Colors.white : Colors.grey700
+                }
+                onPress={() =>
+                  navigation.navigate("EditPostScreen", {
+                    post,
+                  })
+                }
+              />
+              <Appbar.Action
+                icon="trash-can"
+                color={Platform.OS === "android" ? Colors.white : Colors.red700}
+                onPress={deletePostHandler}
+              />
+            </View>
+          )}
         </View>
       </View>
     </>

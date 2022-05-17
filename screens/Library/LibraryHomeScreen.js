@@ -57,10 +57,15 @@ const LibraryHomeScreen = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Animatable.View animation="fadeIn" style={styles.searchContainer}>
+    <>
+
+     <Animatable.View animation="fadeIn" style={styles.searchContainer}>
         <TextInput
-          theme={{ colors: { primary: userColors.seaFoam600 } }}
+          theme={{ colors: { primary: userColors.seaFoam600 }, }}
+          
+          style={{ backgroundColor: 'white', color: 'black' }}
+          placeholderTextColor='black'
+          
           label="Start Typing To Search"
           selectionColor={userColors.seaFoam600}
           value={query}
@@ -95,7 +100,7 @@ const LibraryHomeScreen = ({ navigation, route }) => {
           />
         )}
       </Animatable.View>
-    </SafeAreaView>
+    </>
   );
 };
 

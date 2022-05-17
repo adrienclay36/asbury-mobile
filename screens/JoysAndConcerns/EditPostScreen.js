@@ -18,11 +18,12 @@ import { StatusBar } from "expo-status-bar";
 import EditPostHeader from './EditPostHeader';
 import CenteredLoader from "../../components/ui/CenteredLoader";
 const EditPostScreen = ({ navigation, route }) => {
-    const { avatarURL, formatDate, formatName, postContent, postID, postType: incomingType, liveLikes, userID } = route?.params;
+    const { post } = route?.params;
+    console.log(postType);
   const prayerContext = useContext(PrayerContext);
   const userContext = useContext(UserContext);
-  const [content, setContent] = useState(postContent);
-  const [postType, setPostType] = useState(incomingType);
+  const [content, setContent] = useState(post?.postcontent);
+  const [postType, setPostType] = useState(post?.posttype);
   const [name, setName] = useState("");
   const [error, setError] = useState(false);
   
@@ -30,7 +31,7 @@ const EditPostScreen = ({ navigation, route }) => {
 
   const editPostHandler = async () => {
     if (userContext.auth && postType && content) {
-      prayerContext.editPost(route.params?.postID, content, postType, navigation);
+      prayerContext.editPost(post?.id, content, postType, navigation);
     //   navigation.navigate("PostDetails", {liveLikes, userID, postContent, postType, id: postID, formatName, formatDate, avatarURL, userID})
       Keyboard.dismiss();
       navigation.popToTop();

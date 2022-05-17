@@ -9,11 +9,8 @@ import MainDrawerNavigator from "./navigators/MainDrawerNavigator";
 import PrayersProvider from "./store/PrayersProvider";
 import {
   Provider as PaperProvider,
-  DefaultTheme,
-  DarkTheme,
 } from "react-native-paper";
 import { useFonts } from "expo-font";
-import HomeTabNavigator from "./navigators/HomeTabNavigator";
 import AppLoading from "expo-app-loading";
 import AuthStack from "./navigators/AuthStack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";

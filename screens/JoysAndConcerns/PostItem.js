@@ -31,23 +31,17 @@ const ITEM_SIZE = 225;
 const MARGIN = 10;
 const CARD_HEIGHT = ITEM_SIZE + MARGIN * 2;
 const PostItem = ({
-  author,
-  likes,
-  id,
-  postContent,
-  postDate,
-  postType,
-  userID,
+  post,
   navigation,
   fromHomePage,
   itemHeight,
 }) => {
-  const [liveLikes, setLiveLikes] = useState(likes);
+  const [liveLikes, setLiveLikes] = useState(post?.likes);
   const [liked, setLiked] = useState(false);
   const [commentCount, setCommentCount] = useState(0);
   const userContext = useContext(UserContext);
   const getLikeStatus = useCallback(async () => {
-    const storedPost = await AsyncStorage.getItem(`post_${id}`);
+    const storedPost = await AsyncStorage.getItem(`post_${post?.id}`);
     if (storedPost) {
       setLiked(true);
     } else {
@@ -55,15 +49,15 @@ const PostItem = ({
     }
 
     isInit = false;
-  }, [id]);
+  }, [post?.id]);
 
   const getCommentCount = useCallback(async () => {
     const { data, count } = await supabase
       .from("comments")
       .select("postid", { count: "exact" })
-      .match({ postid: id });
+      .match({ postid: post?.id });
     setCommentCount(count);
-  }, [id]);
+  }, [post?.id]);
 
   useEffect(() => {
     getLikeStatus();
@@ -72,89 +66,52 @@ const PostItem = ({
 
   const prayerContext = useContext(PrayerContext);
 
-  const { user, avatarURL, loadingUser } = useGetUser(userID);
 
-  const formatDate = new Date(postDate).toLocaleDateString("en-US");
 
-  if (itemHeight && loadingUser) {
-    return <Card height={ITEM_SIZE}></Card>
-  }
+  const formatDate = new Date(post?.created_at).toLocaleDateString("en-US");
 
-  if (loadingUser) {
-    return null;
-  }
 
-  let formatName;
-  if (user) {
-    formatName = `${user.first_name} ${user.last_name}`;
-  } else {
-    formatName = author;
-  }
+  
 
-  const imageComponent = avatarURL ? (
+  const imageComponent =  (
     <Avatar.Image
-      source={{ uri: avatarURL }}
+      source={{ uri: post?.avatar_url }}
       size={50}
       style={{ backgroundColor: "transparent" }}
     />
-  ) : (
-    <Avatar.Image
-      source={require("../../assets/default-2.png")}
-      size={50}
-      style={{ backgroundColor: Colors.white }}
-    />
-  );
+  )
+ 
 
   const incrementLikeHandler = async () => {
-    const storedPost = await AsyncStorage.getItem(`post_${id}`);
+    const storedPost = await AsyncStorage.getItem(`post_${post?.id}`);
     if (storedPost) {
-      prayerContext.decrementLike(id);
-      AsyncStorage.removeItem(`post_${id}`);
+      prayerContext.decrementLike(post?.id);
+      AsyncStorage.removeItem(`post_${post?.id}`);
       setLiveLikes(liveLikes - 1);
       return;
     }
     setLiveLikes(liveLikes + 1);
-    prayerContext.incrementLike(id);
-    if (userID) {
+    prayerContext.incrementLike(post?.id);
+    if (post?.user_id) {
       userContext.sendPushNotification(
-        userID,
+        post?.user_id,
         "Someone Liked Your Post!",
         `${userContext.formatName} Liked one of your posts!`,
-        id,
+        post?.id,
         "POST_LIKED"
       );
     }
-    AsyncStorage.setItem(`post_${id}`, "1");
+    AsyncStorage.setItem(`post_${post?.id}`, "1");
   };
 
   const navigatePostDetails = () => {
-    navigation.navigate("PostDetails", {
-      liveLikes,
-      formatName,
-      postContent,
-      formatDate,
-      postType,
-      id,
-      userID,
-      ITEM_SIZE,
-      avatarURL,
-    });
+    navigation.navigate("PostDetails", { post });
   };
 
   const navigateJoysHome = () => {
     navigation.navigate("JoysStack");
     setTimeout(() => {
-      navigation.navigate("PostDetails", {
-        liveLikes,
-        formatName,
-        postContent,
-        formatDate,
-        postType,
-        id,
-        userID,
-        ITEM_SIZE,
-        avatarURL,
-      });
+      navigation.navigate("PostDetails", { post });
     }, 250);
   };
 
@@ -200,24 +157,24 @@ const PostItem = ({
                 <View style={styles.userInfoContainer}>
                   {imageComponent}
                   <View style={{ marginHorizontal: 10 }}>
-                    <Text style={styles.userName}>{formatName}</Text>
+                    <Text style={styles.userName}>{post?.author}</Text>
                     <Text style={styles.date}>{formatDate}</Text>
                   </View>
                 </View>
               </View>
               <View style={styles.content}>
                 <Text>
-                  {postContent?.length > 100
-                    ? postContent.slice(0, 100) + "..."
-                    : postContent}
+                  {post?.postcontent?.length > 100
+                    ? post?.postcontent.slice(0, 100) + "..."
+                    : post?.postcontent}
                 </Text>
               </View>
             </View>
             <View style={styles.likesContainer}>
-              <Text style={styles.commentCount}>{commentCount} comments</Text>
+              <Text style={styles.commentCount}>{post?.comment_count} comments</Text>
               <View style={{ flexDirection: "row" }}>
                 <View style={{ marginRight: 10 }}>
-                  {postType === "joy" ? (
+                  {post?.posttype === "joy" ? (
                     joyLabel
                   ) : (
                     concernLabel

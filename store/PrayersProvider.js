@@ -52,7 +52,7 @@ const PrayersProvider = (props) => {
       pageNumber,
       PAGE_SIZE,
       TABLE,
-      "postdate"
+      "created_at"
     );
     if (paged) {
       setPosts((prevPosts) => {
@@ -71,7 +71,7 @@ const PrayersProvider = (props) => {
       pageNumber,
       PAGE_SIZE,
       TABLE,
-      "postdate"
+      "created_at"
     );
     setPosts((prevPosts) => {
       return [...prevPosts, ...data];
@@ -95,7 +95,7 @@ const PrayersProvider = (props) => {
     setPosts([]);
     setLoading(true);
     setPageNumber(0);
-    const data = await getPagedDataByDate(0, PAGE_SIZE, TABLE, "postdate");
+    const data = await getPagedDataByDate(0, PAGE_SIZE, TABLE, "created_at");
     setPosts(data);
     setLoading(false);
     isInit = false;
@@ -128,7 +128,7 @@ const PrayersProvider = (props) => {
       postcontent: content,
       ipaddress,
       notifications: false,
-      postdate: new Date(),
+      created_at: new Date(),
     };
 
     const response = await addItemToTable(TABLE, postToAdd);
@@ -153,7 +153,7 @@ const PrayersProvider = (props) => {
       postcontent: content,
       ipaddress,
       notifications: false,
-      postdate: new Date(),
+      created_at: new Date(),
       user_id: userID,
     };
 
@@ -203,7 +203,7 @@ const PrayersProvider = (props) => {
       0,
       PAGE_SIZE,
       TABLE,
-      "postdate"
+      "created_at"
     );
     console.log(data);
     setPosts(data);

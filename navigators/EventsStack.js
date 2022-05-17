@@ -8,21 +8,16 @@ const Stack = createNativeStackNavigator();
 const EventsStack = () => {
     
   return (
-    <View style={{ flex: 1 }} collapsable={false}>
-      <Stack.Navigator>
+
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
-          options={({ route }) => ({
-            
-            header: (props) => (
-              <BasicHeaderMenu {...props} props={props} route={route} />
-            ),
-          })}
+          
           name="EventsHomeScreen"
           component={EventsHomeScreen}
         />
         <Stack.Screen options={{ headerShown: false, presentation: 'formSheet' }}  name="EventDetailsScreen" component={EventDetailsScreen} />
       </Stack.Navigator>
-    </View>
+   
   );
 };
 

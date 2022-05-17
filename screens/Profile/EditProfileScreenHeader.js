@@ -18,7 +18,7 @@ const AVATAR_SIZE = 40;
 const { width, height } = Dimensions.get("window");
 const HEADER_HEIGHT =
   Platform.OS === "android" ? height * 0.14 : height * 0.15;
-const EditProfileScreenHeader = ({ navigation, saveChanges, valuesChanged, }) => {
+const EditProfileScreenHeader = ({ navigation, saveChanges, valuesChanged, loading }) => {
   const userContext = useContext(UserContext);
   
   
@@ -33,16 +33,13 @@ const EditProfileScreenHeader = ({ navigation, saveChanges, valuesChanged, }) =>
             color={Platform.OS === "android" ? Colors.white : Colors.grey700}
             onPress={() => navigation.goBack()}
           />
-          {/* <View style={styles.userContainer}>
-            {imageComponent}
-            {headerComponent}
-          </View> */}
+          
           <Button
             onPress={saveChanges}
             
             mode={Platform.OS === "android" ? "outlined" : "contained"}
-            loading={userContext.loading}
-            disabled={!valuesChanged.firstNameChanged && !valuesChanged.lastNameChanged && !valuesChanged.locationChanged || userContext.loading}
+            loading={loading}
+            disabled={!valuesChanged.firstNameChanged && !valuesChanged.lastNameChanged && !valuesChanged.locationChanged || loading}
             style={{
               backgroundColor:
                 Platform.OS === "android"
@@ -66,7 +63,7 @@ export default EditProfileScreenHeader;
 const styles = StyleSheet.create({
   header: {
     backgroundColor:
-      Platform.OS === "android" ? userColors.seaFoam600 : Colors.grey300,
+      Platform.OS === "android" ? userColors.seaFoam600 : 'transparent',
     height: HEADER_HEIGHT,
   },
   contentContainer: {

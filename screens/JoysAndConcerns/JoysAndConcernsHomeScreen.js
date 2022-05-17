@@ -32,12 +32,7 @@ const JoysAndConcernsHomeScreen = ({ navigation, route }) => {
   const renderPostItem = (itemData) => {
     return (
       <PostItem
-        postContent={itemData.item.postcontent}
-        author={itemData.item.author}
-        postDate={itemData.item.postdate}
-        userID={itemData.item.user_id}
-        postType={itemData.item.posttype}
-        likes={itemData.item.likes}
+        post={itemData?.item}
         scrollY={scrollY}
         index={itemData.index}
         id={itemData.item.id}

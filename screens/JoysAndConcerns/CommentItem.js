@@ -8,24 +8,15 @@ import { primaryFont } from "../../constants/fonts";
 import { UserContext } from "../../store/UserProvider";
 import { AntDesign } from "@expo/vector-icons";
 import { supabase } from "../../supabase-service";
-const CommentItem = ({ author, content, postDate, user_id, id }) => {
-  const formatDate = new Date(postDate).toLocaleDateString("en-US");
+const CommentItem = ({ comment }) => {
+  const formatDate = new Date(comment?.created_at).toLocaleDateString("en-US");
   const userContext = useContext(UserContext);
-
-  const { user, avatarURL, loadingUser } = useGetUser(user_id);
-
-  let formatName;
-  if (user_id && user && !loadingUser) {
-    formatName = `${user.first_name} ${user.last_name}`;
-  } else {
-    formatName = author;
-  }
 
   const deleteComment = async () => {
     const { data, error } = await supabase
       .from("comments")
       .delete()
-      .match({ id });
+      .match({ id: comment?.id });
       if(error) {
         console.log("Error in CommentItem::, ", error.message);
       }
@@ -37,19 +28,13 @@ const CommentItem = ({ author, content, postDate, user_id, id }) => {
     
   };
 
-  const imageComponent = avatarURL ? (
+  const imageComponent =  (
     <Avatar.Image
-      source={{ uri: avatarURL }}
+      source={{ uri: comment?.avatar_url }}
       size={50}
       style={{ backgroundColor: "transparent" }}
     />
-  ) : (
-    <Avatar.Image
-      source={require("../../assets/default-2.png")}
-      size={50}
-      style={{ backgroundColor: Colors.white }}
-    />
-  );
+  )
 
   return (
     <Animatable.View
@@ -70,12 +55,12 @@ const CommentItem = ({ author, content, postDate, user_id, id }) => {
               }}
             >
               <View>
-                <Text style={styles.userName}>{formatName}</Text>
+                <Text style={styles.userName}>{comment?.author}</Text>
                 <View style={styles.postContent}>
-                  <Text>{content}</Text>
+                  <Text>{comment?.content}</Text>
                 </View>
               </View>
-              {userContext?.userInfo?.id === user_id && <AntDesign
+              {userContext?.userInfo?.id === comment?.user_id && <AntDesign
                 onPress={() => deleteCommentHandler()}
                 name="close"
                 size={15}

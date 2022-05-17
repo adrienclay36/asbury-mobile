@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, SafeAreaView } from "react-native";
 import React, { useEffect, useContext } from "react";
 import ProfileCard from "../../components/Giving/ProfileCard";
 import { UserContext } from "../../store/UserProvider";
+import DrawerHeader from "../../components/ui/DrawerHeader";
 const GivingHomePage = ({ navigation, route }) => {
   const userContext = useContext(UserContext);
 
@@ -12,14 +13,13 @@ const GivingHomePage = ({ navigation, route }) => {
     return unsubscribe;
   }, [navigation]);
 
-
-  if(!userContext.userValue) {
-
-    return <Text>Sign in To View Giving Options</Text>
+  if (!userContext.userValue) {
+    return <Text>Sign in To View Giving Options</Text>;
   }
 
   return (
     <>
+    <DrawerHeader/>
       <ProfileCard navigation={navigation} />
     </>
   );

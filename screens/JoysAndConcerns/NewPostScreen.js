@@ -20,6 +20,7 @@ import { StatusBar } from "expo-status-bar";
 import NewPostHeader from "./NewPostHeader";
 import CenteredLoader from "../../components/ui/CenteredLoader";
 import { ScrollView } from "react-native-gesture-handler";
+import { supabase } from "../../supabase-service";
 const NewPostScreen = ({ navigation, route }) => {
   const prayerContext = useContext(PrayerContext);
   const userContext = useContext(UserContext);
@@ -27,27 +28,48 @@ const NewPostScreen = ({ navigation, route }) => {
   const [postType, setPostType] = useState("joy");
   const [name, setName] = useState("");
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const submitPostHandler = async () => {
+    setLoading(true);
     if (userContext.auth && postType && content) {
-      prayerContext.addUserPost(
-        postType,
-        content,
-        userContext.userValue.id,
-        navigation
-      );
       Keyboard.dismiss();
+      const { data, error } = await supabase.from("prayers").insert({
+        user_id: userContext?.userInfo?.id,
+        author: `${userContext?.userInfo?.first_name} ${userContext?.userInfo?.last_name}`,
+        postcontent: content,
+        posttype: postType,
+        avatar_url: userContext?.userInfo?.avatar_url,
+      });
+      if(error) {
+        console.log("Error adding user post:: ", error.message);
+        setLoading(false);
+        return;
+      }
+      setLoading(false);
+      navigation.replace("JoysAndConcernsHome");
       return;
     }
     if (name && content) {
-      prayerContext.addPost(name, postType, content, navigation);
       Keyboard.dismiss();
+      const { data:anonData, error: anonError } = await supabase.from("prayers").insert({
+        author: name,
+        postcontent: content,
+        posttype: postType,
+      });
+      if(anonError) {
+        console.log("error adding guest post:: ", anonError.message);
+        setLoading(false);
+        return;
+      }
+      setLoading(false);
+      navigation.replace("JoysAndConcernsHome");
       return;
     }
     setError(true);
   };
 
-  if (prayerContext.posting) {
+  if (loading) {
     return (
       <>
         <NewPostHeader

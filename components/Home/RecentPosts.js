@@ -16,14 +16,9 @@ const RecentPosts = ({ navigation, route }) => {
     return (
       <PostItem
         itemHeight={true}
-        postContent={itemData.item.postcontent}
-        author={itemData.item.author}
-        postDate={itemData.item.postdate}
-        userID={itemData.item.user_id}
-        postType={itemData.item.posttype}
-        likes={itemData.item.likes}
+        post={itemData.item}
         index={itemData.index}
-        id={itemData.item.id}
+        
         navigation={navigation}
         fromHomePage={true}
       />

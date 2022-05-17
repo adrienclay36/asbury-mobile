@@ -77,6 +77,8 @@ const UserProvider = (props) => {
     if (data) {
       const userData = data[0];
       setUserInfo(userData);
+      setAvatarURL(userData?.avatar_url);
+
       
 
        if (user.app_metadata.provider === "google") {
@@ -104,11 +106,7 @@ const UserProvider = (props) => {
       const name = `${userData.first_name} ${userData.last_name}`;
       setFormatName(name);
 
-      const publicAvatarURL = await getPublicUrl(
-        "avatars",
-        userData.avatar_url
-      );
-      setAvatarURL(publicAvatarURL);
+      
       setPermissions(userData.permissions);
       setRole(userData.role);
 

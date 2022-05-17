@@ -143,6 +143,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     textAlign: "center",
+    paddingBottom: 100,
   },
   infoContainer: {
     marginVertical: 20,

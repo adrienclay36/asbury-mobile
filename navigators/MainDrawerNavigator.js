@@ -30,23 +30,10 @@ const MainDrawerNavigator = ({ navigation, route }) => {
 
       const post = await getItemById("prayers", postID);
       const postData = post[0];
-      const { data, error } = await supabase
-        .from("users")
-        .select()
-        .match({ id: postData.user_id });
-      const user = data[0];
-
-      const fetchedAvatar = await getPublicUrl("avatars", user.avatar_url);
+      
 
       navigation.navigate("PostDetails", {
-        formatName: `${user.first_name} ${user.last_name}`,
-        liveLikes: postData.likes,
-        id: postData.id,
-        postContent: postData.postcontent,
-        formatDate: new Date(postData.postdate).toLocaleDateString("en-US"),
-        postType: postData.posttype,
-        userID: postData.user_id,
-        avatarURL: fetchedAvatar,
+        post: postData,
       });
     }
   };

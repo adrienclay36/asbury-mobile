@@ -1,8 +1,16 @@
-import { StyleSheet, Text, View, FlatList, SafeAreaView, StatusBar, RefreshControl } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  SafeAreaView,
+  StatusBar,
+  RefreshControl,
+} from "react-native";
 import React, { useContext, useEffect } from "react";
 import { BlogContext } from "../../store/BlogProvider";
-
-import LottieView from 'lottie-react-native';
+import DrawerHeader from "../../components/ui/DrawerHeader";
+import LottieView from "lottie-react-native";
 import BlogItem from "./BlogItem";
 
 const BlogHomeScreen = ({ navigation, route }) => {
@@ -15,28 +23,42 @@ const BlogHomeScreen = ({ navigation, route }) => {
     return unsubscribe;
   }, [navigation]);
 
-  if(blogContext.loading) {
-    return <LottieView source={require("../../loaders/dotloader.json")} autoPlay loop />
+  if (blogContext.loading) {
+    return (
+      <LottieView
+        source={require("../../loaders/dotloader.json")}
+        autoPlay
+        loop
+      />
+    );
   }
   return (
-    <SafeAreaView style={styles.container}>
+  
+    <>
+    <DrawerHeader/>
       <FlatList
-      showsHorizontalScrollIndicator={false}
-      showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
         refreshing={blogContext.loading}
-        refreshControl={<RefreshControl onRefresh={() => blogContext.getPosts()} />}
+        refreshControl={
+          <RefreshControl onRefresh={() => blogContext.getPosts()} />
+        }
         data={blogContext.posts}
-        renderItem={(itemData) => <BlogItem id={itemData.item.id} navigation={navigation} route={route} image={itemData.item.image} title={itemData.item.title} author={itemData.item.author} postContent={itemData.item.postcontent} postDate={itemData.item.postdate} userID={itemData.item?.user_id} />}
-      />
-    </SafeAreaView>
+        renderItem={(itemData) => (
+          <BlogItem
+            post={itemData?.item}
+          />
+          )}
+          />
+          </>
+  
   );
 };
 
 export default BlogHomeScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        marginTop: StatusBar.currentHeight + 20,
-        
-    }
+  container: {
+    marginTop: StatusBar.currentHeight + 20,
+  },
 });
