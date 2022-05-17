@@ -37,10 +37,10 @@ const JoysAndConcernsHeader = () => {
         >
           <Avatar.Image
             size={30}
-            source={{ uri: userContext?.userInfo?.avatar_url }}
-            style={{ marginRight: 15, }}
+            source={userContext?.userInfo ? { uri: userContext?.userInfo?.avatar_url } : require("../../assets/default-2.png")}
+            style={{ marginRight: 15, backgroundColor: 'transparent' }}
           />
-          <Text style={styles.name}>{userContext?.userInfo?.first_name}'s Feed</Text>
+          <Text style={styles.name}>{userContext?.userInfo ? `${userContext?.userInfo?.first_name}'s Feed ` : "Joys And Concerns"}</Text>
         </View>
         <View
           style={{

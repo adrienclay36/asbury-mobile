@@ -9,7 +9,9 @@ import {
   TextInput,
   Platform,
   KeyboardAvoidingView,
+  Image,
 } from "react-native";
+import CustomButton from "../../components/ui/CustomButton";
 import React, { useState, useContext, useEffect } from "react";
 import { userColors } from "../../constants/userColors";
 import { Colors, Button, Portal, Modal } from "react-native-paper";
@@ -27,6 +29,7 @@ import * as AuthSession from "expo-auth-session";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import validator from "validator";
+import PaddedScrollView from "../../components/ui/PaddedScrollView";
 
 const CARD_HEIGHT = Dimensions.get("window").height / 1.3;
 
@@ -69,45 +72,6 @@ const SignInScreen = ({ navigation, route }) => {
     setLoading(false);
   };
 
-  // const signUpHandler = async () => {
-  //   setLoading(true);
-  //   if (
-  //     data.confirmPassword &&
-  //     data.isValidConfirmPassword &&
-  //     data.email &&
-  //     data.isValidEmail &&
-  //     data.password &&
-  //     data.isValidPassword
-  //   ) {
-  //     const { data: signUpData, error: signingError } =
-  //       await supabase.auth.signUp({
-  //         email: data.email,
-  //         password: data.password,
-  //       });
-  //     console.log(signUpData);
-  //     if (signingError) {
-  //       setFormError(true);
-  //       setErrorMessage(signingError.message);
-  //     } else {
-  //       setSuccess(true);
-  //       setData({
-  //         email: "",
-  //         password: "",
-  //         confirmPassword: "",
-  //         isValidConfirmPassword: true,
-  //         isValidEmail: true,
-  //         isValidPassword: true,
-  //       });
-
-  //       setSigningUp(false);
-  //     }
-  //   } else {
-  //     setFormError(true);
-  //     setErrorMessage("Invalid Input");
-  //   }
-  //   setLoading(false);
-  // };
-
   const googleAuth = async () => {
     const redirectUri = AuthSession.makeRedirectUri({ useProxy: false });
 
@@ -144,16 +108,17 @@ const SignInScreen = ({ navigation, route }) => {
         showModal={success}
         dismissModal={() => setSuccess(false)}
       />
-      <ImageBackground
+      <Image
         style={styles.backgroundImage}
         resizeMode="cover"
         source={require("../../assets/hero.jpg")}
-      >
-        <Animatable.View animation="fadeInUpBig" style={styles.card}>
+      />
+      <PaddedScrollView containerStyles={{ justifyContent: "center", flex: 1 }}>
+        <Animatable.View animation="fadeInUpBig">
           <View style={styles.titleContainer}>
             <Text style={styles.title}>login</Text>
           </View>
-          <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={15}>
+          <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={30}>
             <Formik
               initialValues={{ email: "", password: "" }}
               validationSchema={loginFormSchema}
@@ -174,21 +139,20 @@ const SignInScreen = ({ navigation, route }) => {
                   <View style={styles.form}>
                     <Text style={styles.text_footer}>Email</Text>
                     <View style={styles.action}>
-                      <FontAwesome name="user-o" color="#05375a" size={20} />
                       <TextInput
                         style={styles.textInput}
                         placeholder="Your Email"
+                        placeholderTextColor={Colors.grey200}
                         autoCapitalize="none"
                         keyboardType="email-address"
                         autoComplete="email"
                         value={values.email}
                         onChangeText={handleChange("email")}
                         onBlur={handleBlur("email")}
-                        onSubmitEditing={() => this.secondTextInput.focus()}
                         blurOnSubmit={false}
                         returnKeyType="next"
                       />
-                      {validator.isEmail(values.email) ? (
+                      {/* {validator.isEmail(values.email) ? (
                         <Animatable.View animation="bounceIn">
                           <Feather
                             name="check-circle"
@@ -196,26 +160,16 @@ const SignInScreen = ({ navigation, route }) => {
                             size={20}
                           />
                         </Animatable.View>
-                      ) : null}
+                      ) : null} */}
                     </View>
-
-                    {1 > values.email.length ||
-                      (values.email.length < 6 && (
-                        <Animatable.View animation="fadeInLeft" duration={500}>
-                          <Text style={styles.errorMsg}>
-                            Please Enter a Valid Email
-                          </Text>
-                        </Animatable.View>
-                      ))}
 
                     <Text style={[styles.text_footer, { marginTop: 25 }]}>
                       Password
                     </Text>
                     <View style={styles.action}>
-                      <Feather name="lock" color="#05375a" size={20} />
                       <TextInput
-                        ref={(input) => this.secondTextInput = input}
                         value={values.password}
+                        placeholderTextColor={Colors.grey200}
                         style={styles.textInput}
                         secureTextEntry={!showPassword}
                         placeholder="Your Password"
@@ -225,51 +179,38 @@ const SignInScreen = ({ navigation, route }) => {
                       />
                       <TouchableOpacity onPress={() => toggleSecureTextEntry()}>
                         {!showPassword ? (
-                          <Feather name="eye-off" color="grey" size={20} />
+                          <Feather name="eye-off" color="white" size={20} />
                         ) : (
-                          <Feather name="eye" color="grey" size={20} />
+                          <Feather name="eye" color="white" size={20} />
                         )}
                       </TouchableOpacity>
                     </View>
 
-                    {1 > values.password.length ||
-                      (values.password.length < 6 && (
-                        <Animatable.View animation="fadeInLeft" duration={500}>
-                          <Text style={styles.errorMsg}>
-                            Password must be at least six characters
-                          </Text>
-                        </Animatable.View>
-                      ))}
-                  </View>
-                  <View
-                    style={{ justifyContent: "center", alignItems: "center" }}
-                  >
-                    <Button
-                      onPress={handleSubmit}
-                      loading={loading}
-                      style={styles.button}
-                      mode="contained"
-                      color={userColors.seaFoam700}
-                      icon={"login"}
-                    >
-                      Log In
-                    </Button>
-                    <Button
-                      style={{ marginBottom: 20 }}
-                      mode="contained"
-                      color={Colors.blue600}
-                      icon="google"
-                      onPress={googleAuth}
-                    >
-                      Sign In With Google
-                    </Button>
+                   
+                
+                      <View style={{ marginVertical: 10, width: "100%" }}>
+                        <CustomButton
+                          text="Log In"
+                          mode="outlined"
+                          onPress={handleSubmit}
+                          loading={loading}
+                        />
+                        <CustomButton
+                          text="Sign In With Google"
+                          onPress={googleAuth}
+                          backgroundColor={Colors.blue600}
+                          leftIcon={<FontAwesome name="google" size={20} color="white" />}
+                        />
+                      </View>
+                      
+                    
                   </View>
                 </>
               )}
             </Formik>
 
             <View style={{ marginVertical: 10 }}>
-              <Text style={{ textAlign: "center" }}>
+              <Text style={{ textAlign: "center", color: 'white' }}>
                 Don't have an account?
               </Text>
               <TouchableOpacity
@@ -277,7 +218,8 @@ const SignInScreen = ({ navigation, route }) => {
               >
                 <Text
                   style={{
-                    color: userColors.seaFoam500,
+                    color: 'white',
+                    marginVertical: 10,
                     fontWeight: "600",
                     textAlign: "center",
                   }}
@@ -303,7 +245,7 @@ const SignInScreen = ({ navigation, route }) => {
             </TouchableOpacity>
           </KeyboardAvoidingView>
         </Animatable.View>
-      </ImageBackground>
+      </PaddedScrollView>
     </View>
   );
 };
@@ -328,27 +270,14 @@ const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
+    position: "absolute",
+    height: Dimensions.get("window").height,
+    width: Dimensions.get("window").width,
   },
-  screen: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  card: {
-    height: Platform.OS === "android" ? CARD_HEIGHT + 70 : CARD_HEIGHT,
-    width: "90%",
-    backgroundColor: Colors.white,
-    borderRadius: 25,
-    shadowColor: "#ccc",
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 10,
-    shadowOpacity: 0.5,
-    elevation: 5,
-  },
+
   title: {
     fontFamily: primaryFont.bold,
-    color: Colors.grey700,
+    color: "white",
     fontSize: 50,
     textAlign: "center",
     marginVertical: 30,
@@ -361,7 +290,6 @@ const styles = StyleSheet.create({
   },
   form: {
     paddingHorizontal: 50,
-    backgroundColor: Colors.white,
     marginBottom: 30,
   },
   formControl: {
@@ -388,7 +316,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   text_footer: {
-    color: "#05375a",
+    color: "white",
     fontSize: 18,
     marginBottom: 15,
   },
@@ -409,17 +337,16 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
 
-    paddingLeft: 10,
-    color: "#05375a",
+    color: "white",
   },
   errorMsg: {
-    color: "#FF0000",
+    color: Colors.white,
     fontSize: 14,
   },
   forgotPassword: {
+    color: 'white',
     textAlign: "center",
     marginTop: 10,
-    color: userColors.seaFoam600,
     fontSize: 12,
     fontWeight: "600",
   },

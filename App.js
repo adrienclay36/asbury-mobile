@@ -40,6 +40,7 @@ export default function App() {
       <PrayersProvider>
         <BlogProvider>
           <PaperProvider>
+
             <SafeAreaProvider>
               <NavigationContainer>
                 <AppStack.Navigator screenOptions={{ headerShown: false }}>
@@ -57,6 +58,7 @@ export default function App() {
               </NavigationContainer>
             </SafeAreaProvider>
           </PaperProvider>
+          
         </BlogProvider>
       </PrayersProvider>
     </UserProvider>

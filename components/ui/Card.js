@@ -10,8 +10,6 @@ export default Card;
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.white,
-    borderWidth: 1,
-    borderColor: Colors.grey300,
     padding: 20,
     marginVertical: 10,
     marginHorizontal: 10,
