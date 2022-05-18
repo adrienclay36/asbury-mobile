@@ -13,7 +13,7 @@ import BulletinHero from "../../components/Home/BulletinHero";
 import Toast from "react-native-toast-message";
 import HomeScreenCard from "../../components/ui/HomeScreenCard";
 import CardSlider from "../../components/Home/CardSlider";
-const bulletinHero = require('../../assets/bulletin-hero.jpg');
+const bulletinHero = require("../../assets/bulletin-hero.jpg");
 const HomeScreen = ({ navigation, route }) => {
   const userContext = useContext(UserContext);
   const prayerContext = useContext(PrayerContext);
@@ -33,8 +33,6 @@ const HomeScreen = ({ navigation, route }) => {
     getEvents();
   }, []);
 
-  
-
   return (
     <>
       <HomeScreenHeader navigation={navigation} />
@@ -50,11 +48,13 @@ const HomeScreen = ({ navigation, route }) => {
           />
         }
       >
-        {/* <VerseOfTheDay /> */}
-        <CardSlider navigation={navigation}/>
+        <View style={{ paddingBottom: 50 }}>
+          {/* <VerseOfTheDay /> */}
+          <CardSlider navigation={navigation} />
 
-        <RecentPosts navigation={navigation} />
-        <UpcomingEvents events={events} navigation={navigation} />
+          <RecentPosts navigation={navigation} />
+          <UpcomingEvents events={events} navigation={navigation} />
+        </View>
       </ScrollView>
     </>
   );

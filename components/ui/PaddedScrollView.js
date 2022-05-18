@@ -14,12 +14,13 @@ const PaddedScrollView = ({
   userStyles = {},
   refreshControlFunction = null,
   refreshing = null,
-  containerStyles = {}
+  containerStyles = {},
+  backgroundColor = 'transparent',
 }) => {
   return (
     <ScrollView
     contentContainerStyle={containerStyles}
-      style={[styles.paddedScrollView, userStyles]}
+      style={[styles.paddedScrollView, userStyles, { backgroundColor: backgroundColor }]}
       showsVerticalScrollIndicator={false}
       refreshControl={
         refreshControlFunction ? (
@@ -40,6 +41,6 @@ export default PaddedScrollView;
 const styles = StyleSheet.create({
   paddedScrollView: {
     height: Dimensions.get("window").height,
-    backgroundColor: 'transparent',
+    
   },
 });

@@ -23,15 +23,7 @@ const BlogHomeScreen = ({ navigation, route }) => {
     return unsubscribe;
   }, [navigation]);
 
-  if (blogContext.loading) {
-    return (
-      <LottieView
-        source={require("../../loaders/dotloader.json")}
-        autoPlay
-        loop
-      />
-    );
-  }
+ 
   return (
   
     <>

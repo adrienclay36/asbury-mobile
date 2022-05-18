@@ -216,13 +216,13 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
   },
   title: {
-    color: 'black',
+
     fontSize: 16,
     marginTop: 3,
     fontWeight: "bold",
   },
   caption: {
-    color: 'black',
+
     fontSize: 14,
     lineHeight: 14,
     marginLeft: 5,
@@ -242,7 +242,6 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   paragraph: {
-    color: 'black',
     fontWeight: "bold",
     marginRight: 3,
   },

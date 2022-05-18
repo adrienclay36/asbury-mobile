@@ -92,7 +92,6 @@ const PrayersProvider = (props) => {
 
   const refreshPosts = async () => {
     isInit = true;
-    setPosts([]);
     setLoading(true);
     setPageNumber(0);
     const data = await getPagedDataByDate(0, PAGE_SIZE, TABLE, "created_at");

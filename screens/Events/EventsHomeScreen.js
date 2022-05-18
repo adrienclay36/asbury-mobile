@@ -6,39 +6,27 @@ import {
   RefreshControl,
   Dimensions,
 } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import { SERVER_URL } from "../../constants/serverURL";
+import React, { useContext, useRef } from "react";
+import { primaryFont } from "../../constants/fonts";
 import Carousel from "react-native-snap-carousel";
 import EventScreenCard from "../../components/ui/EventScreenCard";
 import EventItem from "./EventItem";
-import LottieView from "lottie-react-native";
-import { primaryFont } from "../../constants/fonts";
 const { width, height } = Dimensions.get("window");
 import DrawerHeader from "../../components/ui/DrawerHeader";
+import RegularAnimation from "../../components/ui/RegularAnimation";
+import { EventsContext } from '../../store/EventsProvider';
 const EventsHomeScreen = ({ route, navigation }) => {
-  const [loading, setLoading] = useState();
-  const [events, setEvents] = useState();
+  const eventContext = useContext(EventsContext);
   const scrollY = useRef(new Animated.Value(0)).current;
-  const getEvents = async () => {
-    setLoading(true);
-    const response = await axios.get(`${SERVER_URL}/events`);
-    setEvents(response.data.events);
-    setLoading(false);
-  };
 
-  useEffect(() => {
-    getEvents();
-  }, []);
-
-  if (!events) {
+  if (eventContext?.loading) {
     return (
-      <LottieView
-        source={require("../../loaders/dotloader.json")}
-        autoPlay
-        loop
-      />
+      <>
+        <RegularAnimation
+          source={require("../../loaders/dotloader.json")}
+          loop={true}
+        />
+      </>
     );
   }
 
@@ -56,40 +44,40 @@ const EventsHomeScreen = ({ route, navigation }) => {
   };
   return (
     <>
-    <DrawerHeader/>
-    <View>
-      <Text style={styles.title}>Upcoming</Text>
+      <DrawerHeader />
       <View>
-        <Carousel
-          sliderWidth={width}
-          itemWidth={width * 0.9 + 40}
-          data={events.slice(0, 3)}
-          renderItem={renderCardItem}
-          layout="stack"
+        <Text style={styles.title}>Upcoming</Text>
+        <View>
+          <Carousel
+            sliderWidth={width}
+            itemWidth={width * 0.9 + 40}
+            data={eventContext?.events.slice(0, 3)}
+            renderItem={renderCardItem}
+            layout="stack"
+          />
+        </View>
+        <Animated.FlatList
+          refreshing={eventContext?.loading}
+          refreshControl={<RefreshControl onRefresh={() => eventContext?.getEvents()} />}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: true }
+          )}
+          data={eventContext?.events.slice(3)}
+          renderItem={({ item, index }) => (
+            <EventItem
+              navigation={navigation}
+              scrollY={scrollY}
+              index={index}
+              date={item.date}
+              start={item.start}
+              end={item.end}
+              summary={item.summary}
+            />
+          )}
         />
       </View>
-      <Animated.FlatList
-        refreshing={loading}
-        refreshControl={<RefreshControl onRefresh={getEvents} />}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true }
-        )}
-        data={events.slice(3)}
-        renderItem={({ item, index }) => (
-          <EventItem
-            navigation={navigation}
-            scrollY={scrollY}
-            index={index}
-            date={item.date}
-            start={item.start}
-            end={item.end}
-            summary={item.summary}
-          />
-        )}
-      />
-    </View>
-  </>
+    </>
   );
 };
 

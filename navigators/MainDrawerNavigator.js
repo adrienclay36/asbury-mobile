@@ -1,25 +1,38 @@
 import { StyleSheet, Text, View } from "react-native";
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { UserContext } from "../store/UserProvider";
-import { supabase } from "../supabase-service";
+import axios from 'axios';
 import { getItemById, getPublicUrl } from "../supabase-util";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import HomeTabNavigator from "./HomeTabNavigator";
-import LottieView from "lottie-react-native";
+import { SERVER_URL } from "../constants/serverURL";
 const Drawer = createDrawerNavigator();
 import ProfileStack from "./ProfileStack";
 import DrawerContent from "../components/DrawerContent/DrawerContent";
 import * as Notifications from "expo-notifications";
 import LibraryStack from "./LibraryStack";
 import ServicesTabNavigator from "./ServicesTabNavigator";
-import CenteredLoader from "../components/ui/CenteredLoader";
+import { StripeProvider } from "@stripe/stripe-react-native";
+import RegularAnimation from "../components/ui/RegularAnimation";
 const MainDrawerNavigator = ({ navigation, route }) => {
   const userContext = useContext(UserContext);
+
+  const [publishableKey, setPublishableKey] = useState("");
 
   useEffect(() => {
     Notifications.addNotificationResponseReceivedListener(
       handleNotificationResponse
     );
+  }, []);
+
+  const getPublishableKey = async () => {
+    const response = await axios.get(`${SERVER_URL}/keys`);
+
+    setPublishableKey(response.data.publishableKey);
+  };
+
+  useEffect(() => {
+    getPublishableKey();
   }, []);
 
   const handleNotificationResponse = async (response) => {
@@ -30,7 +43,6 @@ const MainDrawerNavigator = ({ navigation, route }) => {
 
       const post = await getItemById("prayers", postID);
       const postData = post[0];
-      
 
       navigation.navigate("PostDetails", {
         post: postData,
@@ -38,23 +50,28 @@ const MainDrawerNavigator = ({ navigation, route }) => {
     }
   };
 
-  if (userContext.gettingUser && userContext.init) {
+  if ((userContext.gettingUser && userContext.init) || !publishableKey) {
     return (
-      <LottieView source={require("../loaders/dotloader.json")} autoPlay loop />
+      <RegularAnimation
+        source={require("../loaders/dotloader.json")}
+        loop={true}
+      />
     );
   }
 
   return (
     <>
-      <Drawer.Navigator
-        drawerContent={(props) => <DrawerContent {...props} />}
-        screenOptions={{ headerShown: false }}
-      >
-        <Drawer.Screen name="Home" component={HomeTabNavigator} />
-        <Drawer.Screen name="ProfileStack" component={ProfileStack} />
-        <Drawer.Screen name="LibraryStack" component={LibraryStack} />
-        <Drawer.Screen name="Services" component={ServicesTabNavigator} />
-      </Drawer.Navigator>
+      <StripeProvider>
+        <Drawer.Navigator
+          drawerContent={(props) => <DrawerContent {...props} />}
+          screenOptions={{ headerShown: false }}
+        >
+          <Drawer.Screen name="Home" component={HomeTabNavigator} />
+          <Drawer.Screen name="ProfileStack" component={ProfileStack} />
+          <Drawer.Screen name="LibraryStack" component={LibraryStack} />
+          <Drawer.Screen name="Services" component={ServicesTabNavigator} />
+        </Drawer.Navigator>
+      </StripeProvider>
     </>
   );
 };

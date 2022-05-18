@@ -41,13 +41,9 @@ const JoysAndConcernsHomeScreen = ({ navigation, route }) => {
     );
   };
 
-  if (prayerContext.loading) {
-    return <LottieView source={require("../../loaders/dotloader.json")} autoPlay loop />;
-  }
-
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
     
       {prayerContext.posts && <FlatList
         onEndReached={({ distanceFromEnd }) => {
@@ -78,7 +74,7 @@ const JoysAndConcernsHomeScreen = ({ navigation, route }) => {
       />}
       
      
-    </SafeAreaView>
+    </View>
   );
 };
 

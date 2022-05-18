@@ -3,36 +3,18 @@ import React, { useEffect, useState, useContext } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import GivingHomePage from "../screens/Giving/GivingHomePage";
 const Stack = createNativeStackNavigator();
-import { StripeProvider } from "@stripe/stripe-react-native";
 import NewSubscriptionScreen from "../screens/Giving/NewSubscriptionScreen";
-import axios from "axios";
 import NoAccountScreen from "../screens/Giving/NoAccountScreen";
-import LottieView from 'lottie-react-native';
 import OneTimeDonationScreen from "../screens/Giving/OneTimeDonationScreen";
 import { UserContext } from "../store/UserProvider";
-import { SERVER_URL } from "../constants/serverURL";
 const GivingStack = () => {
   const userContext = useContext(UserContext);
-  const [publishableKey, setPublishableKey] = useState("");
+  
 
-  const getPublishableKey = async () => {
-    const response = await axios.get(
-      `${SERVER_URL}/keys`
-    );
-
-    setPublishableKey(response.data.publishableKey);
-  };
-
-  useEffect(() => {
-    getPublishableKey();
-  }, []);
-
-  if (!publishableKey) {
-    return <LottieView autoPlay loop source={require("../loaders/dotloader.json")} />;
-  }
+ 
 
   return (
-    <StripeProvider publishableKey={publishableKey}>
+  
       <View style={{ flex: 1 }} collapsable={false}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           {userContext.userInfo && (
@@ -59,7 +41,7 @@ const GivingStack = () => {
           />}
         </Stack.Navigator>
       </View>
-    </StripeProvider>
+
   );
 };
 

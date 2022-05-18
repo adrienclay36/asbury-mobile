@@ -7,9 +7,7 @@ import { LogBox } from "react-native";
 import UserProvider from "./store/UserProvider";
 import MainDrawerNavigator from "./navigators/MainDrawerNavigator";
 import PrayersProvider from "./store/PrayersProvider";
-import {
-  Provider as PaperProvider,
-} from "react-native-paper";
+import { Provider as PaperProvider } from "react-native-paper";
 import { useFonts } from "expo-font";
 import AppLoading from "expo-app-loading";
 import AuthStack from "./navigators/AuthStack";
@@ -18,6 +16,7 @@ import StartupScreen from "./screens/Auth/StartupScreen";
 const AppStack = createNativeStackNavigator();
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import BlogProvider from "./store/BlogProvider";
+import EventsProvider from "./store/EventsProvider";
 
 LogBox.ignoreLogs(["Setting a timer"]);
 
@@ -39,26 +38,26 @@ export default function App() {
     <UserProvider>
       <PrayersProvider>
         <BlogProvider>
-          <PaperProvider>
-
-            <SafeAreaProvider>
-              <NavigationContainer>
-                <AppStack.Navigator screenOptions={{ headerShown: false }}>
-                  <AppStack.Screen
-                    name="StartupScreen"
-                    component={StartupScreen}
-                  />
-                  <AppStack.Screen name="AuthStack" component={AuthStack} />
-                  <AppStack.Screen
-                    name="AppStack"
-                    component={MainDrawerNavigator}
-                  />
-                </AppStack.Navigator>
-                <StatusBar style="auto" />
-              </NavigationContainer>
-            </SafeAreaProvider>
-          </PaperProvider>
-          
+          <EventsProvider>
+            <PaperProvider>
+              <SafeAreaProvider>
+                <NavigationContainer>
+                  <AppStack.Navigator screenOptions={{ headerShown: false }}>
+                    <AppStack.Screen
+                      name="StartupScreen"
+                      component={StartupScreen}
+                    />
+                    <AppStack.Screen name="AuthStack" component={AuthStack} />
+                    <AppStack.Screen
+                      name="AppStack"
+                      component={MainDrawerNavigator}
+                    />
+                  </AppStack.Navigator>
+                  <StatusBar style="auto" />
+                </NavigationContainer>
+              </SafeAreaProvider>
+            </PaperProvider>
+          </EventsProvider>
         </BlogProvider>
       </PrayersProvider>
     </UserProvider>

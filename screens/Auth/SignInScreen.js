@@ -12,7 +12,7 @@ import {
   Image,
 } from "react-native";
 import CustomButton from "../../components/ui/CustomButton";
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { userColors } from "../../constants/userColors";
 import { Colors, Button, Portal, Modal } from "react-native-paper";
 import * as Animatable from "react-native-animatable";
@@ -48,6 +48,8 @@ const SignInScreen = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const passwordRef = useRef(null);
 
   useEffect(() => {
     console.log("SignInScreen: useEffect:: Checking User");
@@ -116,7 +118,7 @@ const SignInScreen = ({ navigation, route }) => {
       <PaddedScrollView containerStyles={{ justifyContent: "center", flex: 1 }}>
         <Animatable.View animation="fadeInUpBig">
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>login</Text>
+            <Text style={styles.title}>asbury.umc</Text>
           </View>
           <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={30}>
             <Formik
@@ -151,6 +153,7 @@ const SignInScreen = ({ navigation, route }) => {
                         onBlur={handleBlur("email")}
                         blurOnSubmit={false}
                         returnKeyType="next"
+                        onSubmitEditing={() => passwordRef?.current?.focus()}
                       />
                       {/* {validator.isEmail(values.email) ? (
                         <Animatable.View animation="bounceIn">
@@ -176,6 +179,7 @@ const SignInScreen = ({ navigation, route }) => {
                         autoCapitalize="none"
                         onChangeText={handleChange("password")}
                         onBlur={handleBlur("password")}
+                        ref={passwordRef}
                       />
                       <TouchableOpacity onPress={() => toggleSecureTextEntry()}>
                         {!showPassword ? (
@@ -186,8 +190,18 @@ const SignInScreen = ({ navigation, route }) => {
                       </TouchableOpacity>
                     </View>
 
-                   
-                
+                    {!loading&& <TouchableOpacity
+                      style={{ justifyContent: "flex-end", alignItems: "center", marginTop: 15, }}
+                      onPress={() =>
+                        navigation.navigate("ForgotPasswordScreen")
+                      }
+                    >
+                      <Text style={styles.forgotPassword}>
+                        Forgot Password?
+                      </Text>
+                    </TouchableOpacity>}
+
+                    {!loading && (
                       <View style={{ marginVertical: 10, width: "100%" }}>
                         <CustomButton
                           text="Log In"
@@ -199,18 +213,23 @@ const SignInScreen = ({ navigation, route }) => {
                           text="Sign In With Google"
                           onPress={googleAuth}
                           backgroundColor={Colors.blue600}
-                          leftIcon={<FontAwesome name="google" size={20} color="white" />}
+                          leftIcon={
+                            <FontAwesome
+                              name="google"
+                              size={20}
+                              color="white"
+                            />
+                          }
                         />
                       </View>
-                      
-                    
+                    )}
                   </View>
                 </>
               )}
             </Formik>
 
-            <View style={{ marginVertical: 10 }}>
-              <Text style={{ textAlign: "center", color: 'white' }}>
+            {!loading && <View style={{ marginVertical: 10 }}>
+              <Text style={{ textAlign: "center", color: "white" }}>
                 Don't have an account?
               </Text>
               <TouchableOpacity
@@ -218,7 +237,7 @@ const SignInScreen = ({ navigation, route }) => {
               >
                 <Text
                   style={{
-                    color: 'white',
+                    color: "white",
                     marginVertical: 10,
                     fontWeight: "600",
                     textAlign: "center",
@@ -228,21 +247,13 @@ const SignInScreen = ({ navigation, route }) => {
                   Sign Up Now!
                 </Text>
               </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity
-              style={{ justifyContent: "center", alignItems: "center" }}
-              onPress={() => navigation.navigate("ForgotPasswordScreen")}
-            >
-              <Text style={styles.forgotPassword}>Forgot Password?</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
+            </View>}
+            {!loading && <TouchableOpacity
               style={{ justifyContent: "center", alignItems: "center" }}
               onPress={() => navigation.replace("AppStack")}
             >
               <Text style={styles.forgotPassword}>Back To App</Text>
-            </TouchableOpacity>
+            </TouchableOpacity>}
           </KeyboardAvoidingView>
         </Animatable.View>
       </PaddedScrollView>
@@ -278,7 +289,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: primaryFont.bold,
     color: "white",
-    fontSize: 50,
+    fontSize: 35,
     textAlign: "center",
     marginVertical: 30,
   },
@@ -336,7 +347,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-
+    fontSize: 16,
     color: "white",
   },
   errorMsg: {

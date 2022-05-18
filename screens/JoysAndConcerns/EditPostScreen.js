@@ -12,14 +12,13 @@ import React, { useState, useContext } from "react";
 import CustomTextInput from "../../components/ui/CustomTextInput";
 import { PrayerContext } from "../../store/PrayersProvider";
 import { UserContext } from "../../store/UserProvider";
-import { Button, Colors } from "react-native-paper";
-import { userColors } from "../../constants/userColors";
+import { Colors } from "react-native-paper";
+
 import { StatusBar } from "expo-status-bar";
 import EditPostHeader from './EditPostHeader';
 import CenteredLoader from "../../components/ui/CenteredLoader";
 const EditPostScreen = ({ navigation, route }) => {
-    const { post } = route?.params;
-    console.log(postType);
+  const { post } = route?.params;
   const prayerContext = useContext(PrayerContext);
   const userContext = useContext(UserContext);
   const [content, setContent] = useState(post?.postcontent);
@@ -32,7 +31,6 @@ const EditPostScreen = ({ navigation, route }) => {
   const editPostHandler = async () => {
     if (userContext.auth && postType && content) {
       prayerContext.editPost(post?.id, content, postType, navigation);
-    //   navigation.navigate("PostDetails", {liveLikes, userID, postContent, postType, id: postID, formatName, formatDate, avatarURL, userID})
       Keyboard.dismiss();
       navigation.popToTop();
       return;

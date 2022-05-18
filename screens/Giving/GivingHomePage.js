@@ -4,18 +4,9 @@ import ProfileCard from "../../components/Giving/ProfileCard";
 import { UserContext } from "../../store/UserProvider";
 import DrawerHeader from "../../components/ui/DrawerHeader";
 const GivingHomePage = ({ navigation, route }) => {
-  const userContext = useContext(UserContext);
+ 
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      userContext.checkUser();
-    });
-    return unsubscribe;
-  }, [navigation]);
-
-  if (!userContext.userValue) {
-    return <Text>Sign in To View Giving Options</Text>;
-  }
+ 
 
   return (
     <>

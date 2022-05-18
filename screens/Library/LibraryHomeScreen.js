@@ -61,11 +61,8 @@ const LibraryHomeScreen = ({ navigation, route }) => {
 
      <Animatable.View animation="fadeIn" style={styles.searchContainer}>
         <TextInput
-          theme={{ colors: { primary: userColors.seaFoam600 }, }}
-          
-          style={{ backgroundColor: 'white', color: 'black' }}
-          placeholderTextColor='black'
-          
+          theme={{ colors: { primary: userColors.seaFoam600 }, }}       
+          style={{ backgroundColor: 'white', color: 'black', borderWidth: 0, }}
           label="Start Typing To Search"
           selectionColor={userColors.seaFoam600}
           value={query}
